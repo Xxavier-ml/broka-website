@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal — BROKA</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg:#05010F;--border:rgba(108,61,232,0.2);--border-bright:rgba(108,61,232,0.5);--text:#F0EEFF;--text-mid:#9B8EC4;--text-low:#4A3D72;--accent:#f26522;--purple:#6C3DE8;--purple-light:#B06EFF;--neon-green:#00FFB2;--radius:16px;--radius-lg:24px; }
+        *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+        body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;}
+        .bg-grid{position:fixed;top:0;left:0;right:0;bottom:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(108,61,232,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(108,61,232,0.04) 1px,transparent 1px);background-size:60px 60px;}
+        .bg-glow{position:fixed;border-radius:50%;filter:blur(130px);opacity:0.12;pointer-events:none;z-index:0;}
+        .bg-glow-1{width:500px;height:500px;top:-150px;left:-150px;background:var(--purple);}
+        .bg-glow-2{width:400px;height:400px;bottom:-100px;right:-100px;background:var(--accent);}
+        .scanlines{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.025) 2px,rgba(0,0,0,0.025) 4px);}
+        .navbar{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(5,1,15,0.75);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);padding:0 24px;}
+        .nav-container{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:72px;}
+        .nav-logo{display:flex;align-items:center;gap:12px;text-decoration:none;}
+        .nav-logo svg{height:38px;filter:drop-shadow(0 0 10px rgba(242,101,34,0.6));}
+        .nav-logo span{font-family:'Syne',sans-serif;font-weight:800;font-size:1.5rem;color:var(--text);letter-spacing:3px;}
+        .nav-links{display:flex;gap:28px;list-style:none;}
+        .nav-links a{text-decoration:none;color:var(--text-mid);font-weight:500;font-size:0.875rem;transition:color 0.3s;}
+        .nav-links a:hover{color:var(--text);}
+        .nav-cta{background:linear-gradient(135deg,var(--accent),#ff8c42);color:#fff;padding:10px 24px;border-radius:50px;text-decoration:none;font-weight:600;font-size:0.875rem;transition:all 0.3s;}
+        .nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(242,101,34,0.4);}
+        .layout{display:grid;grid-template-columns:260px 1fr;gap:48px;max-width:1100px;margin:0 auto;padding:140px 24px 100px;position:relative;z-index:1;}
+        .sidebar{position:sticky;top:100px;height:fit-content;}
+        .sidebar-title{font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--text-low);margin-bottom:16px;}
+        .sidebar-links{display:flex;flex-direction:column;gap:4px;}
+        .sidebar-links a{color:var(--text-mid);text-decoration:none;font-size:0.88rem;padding:8px 14px;border-radius:8px;border-left:2px solid transparent;transition:all 0.3s;}
+        .sidebar-links a:hover,.sidebar-links a.active{color:var(--text);background:rgba(108,61,232,0.1);border-left-color:var(--accent);}
+        .content h1{font-family:'Syne',sans-serif;font-size:3rem;font-weight:800;margin-bottom:12px;}
+        .content .updated{color:var(--text-low);font-size:0.85rem;margin-bottom:48px;}
+        .doc-section{margin-bottom:56px;scroll-margin-top:100px;}
+        .doc-section h2{font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:700;margin-bottom:16px;color:var(--text);padding-bottom:12px;border-bottom:1px solid var(--border);}
+        .doc-section h3{font-family:'Syne',sans-serif;font-size:1rem;font-weight:700;margin:20px 0 8px;color:var(--purple-light);}
+        .doc-section p{color:var(--text-mid);font-size:0.92rem;line-height:1.8;margin-bottom:14px;}
+        .doc-section ul{color:var(--text-mid);font-size:0.92rem;line-height:1.8;margin-bottom:14px;padding-left:20px;}
+        .doc-section ul li{margin-bottom:6px;}
+        .doc-section a{color:var(--accent);text-decoration:none;}
+        .doc-section a:hover{text-decoration:underline;}
+        .highlight-box{background:rgba(242,101,34,0.08);border:1px solid rgba(242,101,34,0.25);border-radius:12px;padding:20px 24px;margin:20px 0;}
+        .highlight-box p{color:var(--text-mid);font-size:0.9rem;margin:0;}
+        .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:40px;border-bottom:1px solid var(--border);padding-bottom:0;}
+        .tab{padding:12px 20px;cursor:pointer;font-size:0.88rem;font-weight:600;color:var(--text-mid);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.3s;}
+        .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+        .tab-content{display:none;}.tab-content.active{display:block;}
+        .footer{background:rgba(5,1,15,0.9);border-top:1px solid var(--border);padding:40px 24px;position:relative;z-index:1;}
+        .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;}
+        .footer-inner p{color:var(--text-low);font-size:0.85rem;}
+        .footer-links{display:flex;gap:24px;}
+        .footer-links a{color:var(--text-mid);text-decoration:none;font-size:0.85rem;}
+        .footer-links a:hover{color:var(--accent);}
+        @media(max-width:768px){.layout{grid-template-columns:1fr;padding-top:110px;}.sidebar{display:none;}.content h1{font-size:2.2rem;}.nav-links{display:none;}}
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">
+                <svg width="38" height="38" viewBox="0 0 200 200" fill="none"><rect width="200" height="200" rx="20" fill="#1a3a5c"/><path d="M50 130 Q50 160 80 160 L140 160 Q160 160 160 140 L160 110 Q160 90 140 90 L80 90 Q50 90 50 130Z" fill="#f26522"/><circle cx="75" cy="125" r="8" fill="#1a3a5c"/><circle cx="135" cy="125" r="8" fill="#1a3a5c"/><path d="M90 90 L70 50 L110 50 L130 90Z" fill="#4a9b2f"/><rect x="85" y="60" width="12" height="12" fill="#1a3a5c" rx="2"/><rect x="103" y="60" width="12" height="12" fill="#1a3a5c" rx="2"/><path d="M95 110 Q95 80 115 80 Q135 80 135 110" stroke="#1a3a5c" stroke-width="6" fill="none" stroke-linecap="round"/><circle cx="115" cy="75" r="10" fill="#1a3a5c"/></svg>
+                <span>BROKA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html#features">Features</a></li>
+                <li><a href="pricing.html">Pricing</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <a href="index.html#cta" class="nav-cta">Get Early Access</a>
+        </div>
+    </nav>
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-title">Legal Documents</div>
+            <div class="sidebar-links">
+                <a href="#privacy" class="active" onclick="showTab('privacy',this)">Privacy Policy</a>
+                <a href="#terms" onclick="showTab('terms',this)">Terms of Service</a>
+                <a href="#escrow" onclick="showTab('escrow',this)">Escrow Terms</a>
+                <a href="#cookies" onclick="showTab('cookies',this)">Cookie Policy</a>
+            </div>
+        </aside>
+        <main class="content">
+            <h1>Legal</h1>
+            <p class="updated">Last updated: May 2026</p>
+            <div class="tabs">
+                <div class="tab active" onclick="showTab('privacy',null,this)">Privacy Policy</div>
+                <div class="tab" onclick="showTab('terms',null,this)">Terms of Service</div>
+                <div class="tab" onclick="showTab('escrow',null,this)">Escrow Terms</div>
+                <div class="tab" onclick="showTab('cookies',null,this)">Cookie Policy</div>
+            </div>
+
+            <!-- Privacy -->
+            <div class="tab-content active" id="tab-privacy">
+                <div class="doc-section" id="privacy">
+                    <h2>Privacy Policy</h2>
+                    <div class="highlight-box"><p>🔒 BROKA does not sell your personal data to third parties. Ever. This policy explains what we collect, why, and how you can control it.</p></div>
+                    <h3>1. Information We Collect</h3>
+                    <p>We collect information you provide directly (name, email, phone number, location, listing details) and information generated by your use of the platform (transaction history, negotiation logs, device identifiers).</p>
+                    <h3>2. How We Use Your Information</h3>
+                    <ul><li>To operate the AI broker and generate fair price recommendations</li><li>To process payments and hold funds in escrow</li><li>To detect and prevent fraud</li><li>To send transactional communications (deal confirmations, escrow releases)</li><li>To improve our AI models (anonymised, aggregated data only)</li></ul>
+                    <h3>3. Data Sharing</h3>
+                    <p>We share data with payment processors (M-Pesa / Safaricom) strictly for transaction processing, and with identity verification partners for fraud prevention. We do not share data with advertisers.</p>
+                    <h3>4. Data Retention</h3>
+                    <p>Transaction records are retained for 7 years as required by Kenyan financial regulations. You may request deletion of your account and non-transactional data at any time via <a href="mailto:privacy@broka.africa">privacy@broka.africa</a>.</p>
+                    <h3>5. Your Rights</h3>
+                    <p>You have the right to access, correct, port, and request deletion of your personal data. Contact us at <a href="mailto:privacy@broka.africa">privacy@broka.africa</a> to exercise these rights.</p>
+                </div>
+            </div>
+
+            <!-- Terms -->
+            <div class="tab-content" id="tab-terms">
+                <div class="doc-section" id="terms">
+                    <h2>Terms of Service</h2>
+                    <div class="highlight-box"><p>By using BROKA you agree to these terms. Please read them carefully. If you disagree with any part, you may not use the platform.</p></div>
+                    <h3>1. Eligibility</h3>
+                    <p>You must be at least 18 years old and capable of entering a legally binding contract. By using BROKA, you represent that you meet these requirements.</p>
+                    <h3>2. User Accounts</h3>
+                    <p>You are responsible for maintaining the confidentiality of your account credentials. You agree to notify BROKA immediately of any unauthorised use of your account.</p>
+                    <h3>3. Listings & Accuracy</h3>
+                    <p>Sellers must accurately describe all listed items. Fraudulent, misleading, or prohibited listings will result in immediate account suspension and potential legal action.</p>
+                    <h3>4. AI Broker</h3>
+                    <p>The BROKA AI broker provides price recommendations based on market data. These are recommendations, not valuations. BROKA is not liable for any decision made based on AI output.</p>
+                    <h3>5. Fees</h3>
+                    <p>BROKA charges a 3% transaction fee on completed deals (reduced for Pro and Business plan subscribers). Fees are non-refundable once a deal is confirmed by both parties.</p>
+                    <h3>6. Prohibited Activities</h3>
+                    <ul><li>Listing counterfeit, stolen, or illegal goods</li><li>Manipulating the auction system with fake bids</li><li>Attempting to bypass escrow for direct payment</li><li>Harassing other users via the negotiation chat</li></ul>
+                    <h3>7. Dispute Resolution</h3>
+                    <p>Disputes are first handled by BROKA's AI mediation system. Unresolved disputes escalate to human review within 48 hours. BROKA's decision is final for transactions below KSh 500,000.</p>
+                    <h3>8. Limitation of Liability</h3>
+                    <p>BROKA's liability is limited to the transaction fee paid for the disputed transaction. We are not liable for indirect, consequential, or special damages.</p>
+                </div>
+            </div>
+
+            <!-- Escrow -->
+            <div class="tab-content" id="tab-escrow">
+                <div class="doc-section" id="escrow">
+                    <h2>Escrow Terms</h2>
+                    <div class="highlight-box"><p>🔒 Escrow protection is included in every BROKA transaction at no extra cost. Funds are held securely until both parties confirm satisfaction.</p></div>
+                    <h3>1. How Escrow Works</h3>
+                    <p>When a deal is reached via AI negotiation or auction, the buyer's funds are transferred to BROKA's escrow account via M-Pesa. Funds are held until the buyer confirms receipt and satisfaction with the item or service.</p>
+                    <h3>2. Release Conditions</h3>
+                    <p>Funds are released to the seller automatically when: (a) the buyer confirms deal satisfaction in-app, or (b) 48 hours pass after confirmed delivery with no dispute raised.</p>
+                    <h3>3. Refund Conditions</h3>
+                    <p>Funds are returned to the buyer when: (a) the seller cancels the deal, (b) the item is not as described and a dispute is upheld, or (c) the seller fails to deliver within the agreed timeframe.</p>
+                    <h3>4. Dispute Window</h3>
+                    <p>Buyers have 48 hours after confirmed delivery to raise a dispute. After this window, funds are automatically released to the seller. For high-value transactions (above KSh 100,000) the window extends to 72 hours.</p>
+                    <h3>5. Coverage Limit</h3>
+                    <p>Standard escrow protection covers transactions up to KSh 500,000. Transactions above this amount require additional identity verification and may be subject to manual review.</p>
+                    <h3>6. Prohibited Escrow Bypass</h3>
+                    <p>Attempting to negotiate payment outside the BROKA escrow system (e.g. requesting direct M-Pesa outside the app) is a violation of terms and will result in account suspension.</p>
+                </div>
+            </div>
+
+            <!-- Cookies -->
+            <div class="tab-content" id="tab-cookies">
+                <div class="doc-section" id="cookies">
+                    <h2>Cookie Policy</h2>
+                    <div class="highlight-box"><p>We use a minimal number of cookies. We do not use advertising cookies or sell data to ad networks.</p></div>
+                    <h3>1. What Are Cookies</h3>
+                    <p>Cookies are small text files stored on your device when you visit a website. They help us remember your preferences and understand how you use BROKA.</p>
+                    <h3>2. Cookies We Use</h3>
+                    <ul><li><strong>Essential cookies</strong> — Required for login sessions and security. Cannot be disabled.</li><li><strong>Analytics cookies</strong> — Help us understand which features are used most. Anonymised and aggregated only.</li><li><strong>Preference cookies</strong> — Remember your language and display settings.</li></ul>
+                    <h3>3. Cookies We Do NOT Use</h3>
+                    <p>We do not use advertising, retargeting, or social media tracking cookies. BROKA does not serve ads and has no advertising partners.</p>
+                    <h3>4. Managing Cookies</h3>
+                    <p>You can disable non-essential cookies at any time via your browser settings or via our in-app preferences. Disabling essential cookies will prevent you from logging in.</p>
+                    <h3>5. Contact</h3>
+                    <p>Questions about cookies? Email <a href="mailto:privacy@broka.africa">privacy@broka.africa</a>.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <footer class="footer">
+        <div class="footer-inner">
+            <p>© 2026 BROKA. All rights reserved. Built with ❤️ for Africa.</p>
+            <div class="footer-links">
+                <a href="index.html">Home</a>
+                <a href="about.html">About</a>
+                <a href="pricing.html">Pricing</a>
+            </div>
+        </div>
+    </footer>
+    <script>
+        function showTab(id, sidebarEl, tabEl) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sidebar-links a').forEach(a => a.classList.remove('active'));
+            document.getElementById('tab-' + id).classList.add('active');
+            if (tabEl) tabEl.classList.add('active');
+            else { const tabs = document.querySelectorAll('.tab'); const idx = ['privacy','terms','escrow','cookies'].indexOf(id); if (tabs[idx]) tabs[idx].classList.add('active'); }
+            if (sidebarEl) sidebarEl.classList.add('active');
+            else { const links = document.querySelectorAll('.sidebar-links a'); const idx = ['privacy','terms','escrow','cookies'].indexOf(id); if (links[idx]) links[idx].classList.add('active'); }
+        }
+        // auto-activate from hash
+        const hash = window.location.hash.replace('#','');
+        if (['privacy','terms','escrow','cookies'].includes(hash)) showTab(hash);
+    </script>
+</body>
+</html>
