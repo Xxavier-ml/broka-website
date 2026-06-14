@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>BROKA — AI Marketplace</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════════════════════
+   BROKA DESIGN TOKENS  (exact BrokaColors from main.dart)
+═══════════════════════════════════════════════════════ */
+:root{
+  --bg:         #03000A;
+  --bg-mid:     #07021A;
+  --bg-card:    #0D0828;
+  --bg-glass:   rgba(139,92,246,.10);
+  --gs:         #7C3AED;
+  --gm:         #4F46E5;
+  --ge:         #1E1B4B;
+  --np:         #A78BFA;
+  --nb:         #38BDF8;
+  --ng:         #34D399;
+  --npk:        #F472B6;
+  --nc:         #22D3EE;
+  --gold:       #FBBF24;
+  --success:    #10B981;
+  --danger:     #EF4444;
+  --warn:       #F59E0B;
+  --th:         #F8F7FF;
+  --tm:         #8B7EC8;
+  --tl:         #3D3468;
+  --border:     #1E1648;
+  --card-g1:    #130D35;
+  --card-g2:    #080520;
+  --hdr-g1:     #0F0830;
+  --hdr-g2:     #03000A;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:#111;display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif}
+
+/* ── Phone Shell ── */
+.phone-shell{
+  width:390px;height:844px;
+  background:var(--bg);
+  border-radius:44px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 0 0 10px #1a1a1a,0 0 0 12px #2a2a2a,0 60px 120px rgba(0,0,0,.8),0 0 80px rgba(124,58,237,.15);
+  display:flex;flex-direction:column;
+  user-select:none;
+}
+/* Dynamic island */
+.dynamic-island{
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);
+  width:120px;height:34px;
+  background:#000;border-radius:20px;
+  z-index:999;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.di-cam{width:10px;height:10px;border-radius:50%;background:#1a1a1a;border:2px solid #333}
+.di-notch{width:8px;height:8px;border-radius:50%;background:#0a0a0a;border:1.5px solid #222;position:relative}
+.di-notch::after{content:'';width:4px;height:4px;border-radius:50%;background:#111;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}
+
+/* Status bar */
+.status-bar{
+  height:50px;
+  display:flex;align-items:flex-end;padding:0 24px 8px;
+  position:relative;z-index:10;
+  flex-shrink:0;
+}
+.status-time{font-size:15px;font-weight:700;color:var(--th);}
+.status-icons{margin-left:auto;display:flex;gap:6px;align-items:center}
+.status-icons span{font-size:12px;color:var(--th)}
+
+/* Screen container */
+#screen-root{flex:1;overflow:hidden;position:relative}
+.screen{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);
+  opacity:0;pointer-events:none;
+  transition:opacity .2s ease;
+}
+.screen.active{opacity:1;pointer-events:all}
+
+/* ══════════════════════════════
+   SHARED COMPONENTS
+══════════════════════════════ */
+.bottom-nav{
+  height:82px;flex-shrink:0;
+  background:var(--bg-mid);
+  border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-around;
+  padding:0 8px 16px;
+}
+.nav-item{
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  cursor:pointer;padding:6px 16px;border-radius:12px;
+  transition:background .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.nav-item:active{background:rgba(167,139,250,.1)}
+.nav-icon{font-size:22px;line-height:1}
+.nav-label{font-size:10px;font-weight:600;color:var(--tm);letter-spacing:.3px}
+.nav-item.active .nav-label{color:var(--np)}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(167,139,250,.6))}
+.nav-add-btn{
+  width:52px;height:52px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;color:#fff;cursor:pointer;
+  box-shadow:0 0 20px rgba(124,58,237,.5);
+  flex-shrink:0;
+  transform:translateY(-8px);
+  transition:transform .15s;
+}
+.nav-add-btn:active{transform:translateY(-6px) scale(.95)}
+
+/* Gradient text */
+.grad{background:linear-gradient(135deg,var(--np),var(--nb));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.grad2{background:linear-gradient(135deg,var(--np),var(--nc));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+/* Card */
+.card{
+  background:linear-gradient(135deg,var(--card-g1),var(--card-g2));
+  border:1px solid var(--border);border-radius:16px;
+}
+.card-glow{border-color:rgba(167,139,250,.4);box-shadow:0 0 20px rgba(124,58,237,.15)}
+
+/* Pill badge */
+.pill-badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:3px 10px;border-radius:100px;
+  font-size:10px;font-weight:700;letter-spacing:.8px;
+  text-transform:uppercase;
+}
+
+/* Section header */
+.sec-hdr{
+  padding:14px 20px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(30,22,72,.5);
+}
+.sec-title{font-size:18px;font-weight:900;letter-spacing:.3px}
+
+/* Scroll area */
+.scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;flex:1}
+.scroll::-webkit-scrollbar{width:0}
+
+/* Skeleton */
+@keyframes shimmer{0%{background-position:-300px 0}100%{background-position:300px 0}}
+.skel{
+  background:linear-gradient(90deg,var(--bg-card) 25%,rgba(30,22,72,.6) 50%,var(--bg-card) 75%);
+  background-size:600px 100%;
+  animation:shimmer 1.5s infinite;
+  border-radius:8px;
+}
+
+/* ══════════════════════════════
+   SCREEN 1 — HOME / FEED
+══════════════════════════════ */
+#s-home .feed-area{flex:1;position:relative;overflow:hidden}
+.feed-card{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:flex-end;
+  cursor:pointer;
+  transition:opacity .35s,transform .35s;
+}
+.feed-card.hidden{opacity:0;pointer-events:none;transform:translateY(40px)}
+.feed-card-bg{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:90px;
+  background:linear-gradient(160deg,var(--card-g1),var(--card-g2));
+}
+.feed-card-grad{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom,transparent 30%,rgba(0,0,0,.65) 65%,rgba(0,0,0,.92) 100%);
+}
+.feed-card-overlay{
+  position:relative;z-index:2;
+  padding:0 18px 14px;
+}
+.feed-seller-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.feed-avatar{
+  width:30px;height:30px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.feed-seller-name{font-size:13px;font-weight:700;color:#fff}
+.verified-icon{font-size:12px}
+.feed-title{
+  font-size:22px;font-weight:800;color:#fff;
+  line-height:1.2;margin-bottom:6px;
+}
+.feed-loc{font-size:13px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:4px;margin-bottom:10px}
+.feed-bottom-row{display:flex;align-items:center;justify-content:space-between}
+.feed-price{font-size:22px;font-weight:800}
+.view-deal-btn{
+  padding:10px 20px;border-radius:24px;
+  background:linear-gradient(135deg,#FF4D6D,#FF8C42);
+  color:#fff;font-size:13px;font-weight:800;
+  cursor:pointer;border:none;
+  box-shadow:0 0 14px rgba(255,77,109,.5);
+  transition:transform .1s;
+}
+.view-deal-btn:active{transform:scale(.95)}
+.feed-cat-badge{
+  position:absolute;top:16px;right:16px;z-index:3;
+  padding:5px 10px;border-radius:20px;
+  background:rgba(0,0,0,.55);border:1px solid rgba(255,255,255,.2);
+  color:#fff;font-size:11px;font-weight:700;
+}
+.featured-badge{
+  position:absolute;top:16px;left:16px;z-index:3;
+  padding:5px 10px;border-radius:20px;
+  background:linear-gradient(135deg,var(--np),var(--nb));
+  color:#fff;font-size:9px;font-weight:900;letter-spacing:.5px;
+  display:flex;align-items:center;gap:4px;
+  box-shadow:0 0 12px rgba(168,85,247,.5);
+}
+.video-badge{
+  position:absolute;top:16px;left:16px;z-index:3;
+  padding:4px 8px;border-radius:6px;
+  background:rgba(239,68,68,.85);
+  color:#fff;font-size:9px;font-weight:700;
+  display:flex;align-items:center;gap:3px;
+}
+.swipe-hint{
+  position:absolute;right:12px;top:50%;transform:translateY(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:6px;z-index:3;
+  opacity:.6;
+}
+.swipe-dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.6)}
+.swipe-dot.active{height:16px;border-radius:3px;background:var(--np)}
+
+/* Stats strip */
+.stats-strip{
+  display:flex;border-bottom:1px solid var(--border);
+  background:rgba(7,2,26,.8);
+}
+.stat-cell{
+  flex:1;padding:10px 0;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  border-right:1px solid var(--border);
+}
+.stat-cell:last-child{border-right:none}
+.stat-v{font-size:15px;font-weight:800;color:var(--th)}
+.stat-l{font-size:9px;color:var(--tm);letter-spacing:.3px}
+
+/* Tab bar */
+.tab-bar{
+  display:flex;gap:0;
+  padding:0 16px;
+  background:var(--bg-mid);
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+  flex-shrink:0;
+}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{
+  padding:11px 16px;
+  font-size:12px;font-weight:700;color:var(--tm);
+  white-space:nowrap;cursor:pointer;
+  border-bottom:2px solid transparent;
+  transition:all .2s;flex-shrink:0;
+}
+.tab-btn.active{color:var(--np);border-bottom-color:var(--np)}
+
+/* Home header */
+.home-hdr{
+  padding:12px 20px 10px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:1px solid rgba(30,22,72,.5);
+  flex-shrink:0;
+}
+.home-hdr-left{}
+.home-greeting{font-size:12px;color:var(--tm);display:flex;align-items:center;gap:5px}
+.home-greeting::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--ng);flex-shrink:0}
+.home-logo{font-size:24px;font-weight:900;letter-spacing:2px}
+.icon-btn{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--bg-card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0;
+}
+.icon-btn:active{background:rgba(167,139,250,.1);border-color:var(--np)}
+.loc-bar{
+  padding:7px 20px;
+  display:flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--tm);
+  flex-shrink:0;
+}
+.loc-bar .loc-icon{color:var(--nb);font-size:13px}
+
+/* ══════════════════════════════
+   SCREEN 2 — INBOX
+══════════════════════════════ */
+.inbox-item{
+  display:flex;gap:12px;align-items:flex-start;
+  padding:14px 20px;
+  border-bottom:1px solid rgba(30,22,72,.5);
+  cursor:pointer;transition:background .15s;
+}
+.inbox-item:active{background:rgba(124,58,237,.05)}
+.inbox-avatar{
+  width:46px;height:46px;border-radius:14px;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:800;color:#fff;flex-shrink:0;
+}
+.inbox-meta{flex:1;min-width:0}
+.inbox-name{font-size:14px;font-weight:800;color:var(--th);margin-bottom:3px}
+.inbox-listing{font-size:12px;color:var(--np);margin-bottom:3px;font-weight:600}
+.inbox-preview{font-size:12px;color:var(--tm);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.inbox-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.inbox-time{font-size:11px;color:var(--tl)}
+.unread-badge{
+  min-width:18px;height:18px;border-radius:9px;
+  background:var(--danger);color:#fff;
+  font-size:10px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 4px;
+}
+.inbox-empty{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+}
+.inbox-empty-icon{font-size:48px;opacity:.4}
+.inbox-empty-text{font-size:14px;color:var(--tm);text-align:center}
+
+/* ══════════════════════════════
+   SCREEN 3 — SELL / POST
+══════════════════════════════ */
+.sell-scroll{flex:1;overflow-y:auto}
+.sell-scroll::-webkit-scrollbar{width:0}
+.sell-section{padding:16px 20px}
+.sell-label{font-size:10px;font-weight:700;color:var(--tl);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:8px}
+.sell-input{
+  width:100%;padding:14px 16px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:14px;
+  color:var(--th);font-size:14px;font-family:'Inter',sans-serif;
+  outline:none;transition:border-color .2s;
+}
+.sell-input:focus{border-color:var(--np)}
+.sell-input::placeholder{color:var(--tl);font-size:13px}
+.sell-input.textarea{height:90px;resize:none;line-height:1.5}
+.cat-chips{display:flex;gap:8px;flex-wrap:wrap}
+.cat-chip{
+  padding:8px 14px;border-radius:10px;
+  background:var(--bg-card);border:1px solid var(--border);
+  color:var(--tm);font-size:12px;font-weight:600;cursor:pointer;
+  transition:all .2s;
+}
+.cat-chip.active{background:rgba(124,58,237,.2);border-color:var(--np);color:var(--np)}
+.media-upload-box{
+  border:2px dashed var(--border);border-radius:14px;
+  padding:24px;display:flex;flex-direction:column;align-items:center;gap:8px;
+  cursor:pointer;transition:border-color .2s;
+  background:rgba(13,8,40,.4);
+}
+.media-upload-box:hover{border-color:rgba(167,139,250,.4)}
+.upload-icon{font-size:28px;opacity:.5}
+.upload-text{font-size:13px;color:var(--tm);text-align:center}
+.upload-sub{font-size:11px;color:var(--tl)}
+.post-btn{
+  margin:16px 20px 8px;
+  padding:16px;border-radius:16px;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  color:#fff;font-size:15px;font-weight:800;
+  text-align:center;cursor:pointer;
+  box-shadow:0 0 24px rgba(124,58,237,.4);
+  border:none;width:calc(100% - 40px);
+  transition:transform .15s;
+}
+.post-btn:active{transform:scale(.98)}
+
+/* ══════════════════════════════
+   SCREEN 4 — ZENO (AI)
+══════════════════════════════ */
+.zeno-hdr{
+  background:linear-gradient(180deg,var(--hdr-g1),transparent);
+  padding:16px 20px 12px;
+  flex-shrink:0;
+}
+.zeno-title-row{display:flex;align-items:center;gap:10px;margin-bottom:4px}
+.zeno-orb{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;
+  box-shadow:0 0 14px rgba(124,58,237,.5);
+}
+.zeno-title{font-size:20px;font-weight:900}
+.zeno-sub{font-size:12px;color:var(--tm);margin-bottom:10px}
+.quick-chips{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.quick-chips::-webkit-scrollbar{display:none}
+.qchip{
+  padding:7px 12px;border-radius:20px;
+  background:rgba(124,58,237,.12);border:1px solid rgba(167,139,250,.2);
+  color:var(--np);font-size:11px;font-weight:600;white-space:nowrap;
+  cursor:pointer;flex-shrink:0;transition:all .15s;
+}
+.qchip:active{background:rgba(124,58,237,.25)}
+
+/* Chat area */
+.chat-area{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:10px}
+.chat-area::-webkit-scrollbar{width:0}
+.msg-row{display:flex;gap:8px;align-items:flex-end}
+.msg-row.user{flex-direction:row-reverse}
+.msg-bubble{
+  max-width:78%;padding:10px 14px;border-radius:18px;
+  font-size:13px;line-height:1.55;color:var(--th);
+}
+.msg-broker{
+  background:linear-gradient(135deg,rgba(124,58,237,.18),rgba(79,70,229,.12));
+  border:1px solid rgba(167,139,250,.2);
+  border-bottom-left-radius:5px;
+}
+.msg-user{
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  border-bottom-right-radius:5px;
+}
+.msg-avatar{
+  width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;margin-bottom:2px;
+}
+.typing-dots{display:flex;gap:4px;align-items:center;padding:4px 0}
+.typing-dots span{
+  width:7px;height:7px;border-radius:50%;background:var(--np);opacity:.5;
+  animation:tdot 1.2s ease-in-out infinite;
+}
+.typing-dots span:nth-child(2){animation-delay:.2s}
+.typing-dots span:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,80%,100%{transform:scale(.7);opacity:.3}40%{transform:scale(1);opacity:.9}}
+
+.chat-input-bar{
+  padding:10px 16px 16px;
+  display:flex;gap:8px;align-items:center;
+  background:var(--bg-mid);border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.chat-input{
+  flex:1;padding:11px 16px;
+  background:var(--bg-card);border:1px solid var(--border);border-radius:24px;
+  color:var(--th);font-size:13px;outline:none;font-family:'Inter',sans-serif;
+  transition:border-color .2s;
+}
+.chat-input:focus{border-color:var(--np)}
+.chat-input::placeholder{color:var(--tl)}
+.send-btn{
+  width:42px;height:42px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:none;font-size:18px;
+  box-shadow:0 0 14px rgba(124,58,237,.4);
+  transition:transform .1s;flex-shrink:0;
+}
+.send-btn:active{transform:scale(.9)}
+.mic-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:var(--bg-card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:16px;transition:all .2s;flex-shrink:0;
+}
+.mic-btn:active{border-color:var(--np);background:rgba(167,139,250,.1)}
+
+/* ══════════════════════════════
+   SCREEN 5 — PROFILE
+══════════════════════════════ */
+.profile-hdr{
+  padding:20px;
+  background:linear-gradient(180deg,#0F0830,transparent);
+  display:flex;align-items:center;gap:16px;
+  flex-shrink:0;
+}
+.profile-photo{
+  width:68px;height:68px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:26px;font-weight:800;color:#fff;flex-shrink:0;
+  box-shadow:0 0 20px rgba(124,58,237,.4);
+  border:2.5px solid rgba(167,139,250,.4);
+}
+.profile-info{flex:1}
+.profile-name{font-size:20px;font-weight:900;color:var(--th)}
+.profile-nick{font-size:13px;color:var(--np);font-weight:600;margin-bottom:4px}
+.profile-email{font-size:12px;color:var(--tm)}
+.verified-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 8px;border-radius:100px;
+  background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);
+  font-size:10px;font-weight:700;color:var(--ng);margin-top:4px;
+}
+.stats-bar{
+  display:flex;background:linear-gradient(135deg,var(--card-g1),var(--card-g2));
+  border:1px solid var(--border);border-radius:14px;margin:0 16px 16px;
+}
+.stat-box{
+  flex:1;padding:12px 8px;text-align:center;
+  border-right:1px solid var(--border);
+}
+.stat-box:last-child{border-right:none}
+.sb-val{font-size:15px;font-weight:800;color:var(--th)}
+.sb-lbl{font-size:10px;color:var(--tm);margin-top:2px}
+
+/* Settings tiles */
+.settings-tile{
+  display:flex;align-items:center;gap:12px;
+  padding:14px 16px;border-radius:12px;
+  background:linear-gradient(135deg,var(--card-g1),var(--card-g2));
+  border:1px solid var(--border);margin-bottom:8px;cursor:pointer;
+  transition:border-color .2s;
+}
+.settings-tile:active{border-color:rgba(167,139,250,.3)}
+.tile-icon{width:36px;height:36px;border-radius:10px;background:rgba(124,58,237,.12);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0}
+.tile-text{flex:1}
+.tile-main{font-size:14px;font-weight:600;color:var(--th)}
+.tile-sub{font-size:11px;color:var(--tm);margin-top:1px}
+.tile-arrow{font-size:16px;color:var(--tl)}
+.toggle-switch{
+  width:44px;height:26px;border-radius:13px;
+  background:var(--border);position:relative;cursor:pointer;
+  transition:background .2s;flex-shrink:0;
+}
+.toggle-switch.on{background:rgba(124,58,237,.5)}
+.toggle-knob{
+  width:20px;height:20px;border-radius:50%;background:var(--tl);
+  position:absolute;top:3px;left:3px;transition:all .2s;
+}
+.toggle-switch.on .toggle-knob{left:21px;background:var(--np)}
+
+/* Dash tile */
+.dash-tile{
+  display:flex;align-items:center;gap:12px;
+  padding:14px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(56,189,248,.06));
+  border:1.5px solid rgba(167,139,250,.3);margin-bottom:16px;cursor:pointer;
+  box-shadow:0 0 20px rgba(124,58,237,.08);
+}
+.dash-icon-wrap{width:42px;height:42px;border-radius:12px;background:rgba(124,58,237,.18);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.dash-texts{flex:1}
+.dash-title{font-size:15px;font-weight:800;color:var(--th)}
+.dash-sub{font-size:11px;color:var(--tm);margin-top:1px}
+.dash-open-btn{
+  padding:5px 12px;border-radius:20px;
+  background:linear-gradient(135deg,var(--np),var(--nb));
+  color:#fff;font-size:11px;font-weight:800;
+}
+
+/* Sign out */
+.signout-btn{
+  width:100%;padding:15px;border-radius:14px;border:none;
+  background:linear-gradient(135deg,var(--danger),#8B0000);
+  color:#fff;font-size:15px;font-weight:700;cursor:pointer;
+  box-shadow:0 0 20px rgba(239,68,68,.2);
+  transition:transform .1s;margin-top:8px;
+}
+.signout-btn:active{transform:scale(.98)}
+
+/* Lang chips */
+.lang-wrap{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.lang-chip{
+  padding:6px 12px;border-radius:20px;
+  background:var(--bg-card);border:1px solid var(--border);
+  font-size:12px;font-weight:600;color:var(--tm);cursor:pointer;
+  display:flex;align-items:center;gap:5px;transition:all .2s;
+}
+.lang-chip.active{background:rgba(124,58,237,.18);border-color:var(--np);color:#fff}
+
+/* Section label */
+.slabel{
+  font-size:10px;font-weight:700;color:var(--tl);letter-spacing:1.2px;
+  text-transform:uppercase;padding:12px 16px 6px;
+}
+
+/* ══════════════════════════════
+   PRODUCT DETAIL SCREEN
+══════════════════════════════ */
+#s-product{background:var(--bg)}
+.product-media{
+  height:280px;position:relative;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,var(--card-g1),#050214);
+  font-size:80px;
+}
+.product-media-grad{position:absolute;bottom:0;left:0;right:0;height:80px;background:linear-gradient(transparent,var(--bg))}
+.product-back{
+  position:absolute;top:14px;left:16px;
+  width:38px;height:38px;border-radius:12px;
+  background:rgba(0,0,0,.4);border:1px solid rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:18px;backdrop-filter:blur(8px);
+}
+.product-body{padding:0 18px;flex:1;overflow-y:auto}
+.product-body::-webkit-scrollbar{width:0}
+.product-cat-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.cat-tag{padding:4px 10px;border-radius:8px;background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);font-size:11px;font-weight:700;color:var(--nb)}
+.views-tag{font-size:11px;color:var(--tl);display:flex;align-items:center;gap:4px}
+.product-title{font-size:22px;font-weight:900;color:var(--th);margin-bottom:8px;line-height:1.2}
+.product-price-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.product-price{font-size:28px;font-weight:800}
+.product-loc{font-size:13px;color:var(--tm);display:flex;align-items:center;gap:5px;margin-bottom:16px}
+
+/* Zeno analysis */
+.zeno-card{
+  background:linear-gradient(135deg,rgba(124,58,237,.1),rgba(56,189,248,.05));
+  border:1px solid rgba(167,139,250,.25);border-radius:16px;
+  padding:14px;margin-bottom:14px;
+}
+.zeno-card-hdr{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.zeno-mini-orb{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--gs),var(--gm));display:flex;align-items:center;justify-content:center;font-size:13px}
+.zeno-card-title{font-size:13px;font-weight:800;color:var(--np)}
+.zeno-rows{display:flex;flex-direction:column;gap:8px}
+.zeno-row{display:flex;justify-content:space-between;align-items:center}
+.zr-label{font-size:12px;color:var(--tm)}
+.zr-val{font-size:12px;font-weight:700}
+.zr-val.good{color:var(--ng)}
+.zr-val.warn{color:var(--warn)}
+.zr-val.bad{color:var(--danger)}
+
+/* Seller card */
+.seller-card{
+  background:linear-gradient(135deg,var(--card-g1),var(--card-g2));
+  border:1px solid var(--border);border-radius:16px;
+  padding:14px;margin-bottom:14px;
+}
+.seller-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.seller-av{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--gs),var(--gm));display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;color:#fff}
+.seller-name{font-size:14px;font-weight:800;color:var(--th)}
+.seller-stats{font-size:11px;color:var(--tm);margin-top:2px}
+.product-cta-row{
+  display:flex;gap:10px;padding:14px 18px;
+  background:var(--bg-mid);border-top:1px solid var(--border);flex-shrink:0;
+}
+.cta-negotiate{
+  flex:1;padding:14px;border-radius:14px;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  color:#fff;font-size:14px;font-weight:800;text-align:center;
+  cursor:pointer;border:none;box-shadow:0 0 20px rgba(124,58,237,.35);
+  transition:transform .1s;
+}
+.cta-negotiate:active{transform:scale(.97)}
+.cta-save{
+  width:46px;height:46px;border-radius:14px;
+  background:var(--bg-card);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;font-size:20px;
+  cursor:pointer;transition:all .2s;
+}
+.cta-save:active{border-color:var(--np);background:rgba(167,139,250,.1)}
+
+/* ══════════════════════════════
+   NEGOTIATE SCREEN
+══════════════════════════════ */
+#s-negotiate .neg-hdr{
+  padding:12px 16px;
+  background:var(--bg-mid);
+  border-bottom:1px solid var(--border);
+  flex-shrink:0;
+}
+.neg-hdr-top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.back-btn{font-size:20px;cursor:pointer;color:var(--tm)}
+.neg-listing-name{font-size:14px;font-weight:800;color:var(--th)}
+.neg-listing-price{font-size:12px;font-weight:700}
+.mode-toggle{
+  display:flex;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:10px;overflow:hidden;
+}
+.mode-btn{
+  flex:1;padding:7px;text-align:center;
+  font-size:11px;font-weight:700;color:var(--tm);cursor:pointer;transition:all .2s;
+}
+.mode-btn.active{background:rgba(124,58,237,.2);color:var(--np)}
+
+/* Deal probability */
+.deal-prob{
+  padding:10px 16px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+}
+.prob-label{font-size:11px;color:var(--tm);white-space:nowrap}
+.prob-bar{flex:1;height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.prob-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gs),var(--nb));transition:width .5s ease}
+.prob-pct{font-size:11px;font-weight:700;white-space:nowrap}
+
+/* Quick actions */
+.quick-actions{
+  display:flex;gap:8px;padding:10px 16px;
+  overflow-x:auto;flex-shrink:0;border-bottom:1px solid rgba(30,22,72,.4);
+}
+.quick-actions::-webkit-scrollbar{display:none}
+.qa-chip{
+  padding:6px 12px;border-radius:20px;
+  background:rgba(124,58,237,.1);border:1px solid rgba(167,139,250,.2);
+  color:var(--np);font-size:11px;font-weight:600;white-space:nowrap;
+  cursor:pointer;flex-shrink:0;transition:all .15s;
+}
+.qa-chip:active{background:rgba(124,58,237,.25)}
+
+/* ══════════════════════════════
+   SPLASH SCREEN
+══════════════════════════════ */
+#s-splash{
+  background:radial-gradient(ellipse at 50% 30%,#1A0848 0%,#08011E 50%,#03000A 100%);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:0;position:relative;overflow:hidden;
+}
+.splash-orb{
+  position:absolute;border-radius:50%;
+  animation:orbit linear infinite;
+}
+@keyframes orbit{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.splash-core{
+  width:90px;height:90px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 50px rgba(124,58,237,.7),0 0 100px rgba(124,58,237,.3);
+  z-index:2;
+}
+.splash-b{font-size:44px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1}
+.splash-text{text-align:center;margin-top:28px;z-index:2}
+.splash-name{font-size:36px;font-weight:900;letter-spacing:8px;margin-bottom:6px}
+.splash-tagline{font-size:9px;letter-spacing:3.5px;color:var(--tl);margin-bottom:28px}
+.splash-progress{width:120px;height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin:0 auto}
+.splash-fill{height:100%;background:var(--np);animation:prog 2.8s ease forwards}
+@keyframes prog{from{width:0}to{width:100%}}
+.splash-init{font-size:9px;letter-spacing:2px;color:var(--tl);margin-top:10px;text-align:center}
+
+/* ══════════════════════════════
+   AUTH SCREEN
+══════════════════════════════ */
+#s-auth{
+  background:var(--bg);
+  overflow:hidden;
+}
+.auth-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% -20%,rgba(124,58,237,.25) 0%,transparent 60%);
+  pointer-events:none;
+}
+.auth-content{flex:1;overflow-y:auto;padding:40px 24px 24px}
+.auth-content::-webkit-scrollbar{width:0}
+.auth-logo{
+  width:64px;height:64px;border-radius:20px;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:28px;font-weight:900;color:#fff;letter-spacing:-1px;
+  box-shadow:0 0 28px rgba(124,58,237,.5);
+  margin:0 auto 20px;
+}
+.auth-title{font-size:28px;font-weight:900;text-align:center;margin-bottom:6px}
+.auth-sub{font-size:14px;color:var(--tm);text-align:center;margin-bottom:32px}
+.auth-tabs{
+  display:flex;background:var(--bg-card);border:1px solid var(--border);
+  border-radius:12px;padding:4px;margin-bottom:24px;
+}
+.auth-tab{
+  flex:1;padding:9px;text-align:center;
+  font-size:13px;font-weight:700;color:var(--tm);
+  cursor:pointer;border-radius:9px;transition:all .2s;
+}
+.auth-tab.active{background:linear-gradient(135deg,var(--gs),var(--gm));color:#fff}
+.auth-field{margin-bottom:14px}
+.auth-field-label{font-size:11px;font-weight:600;color:var(--tl);letter-spacing:.5px;margin-bottom:5px}
+.auth-step-dots{display:flex;gap:6px;justify-content:center;margin-bottom:20px}
+.step-dot{width:28px;height:4px;border-radius:2px;background:var(--border);transition:all .3s}
+.step-dot.active{background:var(--np);width:32px}
+.step-dot.done{background:var(--ng)}
+.auth-step-title{font-size:18px;font-weight:900;text-align:center;margin-bottom:4px}
+.auth-step-sub{font-size:12px;color:var(--tm);text-align:center;margin-bottom:20px}
+.biometric-setup{
+  border:2px dashed rgba(167,139,250,.3);border-radius:18px;
+  padding:28px;display:flex;flex-direction:column;align-items:center;gap:10px;
+  cursor:pointer;margin-bottom:16px;transition:border-color .2s;
+  background:rgba(124,58,237,.04);
+}
+.biometric-setup:active{border-color:var(--np)}
+.bio-icon{font-size:40px}
+.bio-text{font-size:14px;font-weight:700;color:var(--th)}
+.bio-sub{font-size:12px;color:var(--tm);text-align:center}
+
+/* ══════════════════════════════
+   STORE SCREEN
+══════════════════════════════ */
+.store-header{
+  padding:16px 18px 12px;
+  background:linear-gradient(180deg,rgba(124,58,237,.08),transparent);
+  border-bottom:1px solid var(--border);flex-shrink:0;
+}
+.store-banner{
+  height:100px;border-radius:14px;
+  background:linear-gradient(135deg,#1A0848,#07021A);
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;color:var(--tl);border:1px solid var(--border);
+  margin-bottom:12px;position:relative;overflow:hidden;
+}
+.store-banner::after{
+  content:'🛍️';font-size:40px;
+  position:absolute;opacity:.3;
+}
+.store-info-row{display:flex;align-items:center;gap:10px}
+.store-logo-wrap{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,var(--gs),var(--gm));
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;color:#fff;flex-shrink:0;
+  border:2px solid rgba(167,139,250,.3);
+  box-shadow:0 0 16px rgba(124,58,237,.3);
+}
+.store-name{font-size:17px;font-weight:900;color:var(--th)}
+.store-meta{font-size:11px;color:var(--tm);margin-top:2px}
+.store-distance{
+  margin-left:auto;
+  display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+}
+.dist-val{font-size:14px;font-weight:800;color:var(--nb)}
+.dist-lbl{font-size:10px;color:var(--tl)}
+.store-stats-row{
+  display:flex;gap:8px;margin-top:12px;
+}
+.store-stat-pill{
+  flex:1;padding:8px;border-radius:10px;
+  background:rgba(13,8,40,.6);border:1px solid var(--border);
+  text-align:center;
+}
+.ssp-val{font-size:14px;font-weight:800;color:var(--th)}
+.ssp-lbl{font-size:9px;color:var(--tl);margin-top:1px}
+.product-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:10px;padding:12px 16px;
+}
+.product-thumb{
+  border-radius:12px;overflow:hidden;
+  background:linear-gradient(135deg,var(--card-g1),var(--card-g2));
+  border:1px solid var(--border);cursor:pointer;
+  transition:border-color .2s;
+}
+.product-thumb:active{border-color:rgba(167,139,250,.3)}
+.pt-img{height:100px;display:flex;align-items:center;justify-content:center;font-size:40px;background:rgba(7,2,26,.5)}
+.pt-info{padding:10px}
+.pt-name{font-size:12px;font-weight:700;color:var(--th);margin-bottom:4px}
+.pt-price{font-size:13px;font-weight:800;color:var(--ng)}
+
+/* ══════════════════════════════
+   TOAST
+══════════════════════════════ */
+#toast{
+  position:absolute;bottom:100px;left:50%;transform:translateX(-50%);
+  background:var(--bg-card);border:1px solid var(--border);border-radius:12px;
+  padding:10px 20px;font-size:13px;color:var(--th);white-space:nowrap;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);z-index:9999;
+  opacity:0;pointer-events:none;transition:opacity .3s;
+}
+#toast.show{opacity:1}
+
+/* ══════════════════════════════
+   MISC UTILITIES
+══════════════════════════════ */
+.section-divider{height:1px;background:var(--border);margin:4px 0}
+.row{display:flex}
+.col{display:flex;flex-direction:column}
+.spacer{flex:1}
+.mt4{margin-top:4px}
+.mt8{margin-top:8px}
+.mt12{margin-top:12px}
+.mt16{margin-top:16px}
+.p16{padding:16px}
+.px16{padding:0 16px}
+.px20{padding:0 20px}
+.fade-in{animation:fadeIn .3s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="phone-shell">
+  <!-- Dynamic Island -->
+  <div class="dynamic-island">
+    <div class="di-cam"></div>
+    <div class="di-notch"></div>
+  </div>
+
+  <!-- Status Bar -->
+  <div class="status-bar">
+    <span class="status-time" id="clock">9:41</span>
+    <div class="status-icons">
+      <span>●●●</span>
+      <span>WiFi</span>
+      <span>🔋</span>
+    </div>
+  </div>
+
+  <!-- Screen Root -->
+  <div id="screen-root">
+
+    <!-- ═══════════ SPLASH ═══════════ -->
+    <div class="screen active" id="s-splash">
+      <!-- Orbit rings -->
+      <div class="splash-orb" style="width:260px;height:260px;border:1px solid rgba(167,139,250,.08);top:50%;left:50%;margin:-130px 0 0 -130px;animation-duration:15s"></div>
+      <div class="splash-orb" style="width:180px;height:180px;border:1px solid rgba(56,189,248,.15);top:50%;left:50%;margin:-90px 0 0 -90px;animation-duration:10s;animation-direction:reverse"></div>
+      <div class="splash-orb" style="width:110px;height:110px;border:1px solid rgba(167,139,250,.4);top:50%;left:50%;margin:-55px 0 0 -55px;animation-duration:6s"></div>
+      <div class="splash-core">
+        <span class="splash-b">B</span>
+      </div>
+      <div class="splash-text">
+        <div class="splash-name grad">BROKA</div>
+        <div class="splash-tagline">THE FUTURE OF INTELLIGENT COMMERCE</div>
+        <div class="splash-progress"><div class="splash-fill"></div></div>
+        <div class="splash-init">INITIALISING AI SYSTEMS...</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ AUTH ═══════════ -->
+    <div class="screen" id="s-auth">
+      <div class="auth-bg"></div>
+      <div class="auth-content">
+        <div class="auth-logo">B</div>
+        <div class="auth-title grad2">Welcome to BROKA</div>
+        <div class="auth-sub">The fairest marketplace in East Africa</div>
+        <div class="auth-tabs">
+          <div class="auth-tab active" id="tab-login" onclick="switchAuth('login')">Sign In</div>
+          <div class="auth-tab" id="tab-register" onclick="switchAuth('register')">Register</div>
+        </div>
+
+        <!-- Login form -->
+        <div id="auth-login">
+          <div class="auth-field">
+            <div class="auth-field-label">EMAIL</div>
+            <input class="sell-input" type="email" placeholder="you@example.com" id="login-email"/>
+          </div>
+          <div class="auth-field">
+            <div class="auth-field-label">PASSWORD</div>
+            <input class="sell-input" type="password" placeholder="••••••••" id="login-pw"/>
+          </div>
+          <div style="margin-bottom:12px">
+            <div class="biometric-setup" onclick="doLogin()" style="padding:18px">
+              <span style="font-size:28px">👁️</span>
+              <span style="font-size:13px;font-weight:700;color:var(--np)">Use Biometric Unlock</span>
+            </div>
+          </div>
+          <button class="post-btn" style="margin:0;width:100%" onclick="doLogin()">Sign In</button>
+        </div>
+
+        <!-- Register form -->
+        <div id="auth-register" style="display:none">
+          <div class="auth-step-dots">
+            <div class="step-dot active" id="sd1"></div>
+            <div class="step-dot" id="sd2"></div>
+            <div class="step-dot" id="sd3"></div>
+            <div class="step-dot" id="sd4"></div>
+          </div>
+          <div id="reg-step1">
+            <div class="auth-step-title">Basic Info</div>
+            <div class="auth-step-sub">Tell us about yourself</div>
+            <div class="auth-field"><input class="sell-input" placeholder="Full name" id="r-name"/></div>
+            <div class="auth-field"><input class="sell-input" placeholder="Nickname (e.g. @njenga254)" id="r-nick"/></div>
+            <div class="auth-field"><input class="sell-input" placeholder="Phone number" id="r-phone"/></div>
+            <div class="auth-field"><input class="sell-input" type="email" placeholder="Email address" id="r-email"/></div>
+            <div class="auth-field"><input class="sell-input" type="password" placeholder="Password" id="r-pw"/></div>
+            <button class="post-btn" style="margin:0;width:100%" onclick="regNext(2)">Continue →</button>
+          </div>
+          <div id="reg-step2" style="display:none">
+            <div class="auth-step-title">Profile Selfie</div>
+            <div class="auth-step-sub">Front camera only · No gallery uploads</div>
+            <div class="biometric-setup" style="margin-bottom:16px" onclick="showToast('📷 Camera would open here on device')">
+              <span class="bio-icon">🤳</span>
+              <span class="bio-text">Take Selfie</span>
+              <span class="bio-sub">We'll use this as your profile photo</span>
+            </div>
+            <button class="post-btn" style="margin:0;width:100%" onclick="regNext(3)">Continue →</button>
+          </div>
+          <div id="reg-step3" style="display:none">
+            <div class="auth-step-title">BROKA Biometrics</div>
+            <div class="auth-step-sub">Scanned live — not stored device data</div>
+            <div class="biometric-setup" style="margin-bottom:16px" onclick="showToast('🔐 Biometric scanner on device')">
+              <span class="bio-icon">👆</span>
+              <span class="bio-text">Scan Fingerprint</span>
+              <span class="bio-sub">Required to approve payments securely</span>
+            </div>
+            <button class="post-btn" style="margin:0;width:100%" onclick="regNext(4)">Continue →</button>
+          </div>
+          <div id="reg-step4" style="display:none">
+            <div class="auth-step-title">You're all set! 🎉</div>
+            <div class="auth-step-sub">Your BROKA account is ready</div>
+            <div style="text-align:center;font-size:60px;margin:20px 0">✅</div>
+            <button class="post-btn" style="margin:0;width:100%" onclick="goHome()">Enter BROKA →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ HOME ═══════════ -->
+    <div class="screen" id="s-home">
+      <div class="home-hdr">
+        <div class="home-hdr-left">
+          <div class="home-greeting" id="greeting-text">Good morning, Alex 👋</div>
+          <div class="home-logo grad">BROKA</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <div class="icon-btn" onclick="showToast('🔍 Search traders & listings')">🔍</div>
+          <div class="icon-btn" onclick="showToast('⚙️ Filters')">⚙️</div>
+        </div>
+      </div>
+      <div class="loc-bar">
+        <span class="loc-icon">📍</span>
+        <span>Westlands, Nairobi · 3 km radius</span>
+      </div>
+
+      <!-- Stats strip -->
+      <div class="stats-strip">
+        <div class="stat-cell"><div class="stat-v grad">1,482</div><div class="stat-l">Listings</div></div>
+        <div class="stat-cell"><div class="stat-v" style="color:var(--gold)">24</div><div class="stat-l">Live Auctions</div></div>
+        <div class="stat-cell"><div class="stat-v" style="color:var(--ng)">KES 87M</div><div class="stat-l">Vol. Traded</div></div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <div class="tab-btn active" onclick="switchTab(this)">Goods</div>
+        <div class="tab-btn" onclick="switchTab(this)">Brokers</div>
+        <div class="tab-btn" onclick="switchTab(this)">House Hunting</div>
+        <div class="tab-btn" onclick="switchTab(this)">Traders</div>
+      </div>
+
+      <!-- Feed -->
+      <div class="feed-area" id="feed-area">
+        <!-- Swipe hint -->
+        <div class="swipe-hint" id="swipe-hint">
+          <div class="swipe-dot active"></div>
+          <div class="swipe-dot"></div>
+          <div class="swipe-dot"></div>
+          <div class="swipe-dot"></div>
+          <div class="swipe-dot"></div>
+        </div>
+      </div>
+
+      <div class="bottom-nav" id="home-nav">
+        <div class="nav-item active" onclick="switchScreen('home')">
+          <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('inbox')">
+          <span class="nav-icon">💬</span><span class="nav-label">Inbox</span>
+        </div>
+        <div class="nav-add-btn" onclick="switchScreen('sell')">＋</div>
+        <div class="nav-item" onclick="switchScreen('zeno')">
+          <span class="nav-icon">✨</span><span class="nav-label">Zeno</span>
+        </div>
+        <div class="nav-item" onclick="switchScreen('profile')">
+          <span class="nav-icon">👤</span><span class="nav-label">Profile</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ INBOX ═══════════ -->
+    <div class="screen" id="s-inbox">
+      <div class="sec-hdr">
+        <div class="sec-title">Inbox <span style="font-size:13px;font-weight:600;background:var(--danger);color:#fff;padding:2px 8px;border-radius:10px;margin-left:6px">3</span></div>
+        <div class="icon-btn" onclick="showToast('Mark all read')">✓</div>
+      </div>
+      <div class="scroll" id="inbox-list"></div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchScreen('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+        <div class="nav-item active" onclick="switchScreen('inbox')"><span class="nav-icon">💬</span><span class="nav-label">Inbox</span></div>
+        <div class="nav-add-btn" onclick="switchScreen('sell')">＋</div>
+        <div class="nav-item" onclick="switchScreen('zeno')"><span class="nav-icon">✨</span><span class="nav-label">Zeno</span></div>
+        <div class="nav-item" onclick="switchScreen('profile')"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ SELL ═══════════ -->
+    <div class="screen" id="s-sell">
+      <div class="sec-hdr">
+        <div class="sec-title">Post a Listing</div>
+        <div class="icon-btn" onclick="switchScreen('home')">✕</div>
+      </div>
+      <div class="sell-scroll">
+        <div class="sell-section">
+          <div class="sell-label">Category</div>
+          <div class="cat-chips">
+            <div class="cat-chip active" onclick="selectCat(this)">🚗 Vehicles</div>
+            <div class="cat-chip" onclick="selectCat(this)">🏠 Property</div>
+            <div class="cat-chip" onclick="selectCat(this)">📱 Electronics</div>
+            <div class="cat-chip" onclick="selectCat(this)">🐄 Livestock</div>
+            <div class="cat-chip" onclick="selectCat(this)">📦 General</div>
+          </div>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Listing Type</div>
+          <div class="cat-chips">
+            <div class="cat-chip active" onclick="selectType(this)">Direct Sale</div>
+            <div class="cat-chip" onclick="selectType(this)">🏆 Auction</div>
+            <div class="cat-chip" onclick="selectType(this)">🤝 Broker</div>
+          </div>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Item Title</div>
+          <input class="sell-input" placeholder="e.g. Toyota Fielder 2016, Low Mileage"/>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Price (KES)</div>
+          <input class="sell-input" type="number" placeholder="e.g. 1350000"/>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Location</div>
+          <input class="sell-input" placeholder="e.g. Westlands, Nairobi"/>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Description</div>
+          <textarea class="sell-input textarea" placeholder="Describe your item — condition, features, reason for selling..."></textarea>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Verified Photos (Camera Only · Max 6)</div>
+          <div class="media-upload-box" onclick="showToast('📷 Camera opens on device')">
+            <span class="upload-icon">📸</span>
+            <div class="upload-text">Tap to take photos</div>
+            <div class="upload-sub">Camera only · No screenshots</div>
+          </div>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Verified Video (Optional)</div>
+          <div class="media-upload-box" onclick="showToast('🎥 Video camera opens on device')">
+            <span class="upload-icon">🎬</span>
+            <div class="upload-text">Record a walkthrough</div>
+            <div class="upload-sub">Max 2 min · Shows authenticity</div>
+          </div>
+        </div>
+        <div class="sell-section">
+          <div class="sell-label">Advert Video (Optional · AI-generated OK)</div>
+          <div class="media-upload-box" onclick="showToast('📹 Pick from gallery or record')">
+            <span class="upload-icon">✨</span>
+            <div class="upload-text">Upload promotional video</div>
+            <div class="upload-sub">AI-generated videos allowed here</div>
+          </div>
+        </div>
+        <button class="post-btn" onclick="showToast('✅ Listing posted successfully!')">🚀 Post Listing</button>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ ZENO ═══════════ -->
+    <div class="screen" id="s-zeno">
+      <div class="zeno-hdr">
+        <div class="zeno-title-row">
+          <div class="zeno-orb">🤖</div>
+          <div>
+            <div class="zeno-title grad">Zeno</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <div class="icon-btn" onclick="toggleTTS()" id="tts-btn" title="Toggle voice">🔊</div>
+            <div class="icon-btn" onclick="clearChat()">🗑️</div>
+          </div>
+        </div>
+        <div class="zeno-sub">AI Broker · Powered by Llama 3.3 70B via Groq</div>
+        <div class="quick-chips" id="quick-chips">
+          <div class="qchip" onclick="sendQuick('📈 What\'s the market price for iPhones right now?')">📈 iPhone prices</div>
+          <div class="qchip" onclick="sendQuick('🛡️ How does escrow work in BROKA?')">🛡️ How escrow works</div>
+          <div class="qchip" onclick="sendQuick('💡 Tips to write a great listing')">💡 Listing tips</div>
+          <div class="qchip" onclick="sendQuick('🌍 Best time to sell livestock in Kenya')">🌍 Livestock tips</div>
+          <div class="qchip" onclick="sendQuick('🤝 How do I negotiate a better price?')">🤝 Negotiation tips</div>
+        </div>
+      </div>
+      <div class="chat-area" id="zeno-chat"></div>
+      <div class="chat-input-bar">
+        <div class="mic-btn" onclick="showToast('🎤 STT ready on device')">🎤</div>
+        <input class="chat-input" id="zeno-input" placeholder="Ask Zeno anything..." onkeydown="if(event.key==='Enter')sendZeno()"/>
+        <button class="send-btn" onclick="sendZeno()">➤</button>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchScreen('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+        <div class="nav-item" onclick="switchScreen('inbox')"><span class="nav-icon">💬</span><span class="nav-label">Inbox</span></div>
+        <div class="nav-add-btn" onclick="switchScreen('sell')">＋</div>
+        <div class="nav-item active" onclick="switchScreen('zeno')"><span class="nav-icon">✨</span><span class="nav-label">Zeno</span></div>
+        <div class="nav-item" onclick="switchScreen('profile')"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PROFILE ═══════════ -->
+    <div class="screen" id="s-profile">
+      <div class="scroll">
+        <div class="profile-hdr">
+          <div class="profile-photo">AO</div>
+          <div class="profile-info">
+            <div class="profile-name">Alex Omondi</div>
+            <div class="profile-nick">@alex254</div>
+            <div class="profile-email">alex@broka.ke</div>
+            <div class="verified-tag">✓ Verified</div>
+          </div>
+        </div>
+
+        <div class="stats-bar">
+          <div class="stat-box"><div class="sb-val grad">12</div><div class="sb-lbl">Listings</div></div>
+          <div class="stat-box"><div class="sb-val" style="color:var(--gold)">47</div><div class="sb-lbl">Deals</div></div>
+          <div class="stat-box"><div class="sb-val" style="color:var(--np)">4.9★</div><div class="sb-lbl">Rating</div></div>
+          <div class="stat-box"><div class="sb-val" style="color:var(--ng)">3.2M</div><div class="sb-lbl">Traded</div></div>
+        </div>
+
+        <div class="px16">
+          <!-- Seller Dashboard -->
+          <div class="dash-tile" onclick="switchScreen('home');showToast('📊 Seller Dashboard opening...')">
+            <div class="dash-icon-wrap">📊</div>
+            <div class="dash-texts">
+              <div class="dash-title">Seller Dashboard</div>
+              <div class="dash-sub">Analytics, Zeno tips, scores & boost</div>
+            </div>
+            <div class="dash-open-btn">Open</div>
+          </div>
+
+          <div class="slabel">ACCOUNT</div>
+          <div class="settings-tile" onclick="showToast('👤 Edit Profile')">
+            <div class="tile-icon">👤</div>
+            <div class="tile-text"><div class="tile-main">Edit Profile</div><div class="tile-sub">Name, photo, nickname</div></div>
+            <div class="tile-arrow">›</div>
+          </div>
+          <div class="settings-tile" onclick="showToast('📋 My Listings')">
+            <div class="tile-icon">📋</div>
+            <div class="tile-text"><div class="tile-main">My Listings</div><div class="tile-sub">12 active listings</div></div>
+            <div class="tile-arrow">›</div>
+          </div>
+          <div class="settings-tile" onclick="showToast('🧾 Deal Receipts')">
+            <div class="tile-icon">🧾</div>
+            <div class="tile-text"><div class="tile-main">Deal Receipt History</div><div class="tile-sub">View past transactions</div></div>
+            <div class="tile-arrow">›</div>
+          </div>
+          <div class="settings-tile" onclick="showToast('⚖️ Open a Dispute')">
+            <div class="tile-icon">⚖️</div>
+            <div class="tile-text"><div class="tile-main">Disputes</div><div class="tile-sub">Raise or view disputes</div></div>
+            <div class="tile-arrow">›</div>
+          </div>
+
+          <div class="slabel">PREFERENCES</div>
+          <!-- Language picker -->
+          <div class="settings-tile" style="flex-direction:column;align-items:flex-start;gap:10px" onclick="">
+            <div style="display:flex;align-items:center;gap:10px;width:100%">
+              <div class="tile-icon">🌍</div>
+              <div class="tile-text"><div class="tile-main">Language</div><div class="tile-sub">AI + Voice output</div></div>
+            </div>
+            <div class="lang-wrap">
+              <div class="lang-chip active" onclick="selectLang(this)">🇬🇧 English</div>
+              <div class="lang-chip" onclick="selectLang(this)">🇰🇪 Kiswahili</div>
+              <div class="lang-chip" onclick="selectLang(this)">🟡 Dholuo</div>
+              <div class="lang-chip" onclick="selectLang(this)">🟤 Kikuyu</div>
+              <div class="lang-chip" onclick="selectLang(this)">🇺🇬 Luganda</div>
+              <div class="lang-chip" onclick="selectLang(this)">🔥 Sheng</div>
+            </div>
+          </div>
+
+          <div class="settings-tile">
+            <div class="tile-icon">🔔</div>
+            <div class="tile-text"><div class="tile-main">Notifications</div></div>
+            <div class="toggle-switch on" onclick="toggleSwitch(this)" id="notif-toggle"><div class="toggle-knob"></div></div>
+          </div>
+          <div class="settings-tile">
+            <div class="tile-icon">📍</div>
+            <div class="tile-text"><div class="tile-main">Show my Location</div><div class="tile-sub">Visible to other traders</div></div>
+            <div class="toggle-switch on" onclick="toggleSwitch(this)"><div class="toggle-knob"></div></div>
+          </div>
+
+          <div class="slabel">MORE</div>
+          <div class="settings-tile" onclick="showToast('✅ Verification Centre')">
+            <div class="tile-icon">🛡️</div>
+            <div class="tile-text"><div class="tile-main">Verification Centre</div><div class="tile-sub">Get verified badge</div></div>
+            <div class="tile-arrow">›</div>
+          </div>
+          <div class="settings-tile" onclick="switchScreen('store')">
+            <div class="tile-icon">🏪</div>
+            <div class="tile-text"><div class="tile-main">My Store</div><div class="tile-sub">Manage storefront & products</div></div>
+            <div class="tile-arrow">›</div>
+          </div>
+
+          <button class="signout-btn" onclick="signOut()">Sign Out</button>
+          <div style="height:20px"></div>
+        </div>
+      </div>
+      <div class="bottom-nav">
+        <div class="nav-item" onclick="switchScreen('home')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
+        <div class="nav-item" onclick="switchScreen('inbox')"><span class="nav-icon">💬</span><span class="nav-label">Inbox</span></div>
+        <div class="nav-add-btn" onclick="switchScreen('sell')">＋</div>
+        <div class="nav-item" onclick="switchScreen('zeno')"><span class="nav-icon">✨</span><span class="nav-label">Zeno</span></div>
+        <div class="nav-item active" onclick="switchScreen('profile')"><span class="nav-icon">👤</span><span class="nav-label">Profile</span></div>
+      </div>
+    </div>
+
+    <!-- ═══════════ PRODUCT DETAIL ═══════════ -->
+    <div class="screen" id="s-product">
+      <div class="product-media" id="product-media">
+        <span id="product-emoji" style="font-size:80px">🚗</span>
+        <div class="product-media-grad"></div>
+        <div class="product-back" onclick="switchScreen('home')">←</div>
+        <div class="featured-badge">🚀 FEATURED</div>
+      </div>
+      <div class="product-body">
+        <div style="height:12px"></div>
+        <div class="product-cat-row">
+          <div class="cat-tag" id="product-cat">Vehicles</div>
+          <div class="views-tag">👁️ <span id="product-views">1,240</span> views</div>
+        </div>
+        <div class="product-title" id="product-title">Toyota Fielder 2016, Low Mileage</div>
+        <div class="product-price-row">
+          <div class="product-price grad" id="product-price">KES 1,350,000</div>
+        </div>
+        <div class="product-loc" id="product-loc">
+          <span>📍</span> Westlands, Nairobi · 2.1 km away
+        </div>
+
+        <!-- Zeno Analysis -->
+        <div class="zeno-card fade-in">
+          <div class="zeno-card-hdr">
+            <div class="zeno-mini-orb">🤖</div>
+            <div class="zeno-card-title">Zeno Analysis</div>
+            <div style="margin-left:auto;font-size:10px;color:var(--tl)">AI-powered</div>
+          </div>
+          <div class="zeno-rows">
+            <div class="zeno-row"><span class="zr-label">Market Price Range</span><span class="zr-val good">KES 1.2M – 1.5M ✓</span></div>
+            <div class="zeno-row"><span class="zr-label">Seller Credibility</span><span class="zr-val good">4.9★ · 47 deals ✓</span></div>
+            <div class="zeno-row"><span class="zr-label">Fraud Risk</span><span class="zr-val good">Low Risk ✓</span></div>
+            <div class="zeno-row"><span class="zr-label">Travel Cost (from you)</span><span class="zr-val warn">~KES 200 · 2.1 km</span></div>
+            <div class="zeno-row"><span class="zr-label">Suggested Opening Offer</span><span class="zr-val" style="color:var(--nb)">KES 1,280,000</span></div>
+          </div>
+        </div>
+
+        <!-- Seller Card -->
+        <div class="seller-card fade-in">
+          <div class="seller-row">
+            <div class="seller-av">MK</div>
+            <div>
+              <div class="seller-name">Moses Kariuki <span style="font-size:14px">✅</span></div>
+              <div class="seller-stats">⭐ 4.9 · 47 deals · Joined 2022</div>
+            </div>
+          </div>
+          <div class="cat-chips">
+            <div class="cat-chip" onclick="showToast('📞 Calling seller...')">📞 Call</div>
+            <div class="cat-chip" onclick="switchScreen('negotiate')">💬 Chat</div>
+            <div class="cat-chip" onclick="showToast('👤 Opening seller profile...')">👤 Profile</div>
+          </div>
+        </div>
+
+        <div style="height:90px"></div>
+      </div>
+      <div class="product-cta-row">
+        <div class="cta-save" onclick="showToast('❤️ Saved to wishlist')">♡</div>
+        <button class="cta-negotiate" onclick="switchScreen('negotiate')">🤝 Start Negotiation</button>
+        <div class="cta-save" onclick="showToast('📤 Shared')">↑</div>
+      </div>
+    </div>
+
+    <!-- ═══════════ NEGOTIATE ═══════════ -->
+    <div class="screen" id="s-negotiate">
+      <div class="neg-hdr">
+        <div class="neg-hdr-top">
+          <div class="back-btn" onclick="switchScreen('product')">←</div>
+          <div>
+            <div class="neg-listing-name" id="neg-title">Toyota Fielder 2016</div>
+            <div class="neg-listing-price grad">KES 1,350,000</div>
+          </div>
+          <div style="margin-left:auto;display:flex;gap:8px">
+            <div class="icon-btn" onclick="showToast('📞 Dialling seller...')">📞</div>
+            <div class="icon-btn" onclick="showToast('📹 VoIP call')">📹</div>
+          </div>
+        </div>
+        <!-- Mode toggle -->
+        <div class="mode-toggle">
+          <div class="mode-btn active" id="mode-direct" onclick="switchMode('direct')">💬 Direct Chat</div>
+          <div class="mode-btn" id="mode-ai" onclick="switchMode('ai')">🤖 AI-Assisted</div>
+        </div>
+      </div>
+
+      <!-- Deal probability -->
+      <div class="deal-prob">
+        <span class="prob-label">Deal Probability</span>
+        <div class="prob-bar"><div class="prob-fill" id="prob-fill" style="width:65%"></div></div>
+        <span class="prob-pct grad" id="prob-pct">65%</span>
+      </div>
+
+      <!-- Quick actions -->
+      <div class="quick-actions">
+        <div class="qa-chip" onclick="sendNeg('Is this item still available?')">✅ Still available?</div>
+        <div class="qa-chip" onclick="sendNeg('Can you do KES 1,280,000?')">💰 Offer 1.28M</div>
+        <div class="qa-chip" onclick="sendNeg('Can I come see it today?')">📅 View today?</div>
+        <div class="qa-chip" onclick="sendNeg('What is the last price?')">🤝 Best price?</div>
+        <div class="qa-chip" onclick="sendNeg('Any issues with the car?')">❓ Any issues?</div>
+      </div>
+
+      <div class="chat-area" id="neg-chat"></div>
+
+      <div class="chat-input-bar">
+        <div class="mic-btn" onclick="showToast('🎤 Voice input')">🎤</div>
+        <input class="chat-input" id="neg-input" placeholder="Type a message..." onkeydown="if(event.key==='Enter')sendNeg()"/>
+        <button class="send-btn" onclick="sendNeg()">➤</button>
+      </div>
+    </div>
+
+    <!-- ═══════════ STORE ═══════════ -->
+    <div class="screen" id="s-store">
+      <div style="display:flex;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0">
+        <div class="back-btn" style="position:static;width:36px;height:36px;margin-right:10px;border-radius:10px;background:var(--bg-card);border:1px solid var(--border)" onclick="switchScreen('profile')">←</div>
+        <div style="font-size:17px;font-weight:900;color:var(--th)">Stores Near You</div>
+        <div style="margin-left:auto;font-size:12px;color:var(--nb)">📍 Westlands</div>
+      </div>
+      <div class="scroll">
+        <div class="store-header">
+          <div class="store-banner"></div>
+          <div class="store-info-row">
+            <div class="store-logo-wrap">📱</div>
+            <div>
+              <div class="store-name">TechHub Kenya</div>
+              <div class="store-meta">⭐ 4.8 · 120 reviews · Electronics</div>
+              <div class="verified-tag" style="margin-top:4px">✓ Verified Store</div>
+            </div>
+            <div class="store-distance">
+              <div class="dist-val">0.8 km</div>
+              <div class="dist-lbl">away</div>
+            </div>
+          </div>
+          <div class="store-stats-row">
+            <div class="store-stat-pill"><div class="ssp-val">48</div><div class="ssp-lbl">Products</div></div>
+            <div class="store-stat-pill"><div class="ssp-val grad">4.8★</div><div class="ssp-lbl">Rating</div></div>
+            <div class="store-stat-pill"><div class="ssp-val" style="color:var(--ng)">247</div><div class="ssp-lbl">Orders</div></div>
+            <div class="store-stat-pill"><div class="ssp-val" style="color:var(--gold)">PRO</div><div class="ssp-lbl">Plan</div></div>
+          </div>
+        </div>
+
+        <div class="tab-bar" style="border-bottom:1px solid var(--border)">
+          <div class="tab-btn active">Products</div>
+          <div class="tab-btn" onclick="showToast('📋 Reviews loading...')">Reviews</div>
+          <div class="tab-btn" onclick="showToast('ℹ️ Store info')">About</div>
+        </div>
+
+        <div class="product-grid">
+          <div class="product-thumb" onclick="showToast('📱 iPhone 14 Pro Max · KES 145K')">
+            <div class="pt-img">📱</div>
+            <div class="pt-info"><div class="pt-name">iPhone 14 Pro Max</div><div class="pt-price">KES 145,000</div></div>
+          </div>
+          <div class="product-thumb" onclick="showToast('💻 MacBook Air M2 · KES 185K')">
+            <div class="pt-img">💻</div>
+            <div class="pt-info"><div class="pt-name">MacBook Air M2</div><div class="pt-price">KES 185,000</div></div>
+          </div>
+          <div class="product-thumb" onclick="showToast('📺 Samsung 55" QLED · KES 95K')">
+            <div class="pt-img">📺</div>
+            <div class="pt-info"><div class="pt-name">Samsung 55" QLED</div><div class="pt-price">KES 95,000</div></div>
+          </div>
+          <div class="product-thumb" onclick="showToast('⌚ Apple Watch S9 · KES 58K')">
+            <div class="pt-img">⌚</div>
+            <div class="pt-info"><div class="pt-name">Apple Watch S9</div><div class="pt-price">KES 58,000</div></div>
+          </div>
+          <div class="product-thumb" onclick="showToast('🎮 PS5 Console · KES 72K')">
+            <div class="pt-img">🎮</div>
+            <div class="pt-info"><div class="pt-name">PS5 Console</div><div class="pt-price">KES 72,000</div></div>
+          </div>
+          <div class="product-thumb" onclick="showToast('📷 Sony A7 IV · KES 320K')">
+            <div class="pt-img">📷</div>
+            <div class="pt-info"><div class="pt-name">Sony A7 IV</div><div class="pt-price">KES 320,000</div></div>
+          </div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+    </div>
+
+  </div><!-- end screen-root -->
+
+  <!-- Toast -->
+  <div id="toast"></div>
+</div><!-- end phone-shell -->
+
+<script>
+/* ═══════ DATA ═══════ */
+const listings=[
+  {name:'Toyota Fielder 2016',cat:'Vehicles',emoji:'🚗',price:'KES 1,350,000',loc:'Westlands · 2.1 km',seller:'Moses K.',featured:true},
+  {name:'iPhone 14 Pro Max 256GB',cat:'Electronics',emoji:'📱',price:'KES 145,000',loc:'CBD · 0.8 km',seller:'Grace W.',featured:false},
+  {name:'3BR Apartment, Kilimani',cat:'Property',emoji:'🏠',price:'KES 95,000/mo',loc:'Kilimani · 3.4 km',seller:'John M.',featured:false},
+  {name:'Friesian Heifer (2yr)',cat:'Livestock',emoji:'🐄',price:'KES 65,000',loc:'Nakuru · 156 km',seller:'Samuel K.',featured:false},
+  {name:'Samsung S23 Ultra',cat:'Electronics',emoji:'📲',price:'KES 98,000',loc:'Nairobi · 1.2 km',seller:'Amira H.',featured:false},
+];
+const inboxThreads=[
+  {name:'Moses Kariuki',listing:'Toyota Fielder 2016',preview:'Boss bei ya 1.28M inawezekana?',time:'2m',unread:2,emoji:'🚗'},
+  {name:'Grace Wanjiku',listing:'iPhone 14 Pro Max',preview:'Is the phone still available?',time:'1h',unread:1,emoji:'📱'},
+  {name:'John Mburu',listing:'3BR Apartment Kilimani',preview:'Zeno advised you to accept 90k',time:'3h',unread:0,emoji:'🏠'},
+];
+
+/* ═══════ NAVIGATION ═══════ */
+let currentScreen='splash';
+function switchScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const el=document.getElementById('s-'+id);
+  if(el){el.classList.add('active');currentScreen=id;}
+  if(id==='negotiate') initNegChat();
+  if(id==='zeno') ensureZenoGreeting();
+}
+
+/* ═══════ CLOCK ═══════ */
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=
+    now.getHours().toString().padStart(2,'0')+':'+now.getMinutes().toString().padStart(2,'0');
+}
+updateClock();setInterval(updateClock,10000);
+
+/* ═══════ GREETING ═══════ */
+function updateGreeting(){
+  const h=new Date().getHours();
+  const g=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  document.getElementById('greeting-text').textContent=g+', Alex 👋';
+}
+updateGreeting();
+
+/* ═══════ TOAST ═══════ */
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2400);
+}
+
+/* ═══════ SPLASH → AUTH → HOME ═══════ */
+setTimeout(()=>switchScreen('auth'),3200);
+
+/* ═══════ AUTH ═══════ */
+function switchAuth(tab){
+  document.getElementById('tab-login').classList.toggle('active',tab==='login');
+  document.getElementById('tab-register').classList.toggle('active',tab==='register');
+  document.getElementById('auth-login').style.display=tab==='login'?'block':'none';
+  document.getElementById('auth-register').style.display=tab==='register'?'block':'none';
+}
+function doLogin(){
+  const e=document.getElementById('login-email').value;
+  if(!e&&!document.getElementById('login-pw').value){
+    document.getElementById('login-email').value='alex@broka.ke';
+    document.getElementById('login-pw').value='••••••••';
+  }
+  goHome();
+}
+function goHome(){
+  buildFeed();buildInbox();
+  switchScreen('home');
+}
+function regNext(step){
+  for(let i=1;i<=4;i++){
+    const s=document.getElementById('reg-step'+i);
+    if(s) s.style.display=i===step?'block':'none';
+    const dot=document.getElementById('sd'+i);
+    if(dot){
+      dot.classList.toggle('active',i===step);
+      dot.classList.toggle('done',i<step);
+    }
+  }
+}
+
+/* ═══════ FEED ═══════ */
+let feedIndex=0;
+function buildFeed(){
+  const area=document.getElementById('feed-area');
+  // Keep swipe hint
+  const hint=document.getElementById('swipe-hint');
+  listings.forEach((l,i)=>{
+    const card=document.createElement('div');
+    card.className='feed-card'+(i>0?' hidden':'');
+    card.dataset.index=i;
+    card.innerHTML=`
+      <div class="feed-card-bg">${l.emoji}</div>
+      <div class="feed-card-grad"></div>
+      ${l.featured?'<div class="featured-badge">🚀 FEATURED</div>':''}
+      <div class="feed-cat-badge">${l.cat}</div>
+      <div class="feed-card-overlay">
+        <div class="feed-seller-row">
+          <div class="feed-avatar">${l.seller[0]}</div>
+          <span class="feed-seller-name">${l.seller}</span>
+          <span class="verified-icon">✅</span>
+        </div>
+        <div class="feed-title">${l.name}</div>
+        <div class="feed-loc">📍 ${l.loc}</div>
+        <div class="feed-bottom-row">
+          <div class="feed-price grad">${l.price}</div>
+          <button class="view-deal-btn">View Deal</button>
+        </div>
+      </div>`;
+    card.addEventListener('click',()=>openProduct(i));
+    area.insertBefore(card,hint);
+  });
+  feedIndex=0;
+  // Touch/click swipe
+  let startY=0;
+  area.addEventListener('touchstart',e=>{startY=e.touches[0].clientY},{passive:true});
+  area.addEventListener('touchend',e=>{
+    const dy=startY-e.changedTouches[0].clientY;
+    if(dy>40) nextFeed();
+    else if(dy<-40) prevFeed();
+  });
+  area.addEventListener('wheel',e=>{
+    if(e.deltaY>30) nextFeed();
+    else if(e.deltaY<-30) prevFeed();
+  },{passive:true});
+}
+function nextFeed(){if(feedIndex<listings.length-1){feedIndex++;refreshFeed();}}
+function prevFeed(){if(feedIndex>0){feedIndex--;refreshFeed();}}
+function refreshFeed(){
+  document.querySelectorAll('.feed-card').forEach((c,i)=>{
+    c.classList.toggle('hidden',parseInt(c.dataset.index)!==feedIndex);
+  });
+  const dots=document.querySelectorAll('.swipe-dot');
+  dots.forEach((d,i)=>d.classList.toggle('active',i===feedIndex));
+}
+function openProduct(i){
+  const l=listings[i];
+  document.getElementById('product-emoji').textContent=l.emoji;
+  document.getElementById('product-title').textContent=l.name;
+  document.getElementById('product-price').textContent=l.price;
+  document.getElementById('product-cat').textContent=l.cat;
+  document.getElementById('product-views').textContent=Math.floor(800+Math.random()*1200).toLocaleString();
+  document.getElementById('product-loc').innerHTML='<span>📍</span> '+l.loc;
+  document.getElementById('neg-title').textContent=l.name;
+  switchScreen('product');
+}
+
+/* ═══════ INBOX ═══════ */
+function buildInbox(){
+  const list=document.getElementById('inbox-list');
+  list.innerHTML='';
+  if(!inboxThreads.length){
+    list.innerHTML='<div class="inbox-empty"><div class="inbox-empty-icon">💬</div><div class="inbox-empty-text">No messages yet.<br/>Start a negotiation to chat.</div></div>';
+    return;
+  }
+  inboxThreads.forEach(t=>{
+    const el=document.createElement('div');
+    el.className='inbox-item';
+    el.innerHTML=`
+      <div class="inbox-avatar">${t.emoji}</div>
+      <div class="inbox-meta">
+        <div class="inbox-name">${t.name}</div>
+        <div class="inbox-listing">📦 ${t.listing}</div>
+        <div class="inbox-preview">${t.preview}</div>
+      </div>
+      <div class="inbox-right">
+        <div class="inbox-time">${t.time}</div>
+        ${t.unread>0?`<div class="unread-badge">${t.unread}</div>`:''}
+      </div>`;
+    el.addEventListener('click',()=>{
+      document.getElementById('neg-title').textContent=t.listing;
+      switchScreen('negotiate');
+    });
+    list.appendChild(el);
+  });
+}
+
+/* ═══════ NEGOTIATE ═══════ */
+let negMode='direct';
+let probPct=65;
+const negChat=[];
+function initNegChat(){
+  const area=document.getElementById('neg-chat');
+  if(negChat.length===0){
+    addNegMsg('broker','Hi Alex! 👋\n\nYou\'re negotiating for **'+
+      (document.getElementById('neg-title').textContent)+
+      '**. I\'m your AI Broker — I know both you and the seller. I\'ll help reach a fair deal. What\'s your opening move?');
+  } else {
+    renderNegChat();
+  }
+}
+function addNegMsg(role,content){
+  negChat.push({role,content});
+  renderNegChat();
+}
+function renderNegChat(){
+  const area=document.getElementById('neg-chat');
+  area.innerHTML='';
+  negChat.forEach(m=>{
+    const row=document.createElement('div');
+    row.className='msg-row '+(m.role==='buyer'?'user':'');
+    const bubble=document.createElement('div');
+    bubble.className='msg-bubble '+(m.role==='buyer'?'msg-user':'msg-broker');
+    bubble.textContent=m.content.replace(/\*\*(.*?)\*\*/g,'$1');
+    if(m.role!=='buyer'){
+      const av=document.createElement('div');
+      av.className='msg-avatar';av.textContent='🤖';
+      row.appendChild(av);
+    }
+    row.appendChild(bubble);
+    area.appendChild(row);
+  });
+  area.scrollTop=area.scrollHeight;
+}
+function sendNeg(quick){
+  const input=document.getElementById('neg-input');
+  const text=(quick||input.value).trim();
+  if(!text)return;
+  addNegMsg('buyer',text);
+  if(!quick)input.value='';
+  // Show typing
+  const area=document.getElementById('neg-chat');
+  const typingRow=document.createElement('div');
+  typingRow.className='msg-row';typingRow.id='typing';
+  typingRow.innerHTML='<div class="msg-avatar">🤖</div><div class="msg-bubble msg-broker"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  area.appendChild(typingRow);area.scrollTop=area.scrollHeight;
+  // AI replies
+  const replies=getBrokerReply(text);
+  setTimeout(()=>{
+    const t=document.getElementById('typing');if(t)t.remove();
+    addNegMsg('broker',replies);
+    updateProb();
+  },1200+Math.random()*800);
+}
+function getBrokerReply(msg){
+  const m=msg.toLowerCase();
+  if(m.includes('available')||m.includes('still')) return 'Great news! ✅ The seller confirmed the item is available and ready to view. Would you like to schedule a viewing or make an offer?';
+  if(m.includes('1.28')||m.includes('1,28')) return '📊 Noted — I\'ve sent your offer of KES 1,280,000 to the seller.\n\nMarket data shows this is within fair range (KES 1.2M–1.5M). The seller\'s current response time is typically under 10 minutes. 🕐';
+  if(m.includes('today')||m.includes('view')||m.includes('come')) return '📅 I\'ve asked the seller about availability today. They\'re typically available from 2–6 PM in Westlands. Shall I share your location so they can suggest a meeting point?';
+  if(m.includes('best price')||m.includes('last price')) return '🤝 The seller says their best price is KES 1,320,000.\n\nZeno recommends countering at KES 1,290,000 — that\'s within market range and gives both sides a fair deal. Want me to send that offer?';
+  if(m.includes('issue')||m.includes('problem')||m.includes('condition')) return '🔍 The seller reports the car is in excellent condition:\n• Full service history ✓\n• No accidents ✓\n• New tyres (2 months ago) ✓\n• Single owner from 2017 ✓\n\nI recommend requesting a pre-purchase inspection before committing.';
+  return '📝 Got it! I\'ve relayed your message to the seller and will notify you when they respond. In the meantime — the deal probability is at '+probPct+'%. Would you like any negotiation tips?';
+}
+function updateProb(){
+  probPct=Math.min(95,Math.max(30,probPct+Math.floor(Math.random()*15-3)));
+  document.getElementById('prob-fill').style.width=probPct+'%';
+  document.getElementById('prob-pct').textContent=probPct+'%';
+}
+function switchMode(m){
+  negMode=m;
+  document.getElementById('mode-direct').classList.toggle('active',m==='direct');
+  document.getElementById('mode-ai').classList.toggle('active',m==='ai');
+  showToast(m==='direct'?'💬 Direct chat mode — you write, AI relays':'🤖 AI-Assisted mode — Zeno negotiates for you');
+}
+
+/* ═══════ ZENO CHAT ═══════ */
+let zenoGreeted=false;
+let zenoChatLog=[];
+let ttsOn=true;
+const zenoBotReplies={
+  'iphone':()=>'📱 **iPhone Market Prices in Kenya (June 2026):**\n\niPhone 14 Pro Max: KES 140,000–160,000\niPhone 14 Pro: KES 110,000–130,000\niPhone 15: KES 130,000–145,000\n\nTip: Always check the IMEI and request a verified video walkthrough to avoid fakes.',
+  'escrow':()=>'🛡️ **How BROKA Escrow Works:**\n\n1. Buyer initiates M-Pesa STK push\n2. Funds held securely by BROKA\n3. Buyer confirms receipt/delivery\n4. Funds released to seller instantly\n\nIf there\'s a dispute, funds stay frozen until our team resolves it. No one walks away empty-handed unfairly.',
+  'listing':()=>'💡 **Tips for a Great BROKA Listing:**\n\n• Use 4–6 clear photos (camera only)\n• Record a short walkthrough video\n• Be specific about condition & mileage\n• Set a fair price (check Zeno\'s market data)\n• Include your location for proximity discovery\n• Respond within 1 hour to stay ranked high',
+  'livestock':()=>'🌍 **Livestock Selling in Kenya:**\n\nBest times: Before school fee season (Jan, May, Sep) and festive periods (Dec, Easter). Friesian heifers sell best in central/rift valley markets. Use BROKA\'s category filter for livestock-specific buyers.',
+  'negotiate':()=>'🤝 **Negotiation Tips:**\n\n1. Start with Zeno\'s suggested offer (usually 5–8% below ask)\n2. Always acknowledge the seller\'s price before countering\n3. Use facts — market price, mileage, condition\n4. Don\'t rush — a 2-day negotiation often beats a same-day deal\n5. Use AI-Assisted mode and let Zeno do the heavy lifting!'
+};
+function ensureZenoGreeting(){
+  if(zenoGreeted)return;
+  zenoGreeted=true;
+  addZenoMsg('broker','Habari Alex! I\'m your BROKA AI 🤖\n\nI can help you:\n• Get live market price insights\n• Write better listings that sell faster\n• Understand how escrow & payments work\n• Navigate any marketplace question\n\nTap a suggestion above or just ask me anything. Nianze nawe! 🇰🇪');
+}
+function addZenoMsg(role,content){
+  zenoChatLog.push({role,content});
+  const area=document.getElementById('zeno-chat');
+  const row=document.createElement('div');
+  row.className='msg-row '+(role==='user'?'user':'');
+  const bubble=document.createElement('div');
+  bubble.className='msg-bubble '+(role==='user'?'msg-user':'msg-broker');
+  bubble.style.whiteSpace='pre-line';
+  bubble.textContent=content.replace(/\*\*(.*?)\*\*/g,'$1');
+  if(role!=='user'){
+    const av=document.createElement('div');av.className='msg-avatar';av.textContent='🤖';
+    row.appendChild(av);
+  }
+  row.appendChild(bubble);area.appendChild(row);
+  area.scrollTop=area.scrollHeight;
+}
+function sendQuick(q){sendZenoMsg(q);}
+function sendZeno(){
+  const input=document.getElementById('zeno-input');
+  const text=input.value.trim();if(!text)return;
+  sendZenoMsg(text);input.value='';
+}
+function sendZenoMsg(text){
+  addZenoMsg('user',text);
+  const area=document.getElementById('zeno-chat');
+  const trow=document.createElement('div');trow.className='msg-row';trow.id='ztyping';
+  trow.innerHTML='<div class="msg-avatar">🤖</div><div class="msg-bubble msg-broker"><div class="typing-dots"><span></span><span></span><span></span></div></div>';
+  area.appendChild(trow);area.scrollTop=area.scrollHeight;
+  setTimeout(()=>{
+    const t=document.getElementById('ztyping');if(t)t.remove();
+    const lower=text.toLowerCase();
+    let reply='I\'m here to help! 🤖 That\'s a great question. Could you give me a bit more context so I can give you the most accurate answer for the Kenyan market? I specialise in East African commerce, M-Pesa payments, and fair trading practices.';
+    for(const [key,fn] of Object.entries(zenoBotReplies)){
+      if(lower.includes(key)){reply=fn();break;}
+    }
+    addZenoMsg('broker',reply);
+  },800+Math.random()*600);
+}
+function clearChat(){zenoChatLog=[];document.getElementById('zeno-chat').innerHTML='';zenoGreeted=false;ensureZenoGreeting();}
+function toggleTTS(){ttsOn=!ttsOn;document.getElementById('tts-btn').style.opacity=ttsOn?'1':'0.4';showToast(ttsOn?'🔊 Voice on':'🔇 Voice off');}
+
+/* ═══════ UI HELPERS ═══════ */
+function selectCat(el){
+  el.closest('.cat-chips').querySelectorAll('.cat-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+}
+function selectType(el){selectCat(el);}
+function switchTab(el){
+  el.closest('.tab-bar').querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  showToast('Showing '+el.textContent+' listings');
+}
+function toggleSwitch(el){el.classList.toggle('on');}
+function selectLang(el){
+  el.closest('.lang-wrap').querySelectorAll('.lang-chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  showToast('Language set to '+el.textContent.trim());
+}
+function signOut(){
+  if(confirm('Sign out of BROKA?')){switchScreen('auth');}
+}
+
+/* ═══════ KEYBOARD AVOIDANCE ═══════ */
+window.visualViewport&&window.visualViewport.addEventListener('resize',()=>{
+  document.querySelector('.phone-shell').style.height=
+    Math.min(844,window.visualViewport.height)+'px';
+});
+</script>
+</body>
+</html>
