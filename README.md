@@ -26,7 +26,8 @@ Open `http://localhost:3000`.
 |---|---|---|
 | About BROKA | `/`, `/what-is-broka`, `/how-it-works`, `/zeno`, `/technology`, `/vision`, `/founders`, `/roadmap`, `/faq` | Marketing content |
 | Auction House | `/auctions`, `/auctions/[id]` | Live, ending soon, upcoming and completed auctions, with the current bid, countdown and bid history |
-| Online stores | `/stores`, `/stores/[slug]`, `/listings/[id]` | Store directory, a store's page and products, a product's details. The links the app shares (`/store/<name>`, `/store/<name>/about`, `/store/<name>/p/<id>`) are rewritten to these in `next.config.ts` |
+| Online stores | `/stores`, `/stores/[slug]`, `/listings/[id]` | Store directory, a store's page and products, a product's details |
+| Store links | `/store/*` | Served by the web storefront, a separate deployment (below) |
 | Search | `/search` | One search across auctions and stores |
 | Get the app | `/download` | Android APK from the BROKA GitHub releases |
 | Contact | `/contact` | Email, phone, WhatsApp and the co-founders' addresses, plus an email form |
@@ -51,6 +52,26 @@ Nothing private is shown: no phone numbers, no user ids, no reserve prices
 (the API does not send them), and bidder names are shortened ("J*** W.").
 
 Settings are in `.env.example`.
+
+## Store links: the web storefront
+
+Every store link the app shares is `broka.co.ke/store/<name>` (with
+`/about` and `/p/<product>` below it). Those pages are the **web storefront**,
+the main repository's `web/`, deployed as its own Vercel project: it counts
+visits and shares for the store owner's stats, makes WhatsApp link previews and
+shows the "Open in the app" banner. This site passes its paths on to it
+(Next.js multi-zones): `/store/*`, `/og/*`, `/.well-known/*` and its files under
+`/store-assets/*` in `next.config.ts`, and `/api/stores/*` in `middleware.ts`,
+which also tells it the visitor's address. Settings (`lib/storefront.ts`):
+
+- `STOREFRONT_URL`: the storefront project's own address. Unset, `/store/*`
+  links show this site's `/stores/*` and `/listings/*` pages instead, so they
+  never 404.
+- `STOREFRONT_PROXY_KEY`: the same random value (32+ characters) in both
+  projects.
+
+Both are read at build time: redeploy after changing them. Links from the
+storefront back to `/` are plain `<a>` tags, since they cross to this site.
 
 ## Look and feel
 
