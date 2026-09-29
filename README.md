@@ -64,9 +64,10 @@ shows the "Open in the app" banner. This site passes its paths on to it
 `/store-assets/*` in `next.config.ts`, and `/api/stores/*` in `middleware.ts`,
 which also tells it the visitor's address. Settings (`lib/storefront.ts`):
 
-- `STOREFRONT_URL`: the storefront project's own address. Unset, `/store/*`
-  links show this site's `/stores/*` and `/listings/*` pages instead, so they
-  never 404.
+- `STOREFRONT_URL`: the storefront project's own address, by default
+  `https://broka-flax.vercel.app` (`lib/storefront.ts`). Set to `none`,
+  `/store/*` links show this site's `/stores/*` and `/listings/*` pages
+  instead, so they never 404.
 - `STOREFRONT_PROXY_KEY`: the same random value (32+ characters) in both
   projects.
 
