@@ -11,29 +11,31 @@ import { Menu, X, ChevronDown } from "lucide-react";
 export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [dropOpen, setDropOpen] = useState(false);
+  // Which dropdown is open (by its label), if any. One at a time.
+  const [openGroup, setOpenGroup] = useState<string | null>(null);
+  const dropOpen = openGroup !== null;
   const [logoErr, setLogoErr] = useState(false);
-  const dropRef = useRef<HTMLDivElement>(null);
+  const navRef = useRef<HTMLElement>(null);
   const closeMenu = () => setMenuOpen(false);
 
   // Close dropdown on outside click
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (dropRef.current && !dropRef.current.contains(e.target as Node)) setDropOpen(false);
+      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenGroup(null);
     };
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   // Close mobile menu on route change
-  useEffect(() => { setMenuOpen(false); setDropOpen(false); }, [pathname]);
+  useEffect(() => { setMenuOpen(false); setOpenGroup(null); }, [pathname]);
 
   // Escape closes whichever of the dropdown / mobile nav is open
   useEffect(() => {
     if (!dropOpen && !menuOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
-      setDropOpen(false);
+      setOpenGroup(null);
       setMenuOpen(false);
     };
     document.addEventListener("keydown", onKeyDown);
@@ -52,6 +54,9 @@ export function Header() {
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
+  // A group is active when the page is any of its children (or its own link).
+  const isGroupActive = (item: { href: string; children?: { href: string }[] }) =>
+    isActive(item.href) || Boolean(item.children?.some((c) => isActive(c.href)));
 
   return (
     <>
@@ -76,26 +81,26 @@ export function Header() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hdr-nav" aria-label="Primary navigation">
+          <nav className="hdr-nav" aria-label="Primary navigation" ref={navRef}>
             {navLinks.map((item) =>
               item.children ? (
-                <div className="hdr-dropdown" key={item.label} ref={dropRef}>
+                <div className="hdr-dropdown" key={item.label}>
                   <button
-                    className={`hdr-dropdown-btn${isActive(item.href) ? " active" : ""}`}
-                    aria-expanded={dropOpen}
+                    className={`hdr-dropdown-btn${isGroupActive(item) ? " active" : ""}`}
+                    aria-expanded={openGroup === item.label}
                     aria-haspopup="true"
-                    onClick={() => setDropOpen((v) => !v)}
+                    onClick={() => setOpenGroup((g) => (g === item.label ? null : item.label))}
                   >
                     {item.label}
                     <motion.span
-                      animate={{ rotate: dropOpen ? 180 : 0 }}
+                      animate={{ rotate: openGroup === item.label ? 180 : 0 }}
                       transition={{ duration: 0.2, ease: "easeOut" }}
                       style={{ display: "inline-flex" }}
                     >
                       <ChevronDown className="hdr-dropdown-chevron" size={14} />
                     </motion.span>
                   </button>
-                  <div className={`hdr-dropdown-menu${dropOpen ? " open" : ""}`} role="menu">
+                  <div className={`hdr-dropdown-menu${openGroup === item.label ? " open" : ""}`} role="menu">
                     {item.children.map((child) => (
                       <Link key={child.href} href={child.href} role="menuitem">
                         {child.label}

@@ -1,0 +1,177 @@
+/* ================================================================
+   SITE — the living background, hero additions, contact, download
+   and legal pages. Additive: nothing here overrides an existing rule
+   except through the new classes.
+   ================================================================ */
+
+/* ─── The living network (components/background/NetworkBackground) ─── */
+.netbg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.netbg-canvas { position: absolute; inset: 0; display: block; }
+.netbg-glow { position: absolute; border-radius: 50%; will-change: transform; }
+.netbg-glow-a {
+  width: 72vmax; height: 72vmax; left: -24vmax; top: -30vmax;
+  background: radial-gradient(closest-side, rgba(107, 86, 255, 0.26), rgba(107, 86, 255, 0) 100%);
+  animation: netbg-drift-a 42s ease-in-out infinite alternate;
+}
+.netbg-glow-b {
+  width: 64vmax; height: 64vmax; right: -22vmax; bottom: -26vmax;
+  background: radial-gradient(closest-side, rgba(34, 150, 240, 0.2), rgba(34, 150, 240, 0) 100%);
+  animation: netbg-drift-b 50s ease-in-out infinite alternate;
+}
+.netbg-glow-c {
+  width: 46vmax; height: 46vmax; left: 38%; top: 34%;
+  background: radial-gradient(closest-side, rgba(176, 90, 255, 0.11), rgba(176, 90, 255, 0) 100%);
+  animation: netbg-drift-c 58s ease-in-out infinite alternate;
+}
+.netbg-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 40%, rgba(3, 3, 6, 0.6) 100%); }
+@keyframes netbg-drift-a { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(9vmax, 7vmax, 0) scale(1.14); } }
+@keyframes netbg-drift-b { from { transform: translate3d(0, 0, 0) scale(1.08); } to { transform: translate3d(-10vmax, -6vmax, 0) scale(0.94); } }
+@keyframes netbg-drift-c { from { transform: translate3d(0, 0, 0) scale(0.92); } to { transform: translate3d(-12vmax, 8vmax, 0) scale(1.2); } }
+
+/* Everything that is not background sits above the fixed network layer. */
+main, .ftr { position: relative; z-index: 1; }
+
+/* The static constellation predates the live network and would double it in
+   the hero; keep it, but let the moving one lead there. */
+.hero .constellation { opacity: 0.4 !important; }
+
+/* ─── Hero: headline sized to its column ───
+   The 108px display size made "intelligence" wider than the hero's left
+   column, so it ran underneath the visual on the right, and the copy sat at
+   the very left edge (its padding was worked out against the column, not the
+   page) instead of lining up with the header. Both are fixed here, for the
+   two-column layout only: on tablets and phones the hero is one column and
+   keeps its own padding. */
+.hero-headline.t-display { font-size: clamp(38px, 8vw, 84px); }
+@media (min-width: 1025px) {
+  .hero-headline.t-display { font-size: clamp(40px, 4.6vw, 68px); }
+  .hero-copy { padding-left: max(var(--gutter), calc((100vw - var(--max-w)) / 2 + var(--gutter))); }
+}
+
+/* ─── Hero: floating category tiles ─── */
+.htiles { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.htile {
+  position: absolute;
+  pointer-events: auto;
+  width: 104px;
+  padding: 14px 8px 12px;
+  display: grid; justify-items: center; gap: 6px;
+  border-radius: 20px;
+  background: linear-gradient(160deg, rgba(139, 107, 255, 0.22), rgba(20, 20, 40, 0.55));
+  border: 1px solid rgba(160, 140, 255, 0.32);
+  box-shadow: 0 12px 40px rgba(60, 40, 180, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transform: rotate(var(--tilt, 0deg));
+  animation: htile-float 7s ease-in-out infinite;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.htile:hover { border-color: var(--c-c); box-shadow: 0 14px 46px rgba(34, 201, 240, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16); animation-play-state: paused; }
+.htile-emoji { font-size: 38px; line-height: 1; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
+.htile-label { font-size: 12px; font-weight: 600; color: var(--c-text-1); letter-spacing: 0.01em; }
+@keyframes htile-float {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50% { transform: translateY(-14px) rotate(calc(var(--tilt, 0deg) * -0.6)); }
+}
+
+/* ─── Hero: dotted Kenya with a pulsing Nairobi beacon ─── */
+.kenya { position: absolute; right: 2%; bottom: 3%; width: min(34vw, 430px); aspect-ratio: 8.4 / 10; z-index: 0; pointer-events: none; opacity: 0.85; }
+.kenya-dot { fill: #6f8bff; opacity: 0.35; animation: kenya-twinkle 5.5s ease-in-out infinite; }
+.kenya-links line { stroke: rgba(63, 216, 245, 0.35); stroke-width: 1; stroke-dasharray: 3 5; animation: kenya-dash 14s linear infinite; }
+.kenya-town { fill: #7fe4fa; opacity: 0.9; animation: kenya-twinkle 3.6s ease-in-out infinite; }
+.kenya-hub { fill: #fff; }
+.kenya-hub-glow { fill: rgba(139, 107, 255, 0.5); }
+.kenya-ripple { fill: none; stroke: #8b6bff; stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: kenya-ripple 3.6s ease-out infinite; }
+.kenya-ripple-2 { animation-delay: 1.2s; }
+.kenya-ripple-3 { animation-delay: 2.4s; }
+@keyframes kenya-twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.85; } }
+@keyframes kenya-dash { to { stroke-dashoffset: -96; } }
+@keyframes kenya-ripple { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(6); opacity: 0; } }
+
+/* ─── Footer: contact details ─── */
+.ftr-contact { display: grid; gap: 8px; margin-top: 18px; }
+.ftr-contact a { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text-2); transition: color 0.15s; }
+.ftr-contact a:hover { color: var(--c-text-1); }
+.ftr-contact svg { color: var(--c-v-light); flex-shrink: 0; }
+.ftr-legal { display: flex; gap: 18px; flex-wrap: wrap; }
+.ftr-legal a { font-size: 11px; color: var(--c-text-3); }
+.ftr-legal a:hover { color: var(--c-text-1); }
+
+/* ─── Contact page: ways to reach BROKA ─── */
+.reach { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-bottom: 8px; }
+.ccard { display: grid; gap: 6px; align-content: start; padding: 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(10, 10, 18, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.2s, transform 0.2s; }
+a.ccard:hover { border-color: var(--c-rule-v); transform: translateY(-3px); }
+.ccard-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: var(--c-v-light); background: var(--c-v-dim); border: 1px solid var(--c-rule-v); margin-bottom: 8px; }
+.ccard-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-text-3); }
+.ccard-value { font-family: var(--f-display); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+.ccard-note { font-size: 13px; color: var(--c-text-2); line-height: 1.55; }
+.founder-mail { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; font-size: 13.5px; font-weight: 500; color: var(--c-v-light); }
+.founder-mail:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ─── Download page ─── */
+.dl-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; counter-reset: dl; margin-top: 36px; }
+.dl-step { position: relative; padding: 26px 24px 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(10, 10, 18, 0.72); counter-increment: dl; }
+.dl-step::before { content: counter(dl); font-family: var(--f-body); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; margin-bottom: 14px; font-family: var(--f-display); font-weight: 800; font-size: 14px; color: #fff; background: var(--c-v); }
+.dl-step h3 { font-size: 17px; margin-bottom: 6px; }
+.dl-step p { font-size: 13.5px; line-height: 1.6; color: var(--c-text-2); }
+.dl-features { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 36px; }
+.dl-hero-actions { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.dl-note { font-size: 12.5px; color: var(--c-text-3); margin-top: 14px; max-width: 560px; line-height: 1.6; }
+
+/* ─── Legal pages ─── */
+.legal { max-width: 760px; margin: 0 auto; }
+.legal h2 { font-size: 22px; letter-spacing: -0.03em; margin: 44px 0 12px; }
+.legal p, .legal li { font-size: 15.5px; line-height: 1.8; color: var(--c-text-2); }
+.legal p + p { margin-top: 14px; }
+.legal ul { display: grid; gap: 8px; margin: 12px 0; padding-left: 4px; }
+.legal li { position: relative; padding-left: 20px; }
+.legal li::before { content: ""; position: absolute; left: 2px; top: 12px; width: 6px; height: 6px; border-radius: 50%; background: var(--c-v); }
+.legal a { color: var(--c-v-light); text-decoration: underline; text-underline-offset: 3px; }
+.legal-updated { font-size: 12.5px; color: var(--c-text-3); margin-bottom: 32px; }
+
+/* ─── Not found / error ─── */
+.nf { min-height: 82svh; display: grid; place-items: center; text-align: center; padding: calc(68px + 40px) 0 80px; position: relative; z-index: 1; }
+.nf-code { font-family: var(--f-display); font-size: clamp(80px, 18vw, 180px); font-weight: 800; letter-spacing: -0.06em; line-height: 0.9; background: linear-gradient(135deg, var(--c-v-soft), var(--c-c)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+/* The big code is a <p> too; .nf p below would otherwise cap it at 460px and clip its gradient fill. */
+.nf .nf-code { max-width: none; margin: 0 auto; }
+.nf h1 { font-size: clamp(24px, 4vw, 38px); margin: 14px 0 10px; }
+.nf p { color: var(--c-text-2); max-width: 460px; margin: 0 auto 28px; }
+.nf-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+/* ─── Mobile menu ───
+   A group's links (a parent plus its children) sat inline in a <div>, so they
+   ran sideways in one row instead of stacking; the primary button's text was
+   greyed by the menu's own link colour; and a long menu could not scroll on a
+   short phone. */
+.mobile-nav { max-height: calc(100dvh - 68px); overflow-y: auto; overscroll-behavior: contain; }
+.mobile-nav > div { display: flex; flex-direction: column; }
+.mobile-nav .btn-primary { color: #fff; justify-content: center; }
+
+/* ─── Header: the menu now has seven entries (Browse was added), which no longer
+   fit beside the logo and button below about 1000px, so the hamburger takes
+   over there instead of at 640px. ─── */
+@media (max-width: 1000px) {
+  .hdr-nav { display: none; }
+  .hdr-burger { display: flex; }
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 1024px) {
+  /* The tiles ride the hero visual, which stacks under the copy on tablets. */
+  .htile { width: 88px; padding: 11px 6px 10px; }
+  .htile-emoji { font-size: 30px; }
+  .kenya { width: min(46vw, 320px); opacity: 0.55; }
+}
+@media (max-width: 640px) {
+  .htile { width: 74px; border-radius: 16px; }
+  .htile-emoji { font-size: 26px; }
+  .htile-label { font-size: 10.5px; }
+  /* Four tiles are plenty on a phone. */
+  .htile:nth-child(n + 5) { display: none; }
+  .kenya { display: none; }
+  .netbg-glow { opacity: 0.8; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .netbg-glow, .htile, .kenya-dot, .kenya-town, .kenya-ripple, .kenya-links line { animation: none !important; }
+  .kenya-ripple { opacity: 0.4; transform: scale(2); }
+}

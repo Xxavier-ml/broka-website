@@ -6,8 +6,18 @@ import { Magnetic } from "@/components/ui/Magnetic";
 import { ZenoDemo } from "@/components/zeno/ZenoDemo";
 import { ConstellationField } from "@/components/visuals/ConstellationField";
 import { FlowMesh } from "@/components/visuals/FlowMesh";
+import { FloatingCategories } from "@/components/hero/FloatingCategories";
+import { KenyaBeacon } from "@/components/hero/KenyaBeacon";
+import { HomeDiscover } from "@/components/marketplace/HomeDiscover";
+import { LiveMarketplace } from "@/components/marketplace/LiveMarketplace";
+import { getHomeData } from "@/lib/api/home";
 
-export default function Home() {
+// The auctions and stores on this page come from the BROKA API; rebuild it
+// from fresh data every minute rather than once at deploy time.
+export const revalidate = 60;
+
+export default async function Home() {
+  const market = await getHomeData();
   return (
     <>
       {/* ─── HERO ─────────────────────────────────────────── */}
@@ -24,11 +34,19 @@ export default function Home() {
           <span className="orbit-ring orbit-3" />
         </div>
         <FlowMesh />
+        <KenyaBeacon />
         <HeroCopy />
         <div className="hero-viz-col">
           <HeroScene />
+          <FloatingCategories />
         </div>
       </section>
+
+      {/* ─── SEARCH, CATEGORIES, LIVE NUMBERS ─────────────── */}
+      <HomeDiscover data={market} />
+
+      {/* ─── LIVE AUCTIONS + NEW STORES (from the BROKA API) ─ */}
+      <LiveMarketplace data={market} />
 
       {/* ─── THE COMMERCE PROBLEM ─────────────────────────── */}
       <section className="sec atm-violet-center grid-bg has-field" aria-labelledby="prob-h">

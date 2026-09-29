@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { cn } from "@/lib/utils";
+import { CONTACT } from "@/lib/site";
 
 const CATEGORIES = [
   { title: "General enquiry", sub: "Questions about BROKA, Zeno or the platform." },
@@ -12,7 +13,8 @@ const CATEGORIES = [
   { title: "Technical", sub: "Engineers, researchers and API enquiries." },
 ] as const;
 
-const CONTACT_EMAIL = "hello@broka.co.ke";
+// The team inbox; one address in lib/site.ts so the page, footer and form agree.
+const CONTACT_EMAIL = CONTACT.adminEmail;
 
 export function EarlyAccessPanel() {
   const [selected, setSelected] = useState<string>(CATEGORIES[4].title);

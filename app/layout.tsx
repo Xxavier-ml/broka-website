@@ -1,9 +1,14 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Syne, Inter } from "next/font/google";
 import "./globals.css";
+import "./marketplace.css";
+import "./site.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
+import { NetworkBackground } from "@/components/background/NetworkBackground";
+import { JsonLd } from "@/components/ui/JsonLd";
+import { CONTACT, SITE_URL, SOCIAL } from "@/lib/site";
 
 const syne = Syne({ subsets: ["latin"], weight: ["400","600","700","800"], variable: "--font-syne", display: "swap" });
 const inter = Inter({ subsets: ["latin"], weight: ["300","400","500","600"], variable: "--font-inter", display: "swap" });
@@ -23,18 +28,58 @@ export const metadata: Metadata = {
     locale: "en_KE",
   },
   twitter: { card: "summary_large_image", title: "BROKA — The Intelligence Layer for Commerce", description: "Commerce, intelligently connected. Built in Kenya." },
-  alternates: { canonical: "https://www.broka.co.ke/" },
+  // "./" resolves to each page's own address. A fixed home-page URL here was inherited by
+  // every page, telling search engines that all of them are duplicates of the home page.
+  alternates: { canonical: "./" },
   robots: { index: true, follow: true },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#050507",
+  colorScheme: "dark",
+  width: "device-width",
+  initialScale: 1,
+};
+
+// Who BROKA is and how to reach it, for search engines (and the knowledge
+// panel they may build from it). Same details as the Contact page and footer.
+const organization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "BROKA",
+  url: SITE_URL,
+  logo: `${SITE_URL}/assets/broka-logo.png`,
+  description:
+    "BROKA is an intelligent commerce platform connecting buyers and sellers in Kenya, with AI-assisted negotiation and escrow-protected payments.",
+  email: CONTACT.adminEmail,
+  telephone: CONTACT.phone,
+  address: { "@type": "PostalAddress", addressLocality: CONTACT.city, addressCountry: "KE" },
+  contactPoint: [
+    {
+      "@type": "ContactPoint",
+      contactType: "customer support",
+      email: CONTACT.adminEmail,
+      telephone: CONTACT.phone,
+      areaServed: "KE",
+      availableLanguage: ["English", "Swahili"],
+    },
+  ],
+  sameAs: [SOCIAL.x, SOCIAL.linkedin],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${syne.variable} ${inter.variable}`}>
       <body>
+        <a href="#main" className="skip-link">
+          Skip to content
+        </a>
         <SmoothScroll />
+        <NetworkBackground />
         <div className="grain" aria-hidden="true" />
+        <JsonLd data={organization} />
         <Header />
-        <main>{children}</main>
+        <main id="main">{children}</main>
         <Footer />
       </body>
     </html>

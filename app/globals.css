@@ -25,6 +25,14 @@
   --c-bg-3:  #0D0D18;
   --c-bg-4:  #12121F;
 
+  /* ─── Translucent section tints ───
+     The animated network (NetworkBackground) is fixed behind the whole page.
+     Sections tint it instead of hiding it, keeping the same tonal steps. */
+  --c-bg-t:   rgba(5, 5, 7, 0.50);
+  --c-bg-1-t: rgba(7, 7, 13, 0.58);
+  --c-bg-2-t: rgba(10, 10, 18, 0.64);
+  --c-bg-3-t: rgba(13, 13, 24, 0.70);
+
   /* ─── Surface / glass ─── */
   --c-surface:   rgba(255,255,255,0.030);
   --c-surface-2: rgba(255,255,255,0.055);
@@ -104,33 +112,33 @@ ul,ol { list-style: none; }
 .sec-lg { padding: 160px 0; }
 
 /* Background variants */
-.bg-0 { background: var(--c-bg); }
-.bg-1 { background: var(--c-bg-1); }
-.bg-2 { background: var(--c-bg-2); }
-.bg-3 { background: var(--c-bg-3); }
+.bg-0 { background: var(--c-bg-t); }
+.bg-1 { background: var(--c-bg-1-t); }
+.bg-2 { background: var(--c-bg-2-t); }
+.bg-3 { background: var(--c-bg-3-t); }
 
 /* Atmospheric sections */
 .atm-violet {
   background:
     radial-gradient(ellipse 60% 55% at 65% 35%, rgba(107,86,255,0.13) 0%, transparent 70%),
-    var(--c-bg-1);
+    var(--c-bg-1-t);
 }
 .atm-violet-center {
   background:
     radial-gradient(ellipse 70% 60% at 50% 45%, rgba(107,86,255,0.12) 0%, transparent 65%),
-    var(--c-bg);
+    var(--c-bg-t);
 }
 .atm-amber {
   background:
     radial-gradient(ellipse 55% 50% at 35% 55%, rgba(200,162,62,0.10) 0%, transparent 60%),
     radial-gradient(ellipse 40% 40% at 75% 25%, rgba(107,86,255,0.07) 0%, transparent 50%),
-    var(--c-bg-2);
+    var(--c-bg-2-t);
 }
 .atm-hero {
   background:
     radial-gradient(ellipse 90% 60% at 60% 40%, rgba(107,86,255,0.10) 0%, transparent 55%),
     radial-gradient(ellipse 50% 70% at 15% 70%, rgba(107,86,255,0.05) 0%, transparent 45%),
-    var(--c-bg);
+    var(--c-bg-t);
 }
 
 /* Grid overlay */
@@ -503,13 +511,15 @@ ul,ol { list-style: none; }
    ================================================================ */
 .ftr {
   border-top: 1px solid var(--c-rule);
-  background: var(--c-bg-1);
+  background: rgba(7, 7, 13, 0.86);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 80px 0 40px;
 }
 .ftr-grid {
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1fr;
-  gap: 48px;
+  grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr;
+  gap: 40px;
   margin-bottom: 64px;
 }
 .ftr-brand-name {

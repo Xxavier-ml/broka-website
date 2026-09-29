@@ -10,6 +10,15 @@ export interface NavGroup {
 }
 
 export const navLinks: NavGroup[] = [
+  {
+    label: "Browse",
+    href: "/auctions",
+    children: [
+      { label: "Auction House", href: "/auctions" },
+      { label: "Online stores", href: "/stores" },
+      { label: "Search", href: "/search" },
+    ],
+  },
   { label: "What is BROKA", href: "/what-is-broka" },
   { label: "How it works", href: "/how-it-works" },
   { label: "Zeno", href: "/zeno" },
@@ -22,6 +31,7 @@ export const navLinks: NavGroup[] = [
       { label: "Founders", href: "/founders" },
       { label: "Roadmap", href: "/roadmap" },
       { label: "Contact", href: "/contact" },
+      { label: "Get the app", href: "/download" },
     ],
   },
 ];

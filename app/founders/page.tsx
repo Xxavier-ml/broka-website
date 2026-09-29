@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
+import { Mail } from "lucide-react";
 import { founders } from "@/data/founders";
+import { mailto } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Founders",
@@ -37,6 +39,9 @@ export default function Founders() {
                 <h3 className="founder-name">{f.name}</h3>
                 <p className="founder-role">{f.role}</p>
                 <p className="founder-bio">{f.bio}</p>
+                <a href={mailto(f.email)} className="founder-mail">
+                  <Mail size={15} aria-hidden="true" /> {f.email}
+                </a>
                 {Object.values(f.social).some(Boolean) && (
                   <div className="founder-socials">
                     {f.social.twitter && (
