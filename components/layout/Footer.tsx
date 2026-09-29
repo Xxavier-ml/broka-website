@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Mail, MessageCircle, Phone } from "lucide-react";
 import { CONTACT, SOCIAL, mailto } from "@/lib/site";
 
@@ -9,7 +10,10 @@ export function Footer() {
       <div className="wrap">
         <div className="ftr-grid">
           <div>
-            <div className="ftr-brand-name">BROKA</div>
+            <div className="ftr-brand">
+              <Image src="/assets/broka-mark.png" alt="" width={34} height={34} />
+              <span className="ftr-brand-name">BROKA</span>
+            </div>
             <p className="ftr-brand-tag">Future of Intelligent Commerce</p>
             <p className="t-sm" style={{ maxWidth: 240, marginTop: 8 }}>
               An intelligent commerce platform connecting buyers and sellers in

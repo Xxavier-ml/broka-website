@@ -4,91 +4,52 @@
    except through the new classes.
    ================================================================ */
 
-/* ─── The living network (components/background/NetworkBackground) ─── */
-.netbg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-.netbg-canvas { position: absolute; inset: 0; display: block; }
-.netbg-glow { position: absolute; border-radius: 50%; will-change: transform; }
-.netbg-glow-a {
-  width: 72vmax; height: 72vmax; left: -24vmax; top: -30vmax;
-  background: radial-gradient(closest-side, rgba(107, 86, 255, 0.26), rgba(107, 86, 255, 0) 100%);
-  animation: netbg-drift-a 42s ease-in-out infinite alternate;
+/* ─── The living network (components/background/NetworkBackground) ───
+   Fixed, one large-viewport tall: a phone's address bar sliding in and out
+   then never resizes it. The canvas paints the whole sky itself; the
+   gradient is only what shows before it starts, or without WebGL. */
+.netbg {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100vh;
+  height: 100lvh;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 70% 55% at 8% 0%, rgba(110, 70, 255, 0.32), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 96% 88%, rgba(40, 90, 255, 0.24), transparent 70%),
+    #06051a;
 }
-.netbg-glow-b {
-  width: 64vmax; height: 64vmax; right: -22vmax; bottom: -26vmax;
-  background: radial-gradient(closest-side, rgba(34, 150, 240, 0.2), rgba(34, 150, 240, 0) 100%);
-  animation: netbg-drift-b 50s ease-in-out infinite alternate;
-}
-.netbg-glow-c {
-  width: 46vmax; height: 46vmax; left: 38%; top: 34%;
-  background: radial-gradient(closest-side, rgba(176, 90, 255, 0.11), rgba(176, 90, 255, 0) 100%);
-  animation: netbg-drift-c 58s ease-in-out infinite alternate;
-}
-.netbg-vignette { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 40%, rgba(3, 3, 6, 0.6) 100%); }
-@keyframes netbg-drift-a { from { transform: translate3d(0, 0, 0) scale(1); } to { transform: translate3d(9vmax, 7vmax, 0) scale(1.14); } }
-@keyframes netbg-drift-b { from { transform: translate3d(0, 0, 0) scale(1.08); } to { transform: translate3d(-10vmax, -6vmax, 0) scale(0.94); } }
-@keyframes netbg-drift-c { from { transform: translate3d(0, 0, 0) scale(0.92); } to { transform: translate3d(-12vmax, 8vmax, 0) scale(1.2); } }
+.netbg-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; opacity: 0; transition: opacity 0.8s ease; }
+.netbg-canvas[data-ready] { opacity: 1; }
 
 /* Everything that is not background sits above the fixed network layer. */
 main, .ftr { position: relative; z-index: 1; }
 
-/* The static constellation predates the live network and would double it in
-   the hero; keep it, but let the moving one lead there. */
-.hero .constellation { opacity: 0.4 !important; }
-
-/* ─── Hero: headline sized to its column ───
-   The 108px display size made "intelligence" wider than the hero's left
-   column, so it ran underneath the visual on the right, and the copy sat at
-   the very left edge (its padding was worked out against the column, not the
-   page) instead of lining up with the header. Both are fixed here, for the
-   two-column layout only: on tablets and phones the hero is one column and
-   keeps its own padding. */
-.hero-headline.t-display { font-size: clamp(38px, 8vw, 84px); }
-@media (min-width: 1025px) {
-  .hero-headline.t-display { font-size: clamp(40px, 4.6vw, 68px); }
-  .hero-copy { padding-left: max(var(--gutter), calc((100vw - var(--max-w)) / 2 + var(--gutter))); }
+/* Display type is the mockup's bold sans wherever it appears, including big
+   statements set on <p> or <div> (which would otherwise take the body serif). */
+.t-display, .t-h1, .t-h2, .t-h3, .t-h4, .home-problem-statement, .story-pull,
+.pillar-title, .vision-tier-place, .rm-phase-name, .journey-title, .founder-name,
+.tech-pillar-title, .zeno-cap-title, .feature-title, .vision-principle-title,
+.state-title, .appcta-title, .ftr-brand-name {
+  font-family: var(--f-display);
 }
+.home-problem-statement { letter-spacing: -0.035em; }
 
-/* ─── Hero: floating category tiles ─── */
-.htiles { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
-.htile {
-  position: absolute;
-  pointer-events: auto;
-  width: 104px;
-  padding: 14px 8px 12px;
-  display: grid; justify-items: center; gap: 6px;
-  border-radius: 20px;
-  background: linear-gradient(160deg, rgba(139, 107, 255, 0.22), rgba(20, 20, 40, 0.55));
-  border: 1px solid rgba(160, 140, 255, 0.32);
-  box-shadow: 0 12px 40px rgba(60, 40, 180, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  transform: rotate(var(--tilt, 0deg));
-  animation: htile-float 7s ease-in-out infinite;
-  transition: border-color 0.2s, box-shadow 0.2s;
+/* Dense UI reads better in a sans at small sizes; the serif is for reading. */
+.lbadge, .chip, .ftab, .sform-input, .sform-btn, .contact-input, .zdemo-input,
+.facts dt, .detail-h, .lcard-price-label, .bidbox-label, .ftr-col-title, .ccard-label,
+.pager-count, .result-count, .crumbs, .zeno-ctx-key, .zdemo-label, .zdemo-section-label,
+.badge, .lcard-cat, .rm-phase-desc, .founder-role, .pillar-num, .journey-num, .wib-col-label,
+.vision-tier-label, .tech-pillar-label, .wib-pov-label {
+  font-family: var(--f-ui);
 }
-.htile:hover { border-color: var(--c-c); box-shadow: 0 14px 46px rgba(34, 201, 240, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16); animation-play-state: paused; }
-.htile-emoji { font-size: 38px; line-height: 1; filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45)); }
-.htile-label { font-size: 12px; font-weight: 600; color: var(--c-text-1); letter-spacing: 0.01em; }
-@keyframes htile-float {
-  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
-  50% { transform: translateY(-14px) rotate(calc(var(--tilt, 0deg) * -0.6)); }
-}
-
-/* ─── Hero: dotted Kenya with a pulsing Nairobi beacon ─── */
-.kenya { position: absolute; right: 2%; bottom: 3%; width: min(34vw, 430px); aspect-ratio: 8.4 / 10; z-index: 0; pointer-events: none; opacity: 0.85; }
-.kenya-dot { fill: #6f8bff; opacity: 0.35; animation: kenya-twinkle 5.5s ease-in-out infinite; }
-.kenya-links line { stroke: rgba(63, 216, 245, 0.35); stroke-width: 1; stroke-dasharray: 3 5; animation: kenya-dash 14s linear infinite; }
-.kenya-town { fill: #7fe4fa; opacity: 0.9; animation: kenya-twinkle 3.6s ease-in-out infinite; }
-.kenya-hub { fill: #fff; }
-.kenya-hub-glow { fill: rgba(139, 107, 255, 0.5); }
-.kenya-ripple { fill: none; stroke: #8b6bff; stroke-width: 1.4; transform-box: fill-box; transform-origin: center; animation: kenya-ripple 3.6s ease-out infinite; }
-.kenya-ripple-2 { animation-delay: 1.2s; }
-.kenya-ripple-3 { animation-delay: 2.4s; }
-@keyframes kenya-twinkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 0.85; } }
-@keyframes kenya-dash { to { stroke-dashoffset: -96; } }
-@keyframes kenya-ripple { 0% { transform: scale(0.6); opacity: 0.9; } 100% { transform: scale(6); opacity: 0; } }
 
 /* ─── Footer: contact details ─── */
+.ftr-brand { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.ftr-brand .ftr-brand-name { margin-bottom: 0; font-size: 19px; letter-spacing: 0.05em; }
 .ftr-contact { display: grid; gap: 8px; margin-top: 18px; }
 .ftr-contact a { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--c-text-2); transition: color 0.15s; }
 .ftr-contact a:hover { color: var(--c-text-1); }
@@ -99,7 +60,7 @@ main, .ftr { position: relative; z-index: 1; }
 
 /* ─── Contact page: ways to reach BROKA ─── */
 .reach { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-bottom: 8px; }
-.ccard { display: grid; gap: 6px; align-content: start; padding: 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(10, 10, 18, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.2s, transform 0.2s; }
+.ccard { display: grid; gap: 6px; align-content: start; padding: 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(18, 15, 54, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.2s, transform 0.2s; }
 a.ccard:hover { border-color: var(--c-rule-v); transform: translateY(-3px); }
 .ccard-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: var(--c-v-light); background: var(--c-v-dim); border: 1px solid var(--c-rule-v); margin-bottom: 8px; }
 .ccard-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-text-3); }
@@ -110,7 +71,7 @@ a.ccard:hover { border-color: var(--c-rule-v); transform: translateY(-3px); }
 
 /* ─── Download page ─── */
 .dl-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; counter-reset: dl; margin-top: 36px; }
-.dl-step { position: relative; padding: 26px 24px 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(10, 10, 18, 0.72); counter-increment: dl; }
+.dl-step { position: relative; padding: 26px 24px 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(18, 15, 54, 0.72); counter-increment: dl; }
 .dl-step::before { content: counter(dl); font-family: var(--f-body); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; margin-bottom: 14px; font-family: var(--f-display); font-weight: 800; font-size: 14px; color: #fff; background: var(--c-v); }
 .dl-step h3 { font-size: 17px; margin-bottom: 6px; }
 .dl-step p { font-size: 13.5px; line-height: 1.6; color: var(--c-text-2); }
@@ -147,31 +108,26 @@ a.ccard:hover { border-color: var(--c-rule-v); transform: translateY(-3px); }
 .mobile-nav > div { display: flex; flex-direction: column; }
 .mobile-nav .btn-primary { color: #fff; justify-content: center; }
 
-/* ─── Header: the menu now has seven entries (Browse was added), which no longer
-   fit beside the logo and button below about 1000px, so the hamburger takes
-   over there instead of at 640px. ─── */
-@media (max-width: 1000px) {
+/* ─── Header, narrower screens ─── */
+@media (max-width: 1180px) {
+  .hdr-search { width: 42px; padding: 0; justify-content: center; }
+  .hdr-search-text { display: none; }
+  .hdr-link, .hdr-dropdown-btn { padding: 8px 10px; }
+  .hdr-link.active::after, .hdr-dropdown-btn.active::after { left: 10px; right: 10px; }
+}
+@media (max-width: 980px) {
   .hdr-nav { display: none; }
   .hdr-burger { display: flex; }
 }
+@media (max-width: 460px) {
+  .hdr-word-tag { display: none; }
+  .hdr-word-name { font-size: 19px; }
+  /* The menu carries "Get the app" on small phones; the bar keeps search and the menu button. */
+  .hdr-cta { display: none; }
+  .hdr-actions { gap: 8px; }
+}
 
 /* ─── Responsive ─── */
-@media (max-width: 1024px) {
-  /* The tiles ride the hero visual, which stacks under the copy on tablets. */
-  .htile { width: 88px; padding: 11px 6px 10px; }
-  .htile-emoji { font-size: 30px; }
-  .kenya { width: min(46vw, 320px); opacity: 0.55; }
-}
-@media (max-width: 640px) {
-  .htile { width: 74px; border-radius: 16px; }
-  .htile-emoji { font-size: 26px; }
-  .htile-label { font-size: 10.5px; }
-  /* Four tiles are plenty on a phone. */
-  .htile:nth-child(n + 5) { display: none; }
-  .kenya { display: none; }
-  .netbg-glow { opacity: 0.8; }
-}
 @media (prefers-reduced-motion: reduce) {
-  .netbg-glow, .htile, .kenya-dot, .kenya-town, .kenya-ripple, .kenya-links line { animation: none !important; }
-  .kenya-ripple { opacity: 0.4; transform: scale(2); }
+  .netbg-canvas { transition: none; }
 }

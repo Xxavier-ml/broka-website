@@ -99,7 +99,7 @@ export default function Vision() {
           <span className="t-eyebrow" style={{ textAlign: "center", display: "block" }}>The long view</span>
           <blockquote style={{ textAlign: "center" }}>
             <p className="t-h2" id="stmt-h" style={{ lineHeight: 1.15, marginBottom: 32 }}>
-              &ldquo;Kenya is where we start.<br className="br-lg" />Africa is where the opportunity expands.<br className="br-lg" />The ambition is global.&rdquo;
+              &ldquo;Kenya is where we start.{" "}<br className="br-lg" />Africa is where the opportunity expands.{" "}<br className="br-lg" />The ambition is global.&rdquo;
             </p>
           </blockquote>
           <p className="t-body" style={{ textAlign: "center", maxWidth: 560, margin: "0 auto 36px" }}>

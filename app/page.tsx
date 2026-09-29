@@ -1,14 +1,9 @@
 import Link from "next/link";
-import { HeroCopy } from "@/components/hero/HeroCopy";
-import { HeroScene } from "@/components/hero/HeroScene";
 import { Reveal } from "@/components/ui/Reveal";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { ZenoDemo } from "@/components/zeno/ZenoDemo";
-import { ConstellationField } from "@/components/visuals/ConstellationField";
 import { FlowMesh } from "@/components/visuals/FlowMesh";
-import { FloatingCategories } from "@/components/hero/FloatingCategories";
-import { KenyaBeacon } from "@/components/hero/KenyaBeacon";
-import { HomeDiscover } from "@/components/marketplace/HomeDiscover";
+import { HomeHero } from "@/components/home/HomeHero";
 import { LiveMarketplace } from "@/components/marketplace/LiveMarketplace";
 import { getHomeData } from "@/lib/api/home";
 
@@ -20,42 +15,19 @@ export default async function Home() {
   const market = await getHomeData();
   return (
     <>
-      {/* ─── HERO ─────────────────────────────────────────── */}
-      <section className="hero atm-hero grid-bg" aria-labelledby="hero-h">
-        <div className="aurora" aria-hidden="true">
-          <span className="aurora-blob aurora-1" />
-          <span className="aurora-blob aurora-2" />
-          <span className="aurora-blob aurora-3" />
-        </div>
-        <ConstellationField opacity={0.85} id="hero" />
-        <div className="orbits" aria-hidden="true">
-          <span className="orbit-ring orbit-1" />
-          <span className="orbit-ring orbit-2" />
-          <span className="orbit-ring orbit-3" />
-        </div>
-        <FlowMesh />
-        <KenyaBeacon />
-        <HeroCopy />
-        <div className="hero-viz-col">
-          <HeroScene />
-          <FloatingCategories />
-        </div>
-      </section>
-
-      {/* ─── SEARCH, CATEGORIES, LIVE NUMBERS ─────────────── */}
-      <HomeDiscover data={market} />
+      {/* ─── HERO: pitch, search, Zeno's orbit, live numbers ─ */}
+      <HomeHero data={market} />
 
       {/* ─── LIVE AUCTIONS + NEW STORES (from the BROKA API) ─ */}
       <LiveMarketplace data={market} />
 
       {/* ─── THE COMMERCE PROBLEM ─────────────────────────── */}
-      <section className="sec atm-violet-center grid-bg has-field" aria-labelledby="prob-h">
-        <ConstellationField opacity={0.4} id="prob" />
+      <section className="sec atm-violet-center has-field" aria-labelledby="prob-h">
         <div className="wrap">
           <Reveal className="home-problem">
             <span className="t-eyebrow">The problem</span>
             <p className="home-problem-statement" id="prob-h">
-              Information doesn&apos;t flow<br className="br-lg" />where it&apos;s <em>needed.</em>
+              Information doesn&apos;t flow{" "}<br className="br-lg" />where it&apos;s <em>needed.</em>
             </p>
             <p className="home-problem-body">
               In informal markets across East Africa, buyers and sellers rarely
@@ -77,7 +49,7 @@ export default async function Home() {
           <Reveal className="sec-header">
             <span className="t-eyebrow">What we&apos;re building</span>
             <h2 className="t-h2" id="about-h">
-              Not another marketplace.<br className="br-lg" />The intelligence inside one.
+              Not another marketplace.{" "}<br className="br-lg" />The intelligence inside one.
             </h2>
             <p className="t-body-lg" style={{ maxWidth: 560, marginTop: 16 }}>
               BROKA sits between buyers and sellers — not as an intermediary,
@@ -117,7 +89,7 @@ export default async function Home() {
             <Reveal>
               <span className="t-eyebrow">Meet Zeno</span>
               <h2 className="t-h2" id="zeno-prev-h">
-                Intelligence built into<br className="br-lg" />every transaction.
+                Intelligence built into{" "}<br className="br-lg" />every transaction.
               </h2>
               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
                 Zeno is not a chatbot attached to a marketplace. Zeno is
@@ -188,7 +160,7 @@ export default async function Home() {
             <Reveal>
               <span className="t-eyebrow t-eyebrow-amber">The vision</span>
               <h2 className="t-h2" id="vision-prev-h">
-                Kenya. East Africa.<br className="br-lg" />The world.
+                Kenya. East Africa.{" "}<br className="br-lg" />The world.
               </h2>
               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
                 We are starting in Kenya because that is where we understand
@@ -226,7 +198,7 @@ export default async function Home() {
             <Reveal>
               <span className="t-eyebrow">Under the hood</span>
               <h2 className="t-h2" id="tech-prev-h">
-                Engineered for<br className="br-lg" />real commerce.
+                Engineered for{" "}<br className="br-lg" />real commerce.
               </h2>
               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
                 BROKA is being built on a technical foundation designed to
@@ -283,7 +255,6 @@ export default async function Home() {
 
       {/* ─── FINAL CTA ─────────────────────────────────────── */}
       <section className="sec atm-violet-center has-field" aria-labelledby="cta-h">
-        <ConstellationField opacity={0.5} id="cta" />
         <FlowMesh />
         <div className="wrap">
           <Reveal className="final-cta">

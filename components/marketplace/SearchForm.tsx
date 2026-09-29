@@ -1,4 +1,4 @@
-import { Search } from "lucide-react";
+import { ArrowRight, Search } from "lucide-react";
 
 /**
  * A plain GET form, so search works before any JavaScript loads and the
@@ -11,6 +11,7 @@ export function SearchForm({
   hidden = {},
   label = "Search",
   className = "",
+  iconSubmit = false,
 }: {
   action: string;
   value?: string;
@@ -19,6 +20,8 @@ export function SearchForm({
   hidden?: Record<string, string | undefined>;
   label?: string;
   className?: string;
+  /** A round arrow button instead of the "Search" label (the hero's compact bar). */
+  iconSubmit?: boolean;
 }) {
   return (
     <form action={action} method="get" role="search" className={`sform ${className}`.trim()}>
@@ -37,9 +40,15 @@ export function SearchForm({
         className="sform-input"
       />
       {Object.entries(hidden).map(([k, v]) => (v ? <input key={k} type="hidden" name={k} value={v} /> : null))}
-      <button type="submit" className="sform-btn">
-        Search
-      </button>
+      {iconSubmit ? (
+        <button type="submit" className="sform-btn sform-btn-icon" aria-label="Search">
+          <ArrowRight size={18} aria-hidden="true" />
+        </button>
+      ) : (
+        <button type="submit" className="sform-btn">
+          Search
+        </button>
+      )}
     </form>
   );
 }

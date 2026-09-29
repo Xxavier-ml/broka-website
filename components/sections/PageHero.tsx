@@ -1,5 +1,3 @@
-import { ConstellationField } from "@/components/visuals/ConstellationField";
-
 interface PageHeroProps {
   eyebrow?: string;
   headline: string;
@@ -10,8 +8,7 @@ interface PageHeroProps {
 
 export function PageHero({ eyebrow, headline, sub, children, atmosphere = "atm-violet" }: PageHeroProps) {
   return (
-    <section className={`page-hero grid-bg has-field ${atmosphere}`} aria-labelledby="page-hero-heading">
-      <ConstellationField opacity={0.55} id="pagehero" />
+    <section className={`page-hero has-field ${atmosphere}`} aria-labelledby="page-hero-heading">
       <div className="wrap">
         {eyebrow && <span className="t-eyebrow page-hero-kicker">{eyebrow}</span>}
         <h1 className="t-h1 page-hero-headline" id="page-hero-heading">{headline}</h1>

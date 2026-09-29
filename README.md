@@ -52,14 +52,27 @@ Nothing private is shown: no phone numbers, no user ids, no reserve prices
 
 Settings are in `.env.example`.
 
-## The animated background
+## Look and feel
 
-`components/background/NetworkBackground.tsx` draws BROKA's connected-dots
-identity behind every page on one `<canvas>`: drifting nodes, links that fade
-with distance, packets travelling along links, pointer and scroll parallax. It
-scales its node count to the screen, pauses while the tab is hidden, and under
-`prefers-reduced-motion` draws a single still frame. Sections use translucent
-tints (`--c-bg-t` and friends in `globals.css`) so it shows through.
+Built to the BROKA mockup: deep indigo, Montserrat for headlines and numbers,
+Noto Serif for reading text, Inter for small UI labels, violet-to-blue
+gradient pill buttons. Tokens are at the top of `app/globals.css`.
+
+**The 3D background** (`components/background/NetworkBackground.tsx`) is raw
+WebGL, no library: glowing nodes at real depths in front of a perspective
+camera, links that fade with distance, packets travelling between nodes, a
+starfield, and an indigo sky drawn at quarter resolution. The camera sways
+toward the mouse and flies through the network as the page scrolls. Node
+counts scale with the screen, it pauses in hidden tabs, and with
+`prefers-reduced-motion` it draws one still frame. Without WebGL the CSS
+gradient on `.netbg` shows instead.
+
+**The home hero** (`components/home/`): Zeno (`public/assets/zeno-full.webp`,
+from the app's assets) in a glowing ring with an orbit passing behind and in
+front of him, category tiles, a dotted Kenya map with a Nairobi beacon, and
+live stats from the API. The scene tilts toward the mouse in 3D and sways
+gently on touch screens. Large glows animate as HTML layers so the GPU runs
+them without repainting the SVG.
 
 ## Contact details
 

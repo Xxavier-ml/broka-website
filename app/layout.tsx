@@ -1,8 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Syne, Inter } from "next/font/google";
+import { Montserrat, Noto_Serif, Inter } from "next/font/google";
 import "./globals.css";
 import "./marketplace.css";
 import "./site.css";
+import "./home.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
@@ -10,8 +11,12 @@ import { NetworkBackground } from "@/components/background/NetworkBackground";
 import { JsonLd } from "@/components/ui/JsonLd";
 import { CONTACT, SITE_URL, SOCIAL } from "@/lib/site";
 
-const syne = Syne({ subsets: ["latin"], weight: ["400","600","700","800"], variable: "--font-syne", display: "swap" });
-const inter = Inter({ subsets: ["latin"], weight: ["300","400","500","600"], variable: "--font-inter", display: "swap" });
+// Type pairing from the BROKA mockup: a bold geometric sans for headlines,
+// prices and numbers; a readable serif for everything else. Inter stays for
+// dense UI (inputs, badges, tabs) where a serif gets fussy at small sizes.
+const display = Montserrat({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-montserrat", display: "swap" });
+const serif = Noto_Serif({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-noto-serif", display: "swap" });
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.broka.co.ke"),
@@ -69,14 +74,13 @@ const organization = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${syne.variable} ${inter.variable}`}>
+    <html lang="en" className={`${display.variable} ${serif.variable} ${inter.variable}`}>
       <body>
         <a href="#main" className="skip-link">
           Skip to content
         </a>
         <SmoothScroll />
         <NetworkBackground />
-        <div className="grain" aria-hidden="true" />
         <JsonLd data={organization} />
         <Header />
         <main id="main">{children}</main>

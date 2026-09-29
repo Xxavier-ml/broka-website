@@ -15,7 +15,7 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
         <Reveal className="sec-header">
           <span className="t-eyebrow">Live on BROKA</span>
           <h2 className="t-h2" id="live-h">
-            Auctions and stores,<br className="br-lg" />open right now.
+            Auctions and stores,{" "}<br className="br-lg" />open right now.
           </h2>
           <p className="t-body-lg" style={{ maxWidth: 560, marginTop: 16 }}>
             Look through what sellers across Kenya have listed. See the details here, then bid, make an offer or buy in the BROKA app.

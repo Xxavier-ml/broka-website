@@ -9,7 +9,11 @@ export interface NavGroup {
   children?: NavLink[];
 }
 
+// Five top-level entries, like the mockup's header (Home, Browse, Zeno,
+// About...): everything else lives in the two dropdowns, so the bar fits
+// without wrapping down to tablet widths.
 export const navLinks: NavGroup[] = [
+  { label: "Home", href: "/" },
   {
     label: "Browse",
     href: "/auctions",
@@ -19,19 +23,19 @@ export const navLinks: NavGroup[] = [
       { label: "Search", href: "/search" },
     ],
   },
-  { label: "What is BROKA", href: "/what-is-broka" },
-  { label: "How it works", href: "/how-it-works" },
   { label: "Zeno", href: "/zeno" },
-  { label: "Technology", href: "/technology" },
-  { label: "Vision", href: "/vision" },
   {
-    label: "Company",
-    href: "/founders",
+    label: "About",
+    href: "/what-is-broka",
     children: [
+      { label: "What is BROKA", href: "/what-is-broka" },
+      { label: "How it works", href: "/how-it-works" },
+      { label: "Technology", href: "/technology" },
+      { label: "Vision", href: "/vision" },
       { label: "Founders", href: "/founders" },
       { label: "Roadmap", href: "/roadmap" },
-      { label: "Contact", href: "/contact" },
-      { label: "Get the app", href: "/download" },
+      { label: "FAQ", href: "/faq" },
     ],
   },
+  { label: "Contact", href: "/contact" },
 ];

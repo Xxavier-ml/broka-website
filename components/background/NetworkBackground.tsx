@@ -4,46 +4,174 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/hooks/useDeviceCapability";
 
 /**
- * BROKA's living network: the connected-dots identity from the app's splash
- * screen, animated behind every page.
+ * BROKA's living network, in real 3D, behind every page.
  *
- *  - nodes drift slowly and link to their neighbours; links fade with distance,
- *    so the mesh forms and dissolves as the nodes move
- *  - small "packets" travel along links (deals moving between people) and
- *    ring the node they reach
- *  - a few bright hub nodes carry a bloom; the pointer lights up nearby nodes
- *  - nodes sit at different depths, so pointer and scroll move them by
- *    different amounts (parallax)
+ * Nodes float in a volume in front of a perspective camera, so near ones are
+ * larger, brighter and move faster than far ones. Links fade with distance,
+ * "deals" travel along them as bright packets and ring the node they reach,
+ * hubs breathe, and a starfield sits far behind. The camera sways toward the
+ * pointer and flies down through the network as the page scrolls.
  *
- * It is one <canvas>, cheap by construction: node count scales with the
- * screen area, glows are pre-rendered sprites, the loop stops while the tab is
- * hidden, and with reduced motion it draws a single still frame and never
- * animates. It is decoration only (aria-hidden, no pointer events).
+ * Raw WebGL rather than a 3D library: this runs on every page, and three.js
+ * would add ~170 KB of download on phones for what is two shaders and three
+ * buffers. The canvas paints its own indigo nebula (opaque), so the additive
+ * glow never depends on how a browser composites a transparent canvas.
+ *
+ * Cheap by construction: node counts scale with the screen, the maths is a
+ * few thousand multiplications a frame, the loop stops while the tab is
+ * hidden, and under prefers-reduced-motion it draws one still frame. If
+ * WebGL is unavailable the CSS gradient on .netbg is the background.
  */
 
-type Hue = { core: string; glow: string; link: [number, number, number] };
+// ── Palette (linear-ish RGB, 0..1) ──────────────────────────────────────────
+type RGB = [number, number, number];
+const VIOLET: RGB = [0.6, 0.45, 1.0];
+const LILAC: RGB = [0.78, 0.7, 1.0];
+const BLUE: RGB = [0.35, 0.52, 1.0];
+const CYAN: RGB = [0.3, 0.85, 1.0];
+const ORCHID: RGB = [0.82, 0.42, 1.0];
+// Weighted like the mockup: mostly violet, then blue and cyan accents.
+const NODE_COLORS: RGB[] = [VIOLET, VIOLET, VIOLET, LILAC, LILAC, BLUE, BLUE, CYAN, CYAN, ORCHID];
+const STAR_COLORS: RGB[] = [LILAC, LILAC, BLUE, [0.85, 0.88, 1.0]];
 
-const HUES: Hue[] = [
-  { core: "#B8A6FF", glow: "139,107,255", link: [139, 107, 255] }, // violet
-  { core: "#7FE4FA", glow: "63,216,245", link: [63, 216, 245] }, // cyan
-  { core: "#8FB0FF", glow: "77,123,255", link: [77, 123, 255] }, // blue
-  { core: "#E2DBFF", glow: "196,186,255", link: [196, 186, 255] }, // soft
-];
+// ── Camera ──────────────────────────────────────────────────────────────────
+const F = 1 / Math.tan((60 / 2) * (Math.PI / 180)); // vertical fov 60°
+const PIVOT = 4.2; // depth the camera sways around
+const Z_NEAR = 1.3;
+const Z_FAR = 8.6;
+const STAR_NEAR = 9.5;
+const STAR_FAR = 14;
+const SCROLL_TO_WORLD = 0.0017; // world units per CSS pixel scrolled
 
-interface Particle {
+// ── Shaders ─────────────────────────────────────────────────────────────────
+const NEBULA_VS = `
+attribute vec2 aPos;
+void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
+
+// Deep indigo sky with slowly drifting violet and blue clouds. Dithered so
+// the soft gradients don't band on 8-bit screens.
+const NEBULA_FS = `
+precision mediump float;
+uniform vec2 uRes;
+uniform float uTime;
+uniform float uShift;
+float blob(vec2 p, vec2 c, float r) { vec2 d = p - c; return exp(-dot(d, d) / (r * r)); }
+void main() {
+  vec2 uv = gl_FragCoord.xy / uRes;
+  float asp = uRes.x / uRes.y;
+  vec2 p = vec2(uv.x * asp, uv.y + uShift);
+  vec3 col = mix(vec3(0.016, 0.014, 0.060), vec3(0.036, 0.028, 0.118), smoothstep(-0.2, 1.1, uv.y));
+  float t = uTime;
+  col += vec3(0.34, 0.20, 0.95) * 0.26 * blob(p, vec2(0.10 * asp + 0.05 * sin(t * 0.05), 0.95 + 0.05 * cos(t * 0.04)), 0.62);
+  col += vec3(0.12, 0.28, 0.95) * 0.20 * blob(p, vec2(0.92 * asp + 0.06 * cos(t * 0.043), 0.18 + 0.05 * sin(t * 0.05)), 0.70);
+  col += vec3(0.55, 0.18, 0.90) * 0.12 * blob(p, vec2(0.58 * asp + 0.08 * sin(t * 0.031), 0.58 + 0.06 * sin(t * 0.037)), 0.55);
+  col += vec3(0.10, 0.45, 0.90) * 0.07 * blob(p, vec2(0.30 * asp, -0.35 + 0.05 * cos(t * 0.029)), 0.60);
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// Upscales the quarter-resolution sky (linear filtering keeps it smooth) and
+// dithers it, so the soft gradients do not band.
+const BLIT_FS = `
+precision mediump float;
+uniform sampler2D uTex;
+uniform vec2 uRes;
+void main() {
+  vec2 uv = gl_FragCoord.xy / uRes;
+  vec3 col = texture2D(uTex, uv).rgb;
+  float n = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+  gl_FragColor = vec4(col + (n - 0.5) / 255.0, 1.0);
+}`;
+
+// Points: x, y (clip space), size (device px), r, g, b, intensity, kind.
+const POINT_VS = `
+attribute vec2 aPos;
+attribute float aSize;
+attribute vec4 aColor;
+attribute float aKind;
+varying vec4 vColor;
+varying float vKind;
+void main() {
+  gl_Position = vec4(aPos, 0.0, 1.0);
+  gl_PointSize = aSize;
+  vColor = aColor;
+  vKind = aKind;
+}`;
+
+// kind 0: a glowing node - white-hot core, coloured glow, wide faint halo.
+// kind 1: an expanding ring (a packet arriving).
+const POINT_FS = `
+precision mediump float;
+varying vec4 vColor;
+varying float vKind;
+void main() {
+  vec2 q = gl_PointCoord * 2.0 - 1.0;
+  float d = length(q);
+  if (d > 1.0) discard;
+  vec3 col;
+  if (vKind < 0.5) {
+    float core = 1.0 - smoothstep(0.0, 0.16, d);
+    float glow = exp(-d * d * 9.0);
+    float halo = exp(-d * 3.4) * 0.32;
+    col = vColor.rgb * (glow * 1.1 + halo) + vec3(core) * 0.95;
+  } else {
+    float ring = 1.0 - smoothstep(0.0, 0.1, abs(d - 0.8));
+    col = vColor.rgb * ring + vColor.rgb * exp(-d * d * 4.0) * 0.15;
+  }
+  col *= vColor.a * (1.0 - smoothstep(0.82, 1.0, d));
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+// Lines are drawn as thin quads so they can be wider than 1 device pixel and
+// soft-edged: x, y, r, g, b, alpha, edge (-1..1 across the width).
+const LINE_VS = `
+attribute vec2 aPos;
+attribute vec4 aColor;
+attribute float aEdge;
+varying vec4 vColor;
+varying float vEdge;
+void main() {
+  gl_Position = vec4(aPos, 0.0, 1.0);
+  vColor = aColor;
+  vEdge = aEdge;
+}`;
+
+const LINE_FS = `
+precision mediump float;
+varying vec4 vColor;
+varying float vEdge;
+void main() {
+  float e = 1.0 - abs(vEdge);
+  gl_FragColor = vec4(vColor.rgb * vColor.a * e * e, 1.0);
+}`;
+
+// ── Types ───────────────────────────────────────────────────────────────────
+interface Node {
   x: number;
   y: number;
+  z: number; // negative: in front of the camera
   vx: number;
   vy: number;
-  r: number;
-  /** Depth 0.35 (far) to 1 (near): scales size, speed, brightness and parallax. */
-  z: number;
-  hue: number;
+  vz: number;
+  r: number; // world radius of the whole sprite
+  color: RGB;
   hub: boolean;
   phase: number;
-  // Screen position this frame (after parallax), reused by links and packets.
-  px: number;
-  py: number;
+  speed: number;
+  // Projected this frame.
+  sx: number;
+  sy: number;
+  depth: number;
+  scale: number; // device px per world unit at this depth
+  vis: number; // 0 when behind the camera or faded out
+}
+
+interface Star {
+  x: number;
+  y: number;
+  z: number;
+  size: number;
+  color: RGB;
+  phase: number;
 }
 
 interface Packet {
@@ -51,33 +179,39 @@ interface Packet {
   b: number;
   t: number;
   speed: number;
-  hue: number;
+  color: RGB;
 }
 
-interface Pulse {
-  x: number;
-  y: number;
+interface Ring {
+  node: number;
   t: number;
-  hue: number;
-}
-
-/** A soft glow, drawn once per colour and stamped for every hub and packet. */
-function makeSprite(rgb: string): HTMLCanvasElement {
-  const size = 96;
-  const c = document.createElement("canvas");
-  c.width = c.height = size;
-  const g = c.getContext("2d")!;
-  const grad = g.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
-  grad.addColorStop(0, `rgba(${rgb},0.95)`);
-  grad.addColorStop(0.18, `rgba(${rgb},0.5)`);
-  grad.addColorStop(0.55, `rgba(${rgb},0.12)`);
-  grad.addColorStop(1, `rgba(${rgb},0)`);
-  g.fillStyle = grad;
-  g.fillRect(0, 0, size, size);
-  return c;
+  color: RGB;
 }
 
 const rand = (a: number, b: number) => a + Math.random() * (b - a);
+const pick = <T,>(list: T[]) => list[Math.floor(Math.random() * list.length)]!;
+const smooth = (e0: number, e1: number, x: number) => {
+  const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0)));
+  return t * t * (3 - 2 * t);
+};
+
+function compile(gl: WebGLRenderingContext, vs: string, fs: string): WebGLProgram | null {
+  const make = (type: number, src: string) => {
+    const s = gl.createShader(type);
+    if (!s) return null;
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null;
+  };
+  const v = make(gl.VERTEX_SHADER, vs);
+  const f = make(gl.FRAGMENT_SHADER, fs);
+  const p = gl.createProgram();
+  if (!v || !f || !p) return null;
+  gl.attachShader(p, v);
+  gl.attachShader(p, f);
+  gl.linkProgram(p);
+  return gl.getProgramParameter(p, gl.LINK_STATUS) ? p : null;
+}
 
 export function NetworkBackground() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -86,268 +220,500 @@ export function NetworkBackground() {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
+    const gl = canvas.getContext("webgl", {
+      alpha: false,
+      antialias: false,
+      depth: false,
+      stencil: false,
+      premultipliedAlpha: false,
+      preserveDrawingBuffer: false,
+      powerPreference: "low-power",
+    });
+    if (!gl) return; // the CSS gradient stays as the background
 
-    const sprites = HUES.map((h) => makeSprite(h.glow));
-    const coarse = window.matchMedia("(pointer: coarse)").matches;
+    const nebula = compile(gl, NEBULA_VS, NEBULA_FS);
+    const points = compile(gl, POINT_VS, POINT_FS);
+    const lines = compile(gl, LINE_VS, LINE_FS);
+    const blit = compile(gl, NEBULA_VS, BLIT_FS);
+    if (!nebula || !points || !lines || !blit) return;
+
+    // The sky is soft and moves slowly: draw it at quarter resolution into a
+    // texture, refresh that every few frames, and stretch it over the screen.
+    // Full-resolution per frame was the single biggest cost on weak GPUs.
+    const skyTex = gl.createTexture();
+    const skyFbo = gl.createFramebuffer();
+    let skyW = 0;
+    let skyH = 0;
+    let skyAge = 99;
+    canvas.dataset.ready = "1";
+
+    const quad = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, quad);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const pointBuf = gl.createBuffer();
+    const lineBuf = gl.createBuffer();
+
+    const loc = {
+      nPos: gl.getAttribLocation(nebula, "aPos"),
+      nRes: gl.getUniformLocation(nebula, "uRes"),
+      nTime: gl.getUniformLocation(nebula, "uTime"),
+      nShift: gl.getUniformLocation(nebula, "uShift"),
+      bPos: gl.getAttribLocation(blit, "aPos"),
+      bTex: gl.getUniformLocation(blit, "uTex"),
+      bRes: gl.getUniformLocation(blit, "uRes"),
+      pPos: gl.getAttribLocation(points, "aPos"),
+      pSize: gl.getAttribLocation(points, "aSize"),
+      pColor: gl.getAttribLocation(points, "aColor"),
+      pKind: gl.getAttribLocation(points, "aKind"),
+      lPos: gl.getAttribLocation(lines, "aPos"),
+      lColor: gl.getAttribLocation(lines, "aColor"),
+      lEdge: gl.getAttribLocation(lines, "aEdge"),
+    };
+
+    const maxPointSize = (gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE) as Float32Array)[1] || 64;
+
     type Nav = Navigator & { connection?: { saveData?: boolean }; deviceMemory?: number };
     const nav = navigator as Nav;
     const lowPower =
       nav.connection?.saveData === true ||
       (typeof nav.hardwareConcurrency === "number" && nav.hardwareConcurrency <= 2) ||
       (typeof nav.deviceMemory === "number" && nav.deviceMemory <= 2);
+    const finePointer = window.matchMedia("(pointer: fine)").matches;
 
-    let w = 0;
-    let h = 0;
+    // ── State ───────────────────────────────────────────────────────────────
+    let W = 0; // device px
+    let H = 0;
+    let cssW = 0;
     let dpr = 1;
-    let linkDist = 150;
-    let particles: Particle[] = [];
+    let aspect = 1;
+    let XR = 6; // half-width of the node volume, world units
+    let YR = 5.4;
+    let SXR = 9;
+    let SYR = 8.6;
+    let linkDist = 1.3;
+    let nodes: Node[] = [];
+    let stars: Star[] = [];
     const packets: Packet[] = [];
-    const pulses: Pulse[] = [];
-    // Pointer, eased so nodes glide toward it rather than snapping.
-    const pointer = { x: -9999, y: -9999, tx: -9999, ty: -9999, nx: 0, ny: 0, tnx: 0, tny: 0, active: false };
-    let scrollY = window.scrollY;
+    const rings: Ring[] = [];
+    let links: number[] = []; // flat pairs of node indices, rebuilt each frame
+    let pointData = new Float32Array(0);
+    let lineData = new Float32Array(0);
+    let maxPackets = 10;
+    let spriteCap = 180; // device px; set per screen in sizeCanvas
+
+    let camX = 0;
+    let camY = 0;
+    let camYTarget = 0;
+    let yaw = 0;
+    let pitch = 0;
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, px: -1, py: -1, on: false };
+    let time = 0;
+    let spawnIn = 0.6;
     let raf = 0;
-    let last = 0;
     let running = false;
-    let spawnIn = 0.8;
+    let last = 0;
 
-    function build() {
-      w = window.innerWidth;
-      h = window.innerHeight;
-      dpr = Math.min(window.devicePixelRatio || 1, w < 700 ? 1.5 : 2);
-      canvas!.width = Math.round(w * dpr);
-      canvas!.height = Math.round(h * dpr);
-      canvas!.style.width = `${w}px`;
-      canvas!.style.height = `${h}px`;
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    function sizeCanvas() {
+      const rect = canvas!.getBoundingClientRect();
+      cssW = rect.width || window.innerWidth;
+      const cssH = rect.height || window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, cssW < 760 ? 1.5 : 1.75, lowPower ? 1 : 3);
+      W = Math.max(1, Math.round(cssW * dpr));
+      H = Math.max(1, Math.round(cssH * dpr));
+      // Assigning a canvas size, even the same one, clears it; phones fire
+      // resize whenever the address bar moves, so only resize on a change.
+      if (canvas!.width !== W) canvas!.width = W;
+      if (canvas!.height !== H) canvas!.height = H;
+      gl!.viewport(0, 0, W, H);
+      const sw = Math.max(1, Math.round(W / 4));
+      const sh = Math.max(1, Math.round(H / 4));
+      if (sw !== skyW || sh !== skyH) {
+        skyW = sw;
+        skyH = sh;
+        gl!.bindTexture(gl!.TEXTURE_2D, skyTex);
+        gl!.texImage2D(gl!.TEXTURE_2D, 0, gl!.RGBA, skyW, skyH, 0, gl!.RGBA, gl!.UNSIGNED_BYTE, null);
+        gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MIN_FILTER, gl!.LINEAR);
+        gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_MAG_FILTER, gl!.LINEAR);
+        gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_S, gl!.CLAMP_TO_EDGE);
+        gl!.texParameteri(gl!.TEXTURE_2D, gl!.TEXTURE_WRAP_T, gl!.CLAMP_TO_EDGE);
+        gl!.bindFramebuffer(gl!.FRAMEBUFFER, skyFbo);
+        gl!.framebufferTexture2D(gl!.FRAMEBUFFER, gl!.COLOR_ATTACHMENT0, gl!.TEXTURE_2D, skyTex, 0);
+        gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
+        skyAge = 99;
+      }
+      aspect = W / H;
+      spriteCap = 110 * dpr;
+      const halfTanH = 1 / F;
+      XR = Z_FAR * halfTanH * aspect + 1.4;
+      YR = Z_FAR * halfTanH + 1.6;
+      SXR = STAR_FAR * halfTanH * aspect + 1;
+      SYR = STAR_FAR * halfTanH + 2;
+    }
 
-      const small = w < 700;
-      const area = w * h;
-      let count = Math.round(area / (small ? 21000 : 15500));
-      count = Math.max(24, Math.min(small ? 46 : 105, count));
-      if (lowPower) count = Math.round(count * 0.55);
-      linkDist = Math.max(105, Math.min(185, Math.min(w, h) * 0.2));
+    function populate() {
+      const small = cssW < 760;
+      let count = small ? 130 : cssW < 1200 ? 190 : 250;
+      let starCount = small ? 150 : 300;
+      if (lowPower) {
+        count = Math.round(count * 0.55);
+        starCount = Math.round(starCount * 0.5);
+      }
+      linkDist = small ? 1.4 : 1.5;
+      maxPackets = small ? 6 : lowPower ? 5 : 12;
 
-      particles = Array.from({ length: count }, () => {
-        const z = rand(0.35, 1);
-        const hub = Math.random() < 0.11;
-        const speed = rand(5, 16) * z; // px per second
-        const ang = rand(0, Math.PI * 2);
+      nodes = Array.from({ length: count }, () => {
+        const hub = Math.random() < 0.12;
+        // Biased toward mid-far depths: many small nodes, a few big near ones.
+        const depth = Z_NEAR + 0.4 + (Z_FAR - Z_NEAR - 0.4) * Math.pow(Math.random(), 0.75);
         return {
-          x: rand(0, w),
-          y: rand(0, h),
-          vx: Math.cos(ang) * speed,
-          vy: Math.sin(ang) * speed,
-          r: hub ? rand(2.6, 4.2) * (0.6 + z * 0.5) : rand(1, 2.1) * (0.6 + z * 0.6),
-          z,
-          hue: Math.floor(Math.random() * HUES.length),
+          x: rand(-XR, XR),
+          y: rand(-YR, YR),
+          z: -depth,
+          vx: rand(-0.06, 0.06),
+          vy: rand(-0.05, 0.05),
+          vz: rand(-0.05, 0.05),
+          r: hub ? rand(0.2, 0.3) : rand(0.07, 0.12),
+          color: hub ? pick([VIOLET, LILAC, VIOLET, CYAN]) : pick(NODE_COLORS),
           hub,
           phase: rand(0, Math.PI * 2),
-          px: 0,
-          py: 0,
+          speed: rand(0.6, 1.6),
+          sx: 0,
+          sy: 0,
+          depth,
+          scale: 1,
+          vis: 1,
         };
       });
+      stars = Array.from({ length: starCount }, () => ({
+        x: rand(-SXR, SXR),
+        y: rand(-SYR, SYR),
+        z: -rand(STAR_NEAR, STAR_FAR),
+        size: rand(1.2, 2.8),
+        color: pick(STAR_COLORS),
+        phase: rand(0, Math.PI * 2),
+      }));
       packets.length = 0;
-      pulses.length = 0;
+      rings.length = 0;
+
+      const maxPoints = count + starCount + maxPackets + 24 + 2;
+      pointData = new Float32Array(maxPoints * 8);
+      // links + packet trails + pointer links, 6 vertices of 7 floats each
+      lineData = new Float32Array((1600 + maxPackets + 10) * 6 * 7);
     }
 
-    function place() {
-      // Parallax: pointer shifts nodes by depth; scrolling drifts them upward at a fraction of page speed.
-      const mx = pointer.nx * 26;
-      const my = pointer.ny * 18;
-      const margin = 60;
-      const span = h + margin * 2;
-      for (const p of particles) {
-        const shiftY = -scrollY * 0.07 * p.z;
-        p.px = p.x - mx * p.z;
-        p.py = ((((p.y + shiftY - my * p.z + margin) % span) + span) % span) - margin;
-      }
+    /** World -> screen for the current camera. Writes into the node. */
+    const cosSin = { cy: 1, sy: 0, cp: 1, sp: 0 };
+    function project(x: number, y: number, z: number, out: { sx: number; sy: number; depth: number; scale: number }) {
+      const rx = x - camX;
+      const ry = y - camY;
+      const rz = z + PIVOT;
+      const x1 = rx * cosSin.cy + rz * cosSin.sy;
+      const z1 = -rx * cosSin.sy + rz * cosSin.cy;
+      const y1 = ry * cosSin.cp - z1 * cosSin.sp;
+      const z2 = ry * cosSin.sp + z1 * cosSin.cp;
+      const depth = PIVOT - z2;
+      out.depth = depth;
+      if (depth < 0.2) return false;
+      out.sx = (x1 * F) / depth / aspect;
+      out.sy = (y1 * F) / depth;
+      out.scale = (F * (H / 2)) / depth;
+      return true;
     }
 
+    // ── Simulation ──────────────────────────────────────────────────────────
     function step(dt: number) {
-      const margin = 60;
-      for (const p of particles) {
-        p.x += p.vx * dt;
-        p.y += p.vy * dt;
-        // Wrap just outside the screen, so nodes never blink out in view.
-        if (p.x < -margin) p.x = w + margin;
-        else if (p.x > w + margin) p.x = -margin;
-        if (p.y < -margin) p.y = h + margin;
-        else if (p.y > h + margin) p.y = -margin;
-      }
-      // Ease the pointer.
-      const k = 1 - Math.pow(0.001, dt);
-      pointer.x += (pointer.tx - pointer.x) * k;
-      pointer.y += (pointer.ty - pointer.y) * k;
-      pointer.nx += (pointer.tnx - pointer.nx) * k * 0.6;
-      pointer.ny += (pointer.tny - pointer.ny) * k * 0.6;
+      time += dt;
+      // Camera: scroll flies down through the volume; pointer and a slow idle
+      // sway turn it a little, which is what makes the depth readable.
+      camY += (camYTarget - camY) * (1 - Math.pow(0.0005, dt));
+      pointer.x += (pointer.tx - pointer.x) * (1 - Math.pow(0.02, dt));
+      pointer.y += (pointer.ty - pointer.y) * (1 - Math.pow(0.02, dt));
+      const yawT = pointer.x * 0.14 + Math.sin(time * 0.07) * 0.06;
+      const pitchT = -pointer.y * 0.09 + Math.sin(time * 0.053 + 1.3) * 0.035;
+      yaw += (yawT - yaw) * (1 - Math.pow(0.05, dt));
+      pitch += (pitchT - pitch) * (1 - Math.pow(0.05, dt));
+      camX = Math.sin(time * 0.041) * 0.25;
 
-      // Packets travel along links; arrival rings the node.
+      for (const n of nodes) {
+        n.x += n.vx * dt;
+        n.y += n.vy * dt;
+        n.z += n.vz * dt;
+        if (n.x < -XR) n.x += 2 * XR;
+        else if (n.x > XR) n.x -= 2 * XR;
+        // Keep the volume centred on the camera as it scrolls: wrap in y.
+        if (n.y < camY - YR) n.y += 2 * YR;
+        else if (n.y > camY + YR) n.y -= 2 * YR;
+        if (n.z > -Z_NEAR) n.z = -Z_FAR;
+        else if (n.z < -Z_FAR) n.z = -Z_NEAR;
+      }
+      for (const s of stars) {
+        if (s.y < camY - SYR) s.y += 2 * SYR;
+        else if (s.y > camY + SYR) s.y -= 2 * SYR;
+      }
+
       for (let i = packets.length - 1; i >= 0; i--) {
-        const pk = packets[i]!;
-        pk.t += pk.speed * dt;
-        if (pk.t >= 1) {
-          const b = particles[pk.b];
-          if (b) pulses.push({ x: b.px, y: b.py, t: 0, hue: pk.hue });
+        const p = packets[i]!;
+        p.t += p.speed * dt;
+        if (p.t >= 1) {
+          rings.push({ node: p.b, t: 0, color: p.color });
           packets.splice(i, 1);
         }
       }
-      for (let i = pulses.length - 1; i >= 0; i--) {
-        pulses[i]!.t += dt / 1.6;
-        if (pulses[i]!.t >= 1) pulses.splice(i, 1);
+      for (let i = rings.length - 1; i >= 0; i--) {
+        rings[i]!.t += dt / 1.5;
+        if (rings[i]!.t >= 1) rings.splice(i, 1);
       }
       spawnIn -= dt;
-      if (spawnIn <= 0 && packets.length < (w < 700 ? 4 : 9)) {
-        spawnIn = rand(0.35, 1.1);
-        spawnPacket();
-      }
-    }
-
-    function spawnPacket() {
-      // Pick a random node and one of its linked neighbours that is on screen.
-      for (let tries = 0; tries < 12; tries++) {
-        const a = Math.floor(Math.random() * particles.length);
-        const pa = particles[a]!;
-        if (pa.px < 0 || pa.px > w || pa.py < 0 || pa.py > h) continue;
-        const near: number[] = [];
-        for (let j = 0; j < particles.length; j++) {
-          if (j === a) continue;
-          const pb = particles[j]!;
-          const dx = pa.px - pb.px;
-          const dy = pa.py - pb.py;
-          if (dx * dx + dy * dy < linkDist * linkDist) near.push(j);
-        }
-        if (near.length) {
-          packets.push({
-            a,
-            b: near[Math.floor(Math.random() * near.length)]!,
-            t: 0,
-            speed: rand(0.35, 0.7),
-            hue: pa.hue,
-          });
-          return;
+      if (spawnIn <= 0 && packets.length < maxPackets && links.length) {
+        spawnIn = rand(0.18, 0.6);
+        const k = Math.floor(Math.random() * (links.length / 2)) * 2;
+        const flip = Math.random() < 0.5;
+        const a = links[flip ? k + 1 : k]!;
+        const b = links[flip ? k : k + 1]!;
+        if (nodes[a]!.vis > 0.3 && nodes[b]!.vis > 0.3) {
+          packets.push({ a, b, t: 0, speed: rand(0.35, 0.75), color: pick([CYAN, LILAC, VIOLET, CYAN]) });
         }
       }
     }
 
-    function draw(time: number) {
-      const c = ctx!;
-      c.clearRect(0, 0, w, h);
-      const D2 = linkDist * linkDist;
+    // ── Drawing ─────────────────────────────────────────────────────────────
+    let pc = 0; // floats written into pointData
+    let lc = 0; // floats written into lineData
+    function pushPoint(x: number, y: number, size: number, c: RGB, a: number, kind: number) {
+      if (pc + 8 > pointData.length || a <= 0.003) return;
+      pointData[pc++] = x;
+      pointData[pc++] = y;
+      pointData[pc++] = Math.min(size, maxPointSize, spriteCap);
+      pointData[pc++] = c[0];
+      pointData[pc++] = c[1];
+      pointData[pc++] = c[2];
+      pointData[pc++] = a;
+      pointData[pc++] = kind;
+    }
+    function pushLine(
+      x0: number, y0: number, x1: number, y1: number,
+      c0: RGB, c1: RGB, a0: number, a1: number, halfWidthPx: number,
+    ) {
+      if (lc + 42 > lineData.length) return;
+      // Normal in pixel space, converted back to clip space.
+      const dxp = (x1 - x0) * W;
+      const dyp = (y1 - y0) * H;
+      const len = Math.hypot(dxp, dyp) || 1;
+      const nx = ((-dyp / len) * halfWidthPx * 2) / W;
+      const ny = ((dxp / len) * halfWidthPx * 2) / H;
+      const v = (x: number, y: number, c: RGB, a: number, e: number) => {
+        lineData[lc++] = x;
+        lineData[lc++] = y;
+        lineData[lc++] = c[0];
+        lineData[lc++] = c[1];
+        lineData[lc++] = c[2];
+        lineData[lc++] = a;
+        lineData[lc++] = e;
+      };
+      v(x0 + nx, y0 + ny, c0, a0, 1);
+      v(x0 - nx, y0 - ny, c0, a0, -1);
+      v(x1 + nx, y1 + ny, c1, a1, 1);
+      v(x1 + nx, y1 + ny, c1, a1, 1);
+      v(x0 - nx, y0 - ny, c0, a0, -1);
+      v(x1 - nx, y1 - ny, c1, a1, -1);
+    }
+
+    /** How visible something at this depth is: fades in from the near plane and out into the fog. */
+    const depthFade = (d: number) => smooth(Z_NEAR - 0.2, Z_NEAR + 0.9, d) * (1 - smooth(Z_FAR - 2.2, Z_FAR, d) * 0.85);
+
+    const tmp = { sx: 0, sy: 0, depth: 0, scale: 0 };
+    function draw() {
+      cosSin.cy = Math.cos(yaw);
+      cosSin.sy = Math.sin(yaw);
+      cosSin.cp = Math.cos(pitch);
+      cosSin.sp = Math.sin(pitch);
+
+      for (const n of nodes) {
+        if (!project(n.x, n.y, n.z, tmp)) {
+          n.vis = 0;
+          continue;
+        }
+        n.sx = tmp.sx;
+        n.sy = tmp.sy;
+        n.depth = tmp.depth;
+        n.scale = tmp.scale;
+        const onScreen = Math.abs(n.sx) < 1.25 && Math.abs(n.sy) < 1.25;
+        n.vis = onScreen ? depthFade(n.depth) : 0;
+      }
+
+      // Pointer in clip space, and how strongly each node is lit by it.
+      const pxClip = pointer.on ? (pointer.px / cssW) * 2 - 1 : -9;
+      const pyClip = pointer.on ? 1 - (pointer.py / (H / dpr)) * 2 : -9;
+      const litRadius = 170 * dpr; // device px
 
       // Links.
-      c.lineWidth = 1;
-      for (let i = 0; i < particles.length; i++) {
-        const a = particles[i]!;
-        for (let j = i + 1; j < particles.length; j++) {
-          const b = particles[j]!;
-          const dx = a.px - b.px;
-          const dy = a.py - b.py;
-          const d2 = dx * dx + dy * dy;
-          if (d2 >= D2) continue;
+      links = [];
+      lc = 0;
+      const L2 = linkDist * linkDist;
+      for (let i = 0; i < nodes.length; i++) {
+        const a = nodes[i]!;
+        if (a.vis <= 0) continue;
+        for (let j = i + 1; j < nodes.length; j++) {
+          const b = nodes[j]!;
+          if (b.vis <= 0) continue;
+          const dx = a.x - b.x;
+          const dy = a.y - b.y;
+          const dz = a.z - b.z;
+          const d2 = dx * dx + dy * dy + dz * dz;
+          if (d2 >= L2) continue;
+          links.push(i, j);
           const f = 1 - Math.sqrt(d2) / linkDist;
-          const alpha = f * f * 0.42 * Math.min(a.z, b.z) + 0.02;
-          const [r, g, bl] = HUES[a.hue]!.link;
-          c.strokeStyle = `rgba(${r},${g},${bl},${alpha.toFixed(3)})`;
-          c.beginPath();
-          c.moveTo(a.px, a.py);
-          c.lineTo(b.px, b.py);
-          c.stroke();
+          const alpha = Math.pow(f, 1.1) * 0.95 * Math.min(a.vis, b.vis);
+          const near = 1 - smooth(1.5, 7, (a.depth + b.depth) / 2);
+          pushLine(a.sx, a.sy, b.sx, b.sy, a.color, b.color, alpha, alpha, (1.0 + near * 1.3) * dpr);
         }
       }
 
-      // The pointer joins the mesh: links to the nearest nodes light up.
-      if (pointer.active) {
-        const R = 170;
-        for (const p of particles) {
-          const dx = p.px - pointer.x;
-          const dy = p.py - pointer.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d > R) continue;
-          const f = 1 - d / R;
-          c.strokeStyle = `rgba(184,166,255,${(f * 0.5).toFixed(3)})`;
-          c.beginPath();
-          c.moveTo(pointer.x, pointer.y);
-          c.lineTo(p.px, p.py);
-          c.stroke();
+      // Pointer joins the mesh (mouse only).
+      if (pointer.on) {
+        for (const n of nodes) {
+          if (n.vis <= 0.2) continue;
+          const dxp = ((n.sx - pxClip) * W) / 2;
+          const dyp = ((n.sy - pyClip) * H) / 2;
+          const d = Math.hypot(dxp, dyp);
+          if (d < litRadius) {
+            const f = 1 - d / litRadius;
+            pushLine(pxClip, pyClip, n.sx, n.sy, LILAC, n.color, f * 0.1, f * 0.55 * n.vis, 0.9 * dpr);
+          }
         }
       }
 
-      // Nodes and hub blooms, drawn additively so overlaps glow.
-      c.globalCompositeOperation = "lighter";
-      for (const p of particles) {
-        if (p.px < -20 || p.px > w + 20 || p.py < -20 || p.py > h + 20) continue;
-        const tw = 0.6 + 0.4 * Math.sin(time * 0.0011 + p.phase);
+      // Packet trails.
+      const lerp3 = (a: Node, b: Node, t: number) => {
+        project(a.x + (b.x - a.x) * t, a.y + (b.y - a.y) * t, a.z + (b.z - a.z) * t, tmp);
+        return { x: tmp.sx, y: tmp.sy, scale: tmp.scale, depth: tmp.depth };
+      };
+      const ease = (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
+      const heads: { x: number; y: number; scale: number; depth: number; color: RGB; vis: number }[] = [];
+      for (const p of packets) {
+        const a = nodes[p.a]!;
+        const b = nodes[p.b]!;
+        const vis = Math.min(a.vis, b.vis);
+        if (vis <= 0) continue;
+        const e = ease(p.t);
+        const head = lerp3(a, b, e);
+        const tail = lerp3(a, b, Math.max(0, e - 0.22));
+        pushLine(tail.x, tail.y, head.x, head.y, p.color, p.color, 0, 0.95 * vis, 1.5 * dpr);
+        heads.push({ ...head, color: p.color, vis });
+      }
+
+      // Points: stars, nodes, packets, rings.
+      pc = 0;
+      for (const s of stars) {
+        if (!project(s.x, s.y, s.z, tmp)) continue;
+        if (Math.abs(tmp.sx) > 1.05 || Math.abs(tmp.sy) > 1.05) continue;
+        const tw = 0.45 + 0.55 * Math.sin(time * 0.9 + s.phase) ** 2;
+        pushPoint(tmp.sx, tmp.sy, s.size * 3 * dpr, s.color, 0.55 * tw, 0);
+      }
+      for (const n of nodes) {
+        if (n.vis <= 0) continue;
+        const breathe = n.hub ? 1 + 0.12 * Math.sin(time * n.speed * 1.4 + n.phase) : 1;
+        const tw = 0.7 + 0.3 * Math.sin(time * n.speed + n.phase);
         let boost = 0;
-        if (pointer.active) {
-          const dx = p.px - pointer.x;
-          const dy = p.py - pointer.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < 170) boost = 1 - d / 170;
+        if (pointer.on) {
+          const d = Math.hypot(((n.sx - pxClip) * W) / 2, ((n.sy - pyClip) * H) / 2);
+          if (d < litRadius) boost = 1 - d / litRadius;
         }
-        const glowR = (p.hub ? 26 : 9) * (0.7 + p.z * 0.5) * (1 + boost * 0.9);
-        c.globalAlpha = Math.min(1, (p.hub ? 0.5 : 0.28) * tw * (0.5 + p.z * 0.5) + boost * 0.4);
-        c.drawImage(sprites[p.hue]!, p.px - glowR, p.py - glowR, glowR * 2, glowR * 2);
-        c.globalAlpha = Math.min(1, (0.55 + 0.45 * tw) * (0.5 + p.z * 0.5) + boost * 0.3);
-        c.fillStyle = HUES[p.hue]!.core;
-        c.beginPath();
-        c.arc(p.px, p.py, p.r * (1 + boost * 0.5), 0, Math.PI * 2);
-        c.fill();
+        const size = 2 * n.r * n.scale * breathe * (1 + boost * 0.5);
+        const intensity = (n.hub ? 1.05 : 0.8) * tw * n.vis + boost * 0.45;
+        pushPoint(n.sx, n.sy, Math.max(size, 3 * dpr), n.color, intensity, 0);
+      }
+      for (const h of heads) {
+        pushPoint(h.x, h.y, Math.max(0.34 * h.scale, 14 * dpr), h.color, 1.15 * h.vis, 0);
+      }
+      for (const r of rings) {
+        const n = nodes[r.node]!;
+        if (n.vis <= 0) continue;
+        // A small ripple where a deal lands: grows a little and fades fast.
+        const size = Math.min((0.12 + r.t * 0.55) * n.scale, 70 * dpr);
+        pushPoint(n.sx, n.sy, size, r.color, Math.pow(1 - r.t, 1.6) * 0.8 * n.vis, 1);
       }
 
-      // Packets: a bright head with a short fading tail.
-      for (const pk of packets) {
-        const a = particles[pk.a];
-        const b = particles[pk.b];
-        if (!a || !b) continue;
-        const e = pk.t < 0.5 ? 2 * pk.t * pk.t : 1 - Math.pow(-2 * pk.t + 2, 2) / 2;
-        const x = a.px + (b.px - a.px) * e;
-        const y = a.py + (b.py - a.py) * e;
-        const tail = Math.max(0, e - 0.16);
-        const tx = a.px + (b.px - a.px) * tail;
-        const ty = a.py + (b.py - a.py) * tail;
-        const [r, g, bl] = HUES[pk.hue]!.link;
-        const grad = c.createLinearGradient(tx, ty, x, y);
-        grad.addColorStop(0, `rgba(${r},${g},${bl},0)`);
-        grad.addColorStop(1, `rgba(${r},${g},${bl},0.95)`);
-        c.globalAlpha = 1;
-        c.strokeStyle = grad;
-        c.lineWidth = 1.8;
-        c.beginPath();
-        c.moveTo(tx, ty);
-        c.lineTo(x, y);
-        c.stroke();
-        c.globalAlpha = 0.95;
-        c.drawImage(sprites[pk.hue]!, x - 11, y - 11, 22, 22);
+      // ── GL ──
+      gl!.disable(gl!.BLEND);
+      gl!.bindBuffer(gl!.ARRAY_BUFFER, quad);
+      if (++skyAge >= 4) {
+        skyAge = 0;
+        gl!.bindFramebuffer(gl!.FRAMEBUFFER, skyFbo);
+        gl!.viewport(0, 0, skyW, skyH);
+        gl!.useProgram(nebula);
+        gl!.enableVertexAttribArray(loc.nPos);
+        gl!.vertexAttribPointer(loc.nPos, 2, gl!.FLOAT, false, 0, 0);
+        gl!.uniform2f(loc.nRes, skyW, skyH);
+        gl!.uniform1f(loc.nTime, time);
+        gl!.uniform1f(loc.nShift, camY * 0.04);
+        gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+        gl!.disableVertexAttribArray(loc.nPos);
+        gl!.bindFramebuffer(gl!.FRAMEBUFFER, null);
+        gl!.viewport(0, 0, W, H);
       }
-      c.globalCompositeOperation = "source-over";
-      c.globalAlpha = 1;
+      gl!.useProgram(blit);
+      gl!.activeTexture(gl!.TEXTURE0);
+      gl!.bindTexture(gl!.TEXTURE_2D, skyTex);
+      gl!.uniform1i(loc.bTex, 0);
+      gl!.uniform2f(loc.bRes, W, H);
+      gl!.enableVertexAttribArray(loc.bPos);
+      gl!.vertexAttribPointer(loc.bPos, 2, gl!.FLOAT, false, 0, 0);
+      gl!.drawArrays(gl!.TRIANGLES, 0, 3);
+      gl!.disableVertexAttribArray(loc.bPos);
 
-      // Arrival rings.
-      for (const pl of pulses) {
-        const [r, g, bl] = HUES[pl.hue]!.link;
-        c.strokeStyle = `rgba(${r},${g},${bl},${((1 - pl.t) * 0.55).toFixed(3)})`;
-        c.lineWidth = 1.2;
-        c.beginPath();
-        c.arc(pl.x, pl.y, 4 + pl.t * 34, 0, Math.PI * 2);
-        c.stroke();
+      gl!.enable(gl!.BLEND);
+      gl!.blendFunc(gl!.ONE, gl!.ONE); // light adds up, like glow does
+
+      if (lc > 0) {
+        gl!.useProgram(lines);
+        gl!.bindBuffer(gl!.ARRAY_BUFFER, lineBuf);
+        gl!.bufferData(gl!.ARRAY_BUFFER, lineData.subarray(0, lc), gl!.DYNAMIC_DRAW);
+        const stride = 7 * 4;
+        gl!.enableVertexAttribArray(loc.lPos);
+        gl!.vertexAttribPointer(loc.lPos, 2, gl!.FLOAT, false, stride, 0);
+        gl!.enableVertexAttribArray(loc.lColor);
+        gl!.vertexAttribPointer(loc.lColor, 4, gl!.FLOAT, false, stride, 8);
+        gl!.enableVertexAttribArray(loc.lEdge);
+        gl!.vertexAttribPointer(loc.lEdge, 1, gl!.FLOAT, false, stride, 24);
+        gl!.drawArrays(gl!.TRIANGLES, 0, lc / 7);
+        gl!.disableVertexAttribArray(loc.lPos);
+        gl!.disableVertexAttribArray(loc.lColor);
+        gl!.disableVertexAttribArray(loc.lEdge);
+      }
+
+      if (pc > 0) {
+        gl!.useProgram(points);
+        gl!.bindBuffer(gl!.ARRAY_BUFFER, pointBuf);
+        gl!.bufferData(gl!.ARRAY_BUFFER, pointData.subarray(0, pc), gl!.DYNAMIC_DRAW);
+        const stride = 8 * 4;
+        gl!.enableVertexAttribArray(loc.pPos);
+        gl!.vertexAttribPointer(loc.pPos, 2, gl!.FLOAT, false, stride, 0);
+        gl!.enableVertexAttribArray(loc.pSize);
+        gl!.vertexAttribPointer(loc.pSize, 1, gl!.FLOAT, false, stride, 8);
+        gl!.enableVertexAttribArray(loc.pColor);
+        gl!.vertexAttribPointer(loc.pColor, 4, gl!.FLOAT, false, stride, 12);
+        gl!.enableVertexAttribArray(loc.pKind);
+        gl!.vertexAttribPointer(loc.pKind, 1, gl!.FLOAT, false, stride, 28);
+        gl!.drawArrays(gl!.POINTS, 0, pc / 8);
+        gl!.disableVertexAttribArray(loc.pPos);
+        gl!.disableVertexAttribArray(loc.pSize);
+        gl!.disableVertexAttribArray(loc.pColor);
+        gl!.disableVertexAttribArray(loc.pKind);
       }
     }
 
+    // ── Loop ────────────────────────────────────────────────────────────────
     function frame(now: number) {
       if (!running) return;
       const dt = Math.min(0.05, (now - last) / 1000 || 0.016);
       last = now;
       step(dt);
-      place();
-      draw(now);
+      draw();
       raf = requestAnimationFrame(frame);
     }
-
     function start() {
-      if (running) return;
+      if (running || reduced) return;
       running = true;
       last = performance.now();
       raf = requestAnimationFrame(frame);
@@ -356,52 +722,70 @@ export function NetworkBackground() {
       running = false;
       cancelAnimationFrame(raf);
     }
-    function stillFrame() {
-      place();
-      draw(0);
+    function still() {
+      // Reduced motion: one settled frame, no drift, no scroll flight.
+      time = 12;
+      draw();
     }
 
-    const onResize = () => {
-      build();
-      if (reduced) stillFrame();
-    };
+    let lastW = 0;
+    function onResize() {
+      const prevW = lastW;
+      sizeCanvas();
+      lastW = cssW;
+      // A phone's address bar showing or hiding changes only the height:
+      // keep the same nodes. A real width change (rotation, window resize)
+      // repopulates for the new shape.
+      if (!prevW || Math.abs(cssW - prevW) / prevW > 0.2) populate();
+      if (reduced) still();
+    }
     const onScroll = () => {
-      scrollY = window.scrollY;
-      if (reduced) stillFrame();
+      if (!reduced) camYTarget = -window.scrollY * SCROLL_TO_WORLD;
     };
     const onMove = (e: PointerEvent) => {
       if (e.pointerType !== "mouse") return;
-      pointer.active = true;
-      pointer.tx = e.clientX;
-      pointer.ty = e.clientY;
-      pointer.tnx = e.clientX / w - 0.5;
-      pointer.tny = e.clientY / h - 0.5;
-      if (pointer.x < -9000) {
-        pointer.x = pointer.tx;
-        pointer.y = pointer.ty;
-      }
+      pointer.on = true;
+      pointer.px = e.clientX;
+      pointer.py = e.clientY;
+      pointer.tx = (e.clientX / window.innerWidth) * 2 - 1;
+      pointer.ty = (e.clientY / window.innerHeight) * 2 - 1;
     };
     const onLeave = () => {
-      pointer.active = false;
-      pointer.tnx = 0;
-      pointer.tny = 0;
+      pointer.on = false;
+      pointer.tx = 0;
+      pointer.ty = 0;
     };
     const onVisibility = () => {
       if (document.hidden) stop();
-      else if (!reduced) start();
+      else start();
+    };
+    const onLost = (e: Event) => {
+      e.preventDefault();
+      stop();
+      delete canvas.dataset.ready;
     };
 
-    build();
+    onResize();
+    onScroll();
+    camY = camYTarget;
     window.addEventListener("resize", onResize);
     window.addEventListener("scroll", onScroll, { passive: true });
-    if (!coarse && !reduced) {
+    if (finePointer && !reduced) {
       window.addEventListener("pointermove", onMove, { passive: true });
       document.documentElement.addEventListener("pointerleave", onLeave);
     }
     document.addEventListener("visibilitychange", onVisibility);
+    canvas.addEventListener("webglcontextlost", onLost);
 
-    if (reduced) stillFrame();
-    else start();
+    if (reduced) still();
+    else {
+      // Settle the simulation a little so the first frame already has packets and links.
+      for (let i = 0; i < 24; i++) {
+        step(0.05);
+        draw();
+      }
+      start();
+    }
 
     return () => {
       stop();
@@ -410,16 +794,13 @@ export function NetworkBackground() {
       window.removeEventListener("pointermove", onMove);
       document.documentElement.removeEventListener("pointerleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
+      canvas.removeEventListener("webglcontextlost", onLost);
     };
   }, [reduced]);
 
   return (
     <div className="netbg" aria-hidden="true">
-      <div className="netbg-glow netbg-glow-a" />
-      <div className="netbg-glow netbg-glow-b" />
-      <div className="netbg-glow netbg-glow-c" />
       <canvas ref={ref} className="netbg-canvas" />
-      <div className="netbg-vignette" />
     </div>
   );
 }

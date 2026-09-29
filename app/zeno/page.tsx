@@ -24,7 +24,7 @@ export default function ZenoPage() {
         <div className="wrap">
           <span className="t-eyebrow">Meet Zeno</span>
           <h1 className="t-h1 page-hero-headline" id="zeno-page-h">
-            Intelligence built into<br className="br-lg" />every transaction.
+            Intelligence built into{" "}<br className="br-lg" />every transaction.
           </h1>
           <p className="page-hero-sub">
             Zeno is not a chatbot attached to a marketplace. Zeno is the
@@ -44,7 +44,7 @@ export default function ZenoPage() {
         <div className="wrap">
           <div style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
             <p className="t-h2" style={{ lineHeight: 1.15, color: "var(--c-text-1)" }}>
-              &ldquo;Zeno is not a chatbot<br className="br-lg" />attached to a marketplace.&rdquo;
+              &ldquo;Zeno is not a chatbot{" "}<br className="br-lg" />attached to a marketplace.&rdquo;
             </p>
             <p className="t-body-lg" style={{ marginTop: 28, maxWidth: 580, margin: "28px auto 0" }}>
               Existing commerce platforms add a chat window and call it AI. Zeno

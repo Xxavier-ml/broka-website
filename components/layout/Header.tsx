@@ -6,7 +6,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { navLinks } from "@/data/navigation";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, Search } from "lucide-react";
 
 export function Header() {
   const pathname = usePathname();
@@ -14,9 +14,17 @@ export function Header() {
   // Which dropdown is open (by its label), if any. One at a time.
   const [openGroup, setOpenGroup] = useState<string | null>(null);
   const dropOpen = openGroup !== null;
-  const [logoErr, setLogoErr] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
   const closeMenu = () => setMenuOpen(false);
+
+  // Clear header at the top of the page, glass once content scrolls under it.
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 12);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -60,24 +68,15 @@ export function Header() {
 
   return (
     <>
-      <header className="hdr">
+      <header className="hdr" data-scrolled={scrolled || menuOpen ? "" : undefined}>
         <div className="wrap hdr-inner">
           {/* Logo */}
           <Link href="/" className="hdr-brand" aria-label="BROKA — Home">
-            {logoErr ? (
-              <span className="hdr-logo-text">BROKA</span>
-            ) : (
-              <Image
-                src="/assets/broka-logo.png"
-                alt="BROKA"
-                width={108}
-                height={30}
-                className="hdr-logo"
-                style={{ objectFit: "contain", objectPosition: "left center" }}
-                onError={() => setLogoErr(true)}
-                priority
-              />
-            )}
+            <Image src="/assets/broka-mark.png" alt="" width={40} height={40} className="hdr-mark" priority />
+            <span className="hdr-word" aria-hidden="true">
+              <span className="hdr-word-name">BROKA</span>
+              <span className="hdr-word-tag">Intelligent Commerce</span>
+            </span>
           </Link>
 
           {/* Desktop nav */}
@@ -123,8 +122,12 @@ export function Header() {
 
           {/* Actions */}
           <div className="hdr-actions">
-            <Link href="/contact" className="hdr-cta">
-              Join BROKA
+            <Link href="/search" className="hdr-search" aria-label="Search BROKA">
+              <Search size={17} aria-hidden="true" />
+              <span className="hdr-search-text">Search</span>
+            </Link>
+            <Link href="/download" className="hdr-cta">
+              Get the app
             </Link>
             <button
               className="hdr-burger"
@@ -191,8 +194,8 @@ export function Header() {
           )
         )}
         <div className="mobile-nav-cta">
-          <Link href="/contact" className="btn btn-primary" onClick={closeMenu}>
-            Join BROKA
+          <Link href="/download" className="btn btn-primary" onClick={closeMenu}>
+            Get the BROKA app
           </Link>
         </div>
       </nav>
