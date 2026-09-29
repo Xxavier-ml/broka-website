@@ -26,7 +26,7 @@ Open `http://localhost:3000`.
 |---|---|---|
 | About BROKA | `/`, `/what-is-broka`, `/how-it-works`, `/zeno`, `/technology`, `/vision`, `/founders`, `/roadmap`, `/faq` | Marketing content |
 | Auction House | `/auctions`, `/auctions/[id]` | Live, ending soon, upcoming and completed auctions, with the current bid, countdown and bid history |
-| Online stores | `/stores`, `/stores/[slug]`, `/listings/[id]` | Store directory, a store's page and products, a product's details |
+| Online stores | `/stores`, `/stores/[slug]`, `/listings/[id]` | Store directory, a store's page and products, a product's details. The links the app shares (`/store/<name>`, `/store/<name>/about`, `/store/<name>/p/<id>`) are rewritten to these in `next.config.ts` |
 | Search | `/search` | One search across auctions and stores |
 | Get the app | `/download` | Android APK from the BROKA GitHub releases |
 | Contact | `/contact` | Email, phone, WhatsApp and the co-founders' addresses, plus an email form |
