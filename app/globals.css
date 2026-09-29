@@ -18,28 +18,28 @@
 }
 
 :root {
-  /* ─── Backgrounds (deep indigo family, from the mockup) ─── */
-  --c-bg:    #06051A;
-  --c-bg-1:  #080720;
-  --c-bg-2:  #0B0A27;
-  --c-bg-3:  #100E30;
-  --c-bg-4:  #16133D;
+  /* ─── Backgrounds: the app's near-black navy (BrokaColors.bg #03040A)
+     and the mockup's (#010521). The colour comes from the glowing network,
+     not from the surfaces. ─── */
+  --c-bg:    #030518;
+  --c-bg-1:  #050821;
+  --c-bg-2:  #080B28;
+  --c-bg-3:  #0C1030;
+  --c-bg-4:  #111538;
 
-  /* ─── Translucent section tints ───
-     The 3D network (NetworkBackground) is fixed behind the whole page and is
-     the page's real background. Sections only tint it lightly, so it stays
-     visible and bright all the way down instead of fading to black. */
-  --c-bg-t:   rgba(6, 5, 26, 0.10);
-  --c-bg-1-t: rgba(8, 7, 32, 0.22);
-  --c-bg-2-t: rgba(11, 10, 39, 0.32);
-  --c-bg-3-t: rgba(16, 14, 48, 0.40);
+  /* ─── Section tints ───
+     The 3D network (NetworkBackground) is the page's background. Sections
+     only darken it a little, never tint it violet. */
+  --c-bg-t:   transparent;
+  --c-bg-1-t: rgba(1, 3, 14, 0.16);
+  --c-bg-2-t: rgba(1, 3, 14, 0.26);
+  --c-bg-3-t: rgba(1, 3, 14, 0.34);
 
-  /* ─── Surface / glass ───
-     Tinted and mostly opaque, so text on a card stays readable over the
-     moving network behind it. */
-  --c-surface:   rgba(20, 17, 60, 0.58);
-  --c-surface-2: rgba(28, 24, 78, 0.66);
-  --c-surface-3: rgba(38, 32, 98, 0.72);
+  /* ─── Surface / glass: dark navy, mostly opaque, so text on a card stays
+     readable over the moving network behind it. ─── */
+  --c-surface:   rgba(8, 12, 36, 0.72);
+  --c-surface-2: rgba(13, 18, 50, 0.78);
+  --c-surface-3: rgba(20, 25, 64, 0.84);
 
   /* ─── Text ─── brighter than before: the muted grey failed contrast on dark */
   --c-text-1: #F4F1FF;
@@ -95,8 +95,8 @@ body {
   background: var(--c-bg);
   /* Mostly covered by the WebGL canvas; this is what shows without WebGL. */
   background-image:
-    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(110, 70, 255, 0.28), transparent 70%),
-    radial-gradient(ellipse 60% 50% at 95% 90%, rgba(40, 90, 255, 0.2), transparent 70%);
+    radial-gradient(ellipse 70% 50% at 10% 0%, rgba(110, 70, 255, 0.12), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 95% 90%, rgba(40, 90, 255, 0.10), transparent 70%);
   background-attachment: fixed;
   color: var(--c-text-1);
   -webkit-font-smoothing: antialiased;
@@ -133,23 +133,23 @@ ul,ol { list-style: none; }
 /* Atmospheric sections */
 .atm-violet {
   background:
-    radial-gradient(ellipse 60% 55% at 65% 35%, rgba(107,86,255,0.13) 0%, transparent 70%),
+    radial-gradient(ellipse 60% 55% at 65% 35%, rgba(107,86,255,0.06) 0%, transparent 70%),
     var(--c-bg-1-t);
 }
 .atm-violet-center {
   background:
-    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(107,86,255,0.12) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 60% at 50% 45%, rgba(107,86,255,0.06) 0%, transparent 65%),
     var(--c-bg-t);
 }
 .atm-amber {
   background:
-    radial-gradient(ellipse 55% 50% at 35% 55%, rgba(200,162,62,0.10) 0%, transparent 60%),
+    radial-gradient(ellipse 55% 50% at 35% 55%, rgba(200,162,62,0.06) 0%, transparent 60%),
     radial-gradient(ellipse 40% 40% at 75% 25%, rgba(107,86,255,0.07) 0%, transparent 50%),
     var(--c-bg-2-t);
 }
 .atm-hero {
   background:
-    radial-gradient(ellipse 90% 60% at 60% 40%, rgba(107,86,255,0.10) 0%, transparent 55%),
+    radial-gradient(ellipse 90% 60% at 60% 40%, rgba(107,86,255,0.05) 0%, transparent 55%),
     radial-gradient(ellipse 50% 70% at 15% 70%, rgba(107,86,255,0.05) 0%, transparent 45%),
     var(--c-bg-t);
 }
@@ -294,7 +294,7 @@ ul,ol { list-style: none; }
 .btn-ghost {
   border: 1px solid var(--c-rule-2);
   color: var(--c-text-1);
-  background: rgba(20, 16, 60, 0.45);
+  background: rgba(9, 13, 38, 0.45);
 }
 .btn-ghost:hover {
   border-color: var(--c-v-light);
@@ -353,7 +353,7 @@ ul,ol { list-style: none; }
 }
 
 .glass {
-  background: rgba(10,10,18,0.72);
+  background: rgba(5, 8, 24, 0.72);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid var(--c-rule);
@@ -378,12 +378,12 @@ ul,ol { list-style: none; }
   z-index: 100;
   height: 68px;
   /* Clear at the top of the page, like the mockup; glass once content scrolls under it. */
-  background: linear-gradient(to bottom, rgba(6, 5, 26, 0.75), rgba(6, 5, 26, 0));
+  background: linear-gradient(to bottom, rgba(2, 3, 14, 0.75), rgba(2, 3, 14, 0));
   border-bottom: 1px solid transparent;
   transition: background 0.25s ease, border-color 0.25s ease;
 }
 .hdr[data-scrolled] {
-  background: rgba(9, 8, 32, 0.78);
+  background: rgba(3, 5, 18, 0.78);
   backdrop-filter: blur(18px) saturate(150%);
   -webkit-backdrop-filter: blur(18px) saturate(150%);
   border-bottom-color: var(--c-rule);
@@ -469,7 +469,7 @@ ul,ol { list-style: none; }
   top: calc(100% + 10px);
   left: 0;
   min-width: 200px;
-  background: rgba(14, 12, 44, 0.96);
+  background: rgba(6, 9, 28, 0.96);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
   border: 1px solid var(--c-rule-2);
@@ -505,7 +505,7 @@ ul,ol { list-style: none; }
   padding: 0 16px;
   border-radius: 999px;
   border: 1px solid var(--c-rule-2);
-  background: rgba(20, 16, 60, 0.5);
+  background: rgba(9, 13, 38, 0.5);
   color: var(--c-text-2);
   font-size: 14px;
   transition: border-color 0.15s, color 0.15s;
@@ -535,7 +535,7 @@ ul,ol { list-style: none; }
   align-items: center; justify-content: center;
   border: 1px solid var(--c-rule-2);
   border-radius: 12px;
-  background: rgba(20, 16, 60, 0.5);
+  background: rgba(9, 13, 38, 0.5);
   color: var(--c-text-1);
   transition: border-color 0.15s;
 }
@@ -547,7 +547,7 @@ ul,ol { list-style: none; }
   position: fixed;
   top: 68px; left: 0; right: 0;
   z-index: 99;
-  background: rgba(10, 9, 34, 0.97);
+  background: rgba(4, 6, 22, 0.97);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-bottom: 1px solid var(--c-rule);
@@ -572,7 +572,7 @@ ul,ol { list-style: none; }
    ================================================================ */
 .ftr {
   border-top: 1px solid var(--c-rule);
-  background: rgba(7, 7, 13, 0.86);
+  background: rgba(2, 4, 14, 0.86);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   padding: 80px 0 40px;

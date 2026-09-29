@@ -48,8 +48,11 @@ const NEBULA_VS = `
 attribute vec2 aPos;
 void main() { gl_Position = vec4(aPos, 0.0, 1.0); }`;
 
-// Deep indigo sky with slowly drifting violet and blue clouds. Dithered so
-// the soft gradients don't band on 8-bit screens.
+// The app's near-black navy sky (#010521 in the mockup), with faint violet
+// and blue haze drifting in the corners. Haze is sized in units of the
+// screen's SHORTER side: sized by height, a tall phone got haze wider than
+// the screen and the whole page turned violet. The colour on the page is
+// meant to come from the glowing network, not from the sky.
 const NEBULA_FS = `
 precision mediump float;
 uniform vec2 uRes;
@@ -58,14 +61,17 @@ uniform float uShift;
 float blob(vec2 p, vec2 c, float r) { vec2 d = p - c; return exp(-dot(d, d) / (r * r)); }
 void main() {
   vec2 uv = gl_FragCoord.xy / uRes;
-  float asp = uRes.x / uRes.y;
-  vec2 p = vec2(uv.x * asp, uv.y + uShift);
-  vec3 col = mix(vec3(0.016, 0.014, 0.060), vec3(0.036, 0.028, 0.118), smoothstep(-0.2, 1.1, uv.y));
+  float m = min(uRes.x, uRes.y);
+  vec2 span = uRes / m;              // screen size in shorter-side units
+  vec2 p = uv * span + vec2(0.0, uShift);
+  vec3 col = mix(vec3(0.004, 0.006, 0.040), vec3(0.010, 0.020, 0.105), smoothstep(-0.1, 1.05, uv.y));
   float t = uTime;
-  col += vec3(0.34, 0.20, 0.95) * 0.26 * blob(p, vec2(0.10 * asp + 0.05 * sin(t * 0.05), 0.95 + 0.05 * cos(t * 0.04)), 0.62);
-  col += vec3(0.12, 0.28, 0.95) * 0.20 * blob(p, vec2(0.92 * asp + 0.06 * cos(t * 0.043), 0.18 + 0.05 * sin(t * 0.05)), 0.70);
-  col += vec3(0.55, 0.18, 0.90) * 0.12 * blob(p, vec2(0.58 * asp + 0.08 * sin(t * 0.031), 0.58 + 0.06 * sin(t * 0.037)), 0.55);
-  col += vec3(0.10, 0.45, 0.90) * 0.07 * blob(p, vec2(0.30 * asp, -0.35 + 0.05 * cos(t * 0.029)), 0.60);
+  col += vec3(0.22, 0.10, 0.62) * 0.15 * blob(p, vec2(0.08 * span.x + 0.04 * sin(t * 0.05), span.y * 0.96 + 0.04 * cos(t * 0.04)), 0.55);
+  col += vec3(0.06, 0.16, 0.62) * 0.13 * blob(p, vec2(span.x * 0.95 + 0.05 * cos(t * 0.043), span.y * 0.14 + 0.04 * sin(t * 0.05)), 0.6);
+  col += vec3(0.30, 0.12, 0.60) * 0.06 * blob(p, vec2(span.x * 0.6 + 0.07 * sin(t * 0.031), span.y * 0.55 + 0.05 * sin(t * 0.037)), 0.5);
+  // Darker toward the edges, as in the mockup.
+  vec2 q = (uv - 0.5) * vec2(span.x / max(span.x, span.y), span.y / max(span.x, span.y)) * 2.0;
+  col *= mix(1.0, 0.55, smoothstep(0.55, 1.35, length(q)));
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -352,7 +358,7 @@ export function NetworkBackground() {
 
     function populate() {
       const small = cssW < 760;
-      let count = small ? 130 : cssW < 1200 ? 190 : 250;
+      let count = small ? 175 : cssW < 1200 ? 200 : 250;
       let starCount = small ? 150 : 300;
       if (lowPower) {
         count = Math.round(count * 0.55);
@@ -372,7 +378,8 @@ export function NetworkBackground() {
           vx: rand(-0.06, 0.06),
           vy: rand(-0.05, 0.05),
           vz: rand(-0.05, 0.05),
-          r: hub ? rand(0.2, 0.3) : rand(0.07, 0.12),
+          // A little larger on phones, where the same world size reads as specks.
+          r: (hub ? rand(0.2, 0.3) : rand(0.07, 0.12)) * (small ? 1.2 : 1),
           color: hub ? pick([VIOLET, LILAC, VIOLET, CYAN]) : pick(NODE_COLORS),
           hub,
           phase: rand(0, Math.PI * 2),

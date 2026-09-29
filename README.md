@@ -54,14 +54,14 @@ Settings are in `.env.example`.
 
 ## Look and feel
 
-Built to the BROKA mockup: deep indigo, Montserrat for headlines and numbers,
+Built to the BROKA mockup: the app's near-black navy, Montserrat for headlines and numbers,
 Noto Serif for reading text, Inter for small UI labels, violet-to-blue
 gradient pill buttons. Tokens are at the top of `app/globals.css`.
 
 **The 3D background** (`components/background/NetworkBackground.tsx`) is raw
 WebGL, no library: glowing nodes at real depths in front of a perspective
 camera, links that fade with distance, packets travelling between nodes, a
-starfield, and an indigo sky drawn at quarter resolution. The camera sways
+starfield, and a navy sky (the app's colour) drawn at quarter resolution. The camera sways
 toward the mouse and flies through the network as the page scrolls. Node
 counts scale with the screen, it pauses in hidden tabs, and with
 `prefers-reduced-motion` it draws one still frame. Without WebGL the CSS
