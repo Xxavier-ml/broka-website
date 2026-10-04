@@ -95,6 +95,8 @@
 }
 .sform:focus-within { border-color: var(--c-v); box-shadow: 0 0 0 4px var(--c-v-dim), 0 10px 40px rgba(107, 86, 255, 0.18); }
 .sform-icon { color: var(--c-text-3); flex-shrink: 0; }
+.sform-search-submit { display: grid; place-items: center; width: 44px; min-width: 44px; height: 44px; flex: 0 0 44px; border-radius: 10px; color: var(--c-text-1); }
+.sform-search-submit:focus-visible { outline: 2px solid var(--c-v-light); outline-offset: 2px; }
 .sform-input {
   flex: 1;
   min-width: 0;
@@ -121,6 +123,8 @@
 .sform-shell { position: relative; width: 100%; }
 .sform-shell-lg { max-width: 760px; }
 .sform-suggestions { position: absolute; top: calc(100% + 9px); left: 0; right: 0; z-index: 80; overflow: hidden; padding: 8px; border: 1px solid var(--c-rule-v); border-radius: 16px; background: rgba(9, 12, 31, .97); box-shadow: 0 24px 60px rgba(0, 0, 0, .44), 0 0 32px rgba(107, 86, 255, .12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+.sform-suggestions[hidden] { display: none; }
+.sform-suggestions-list { display: block; }
 .sform-suggestions-label { padding: 7px 10px 8px; color: var(--c-text-3); font: 10px var(--f-ui); letter-spacing: .11em; text-transform: uppercase; }
 .sform-suggestions-label svg { display: inline-block; margin-right: 5px; vertical-align: -2px; }
 .sform-menu-section + .sform-menu-section { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--c-rule); }
@@ -235,7 +239,7 @@
 .ftabs::-webkit-scrollbar { display: none; }
 .ftab { padding: 8px 14px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--c-text-3); white-space: nowrap; transition: color 0.15s, background 0.15s; }
 .ftab:hover { color: var(--c-text-1); background: var(--c-surface); }
-.ftab.active { color: #fff; background: var(--c-v); }
+.ftab.active { color: #fff; background: var(--c-v-strong); }
 
 /* Category filters. On a desktop the rail ran off the right edge of the
    viewport — 2924px of chips inside a 1240px box — so 13 of the 21 categories

@@ -51,7 +51,7 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
                     orphan card and a hole beside it. */}
                 <div className="lgrid">
                   {data.featuredListings.slice(0, 4).map((listing) => (
-                    <ProductCard key={listing.id} listing={listing} />
+                    <ProductCard key={listing.id} listing={listing} headingLevel={3} />
                   ))}
                 </div>
               </div>

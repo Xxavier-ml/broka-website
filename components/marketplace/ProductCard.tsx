@@ -6,9 +6,10 @@ import { categoryVisual } from "@/lib/categories";
 import { conditionLabel, formatUnitPrice, placeLine } from "@/lib/format";
 import { Media } from "./Media";
 
-export function ProductCard({ listing: l }: { listing: Listing }) {
+export function ProductCard({ listing: l, headingLevel = 2 }: { listing: Listing; headingLevel?: 2 | 3 }) {
   const condition = conditionLabel(l.condition);
   const place = placeLine(l.location_name, l.location_county);
+  const Title = headingLevel === 2 ? "h2" : "h3";
   return (
     <Link href={`/listings/${l.id}`} className="lcard" prefetch={false}>
       <div className="lcard-media">
@@ -19,7 +20,7 @@ export function ProductCard({ listing: l }: { listing: Listing }) {
         <span className="lcard-cat">
           <span aria-hidden="true">{categoryVisual(l.category).emoji}</span> {l.category}
         </span>
-        <h3 className="lcard-title">{l.name}</h3>
+        <Title className="lcard-title">{l.name}</Title>
         <div className="lcard-price">
           <span className="lcard-price-amount">{formatUnitPrice(l.price, l.price_unit)}</span>
         </div>

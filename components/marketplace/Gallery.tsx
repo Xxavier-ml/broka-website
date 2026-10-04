@@ -100,7 +100,6 @@ export function Gallery({ images, alt, fallback }: { images: GalleryImage[]; alt
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") go(-1);
           if (event.key === "ArrowRight") go(1);
-          if (event.key === "Enter" || event.key === " ") toggleZoom();
         }}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -112,8 +111,8 @@ export function Gallery({ images, alt, fallback }: { images: GalleryImage[]; alt
         }}
         onDoubleClick={toggleZoom}
         tabIndex={0}
-        role="img"
-        aria-label={`${alt} — photo ${index + 1} of ${count}`}
+        role="group"
+        aria-label={`${alt} photo gallery`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -132,7 +131,7 @@ export function Gallery({ images, alt, fallback }: { images: GalleryImage[]; alt
             <span className="gallery-count" aria-hidden="true">{index + 1} / {count}</span>
           </>
         )}
-        <div className="gallery-controls" aria-label="Image controls">
+        <div className="gallery-controls" role="group" aria-label="Image controls">
           <button type="button" onClick={() => adjustZoom(-0.25)} disabled={zoom <= MIN_ZOOM} aria-label="Zoom out"><Minus size={16} /></button>
           <span aria-live="polite">{Math.round(zoom * 100)}%</span>
           <button type="button" onClick={() => adjustZoom(0.25)} disabled={zoom >= MAX_ZOOM} aria-label="Zoom in"><Plus size={16} /></button>

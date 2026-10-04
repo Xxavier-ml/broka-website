@@ -205,7 +205,7 @@ body { background-color: #05060d; }
 .browse-category-label { color: #f0f1f8; font-size: 14px; }
 .browse-category-rail { gap: 7px; }
 .browse-category-rail .chip {
-  min-height: 38px; padding: 7px 12px; border-color: rgba(195,202,226,.13);
+  min-height: 44px; padding: 7px 12px; border-color: rgba(195,202,226,.13);
   background: rgba(255,255,255,.025); color: #c4cada;
 }
 .browse-category-rail .chip.active { border-color: rgba(166,148,255,.55); background: rgba(139,117,255,.14); }
@@ -829,10 +829,10 @@ body { background-color: #05060d; }
 .search-control-row .sform-icon { display: none; }
 .search-control-row .sform-search-submit {
   display: grid;
-  flex: 0 0 34px;
+  flex: 0 0 44px;
   place-items: center;
-  width: 34px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -896,7 +896,7 @@ body { background-color: #05060d; }
   .category-search-filter-row { margin-top: 6px; }
   .search-control-row .sform { min-height: 52px; padding: 4px 12px 4px 14px; }
   .search-control-row .sform-input { padding-block: 8px; font-size: 14px; }
-  .search-control-row .sform-search-submit { height: 40px; }
+  .search-control-row .sform-search-submit { height: 44px; }
   .search-control-row .mobile-filter-trigger--icon {
     flex-basis: 52px;
     width: 52px;
@@ -920,4 +920,21 @@ body { background-color: #05060d; }
 
 @media (prefers-reduced-motion: reduce) {
   .search-control-row .mobile-filter-trigger--icon { transition: none; }
+}
+
+@media (max-width: 1024px) {
+  .hdr-search,
+  .hdr-burger { min-width: 44px; min-height: 44px; }
+  .browse-v0-controls .browse-category-rail .chip,
+  .browse-category-rail .chip,
+  .category-ticker-group .chip,
+  .chips .chip { min-width: 44px; min-height: 44px; }
+  .category-ticker-toggle,
+  .mobile-filter-close { min-width: 44px; min-height: 44px; }
+  .mobile-filter-trigger,
+  .category-results-toolbar .mobile-filter-trigger { min-height: 44px; }
+  .search-control-row .sform-search-submit { flex-basis: 44px; width: 44px; min-width: 44px; height: 44px; }
+  .sform-search-chip { min-height: 44px; }
+  .gallery-nav { width: 44px; height: 44px; }
+  .gallery-controls button { width: 44px; height: 44px; }
 }

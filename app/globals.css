@@ -48,6 +48,7 @@
 
   /* ─── Accent: violet ─── */
   --c-v:       #7C5CFF;
+  --c-v-strong: #6A46E8;
   --c-v-light: #A895FF;
   --c-v-soft:  #D4CAFF;
   --c-v-dim:   rgba(124, 92, 255, 0.18);
@@ -514,7 +515,8 @@ ul,ol { list-style: none; }
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 42px;
+  min-width: 44px;
+  height: 44px;
   width: 124px;
   padding: 0 16px;
   border-radius: 999px;
@@ -545,7 +547,7 @@ ul,ol { list-style: none; }
 
 .hdr-burger {
   display: none;
-  width: 42px; height: 42px;
+  width: 44px; height: 44px;
   align-items: center; justify-content: center;
   border: 1px solid var(--c-rule-2);
   border-radius: 12px;
@@ -1118,7 +1120,7 @@ ul,ol { list-style: none; }
   animation: msg-in 0.4s ease both;
 }
 .zmsg-user .zmsg-bubble {
-  background: var(--c-v);
+  background: var(--c-v-strong);
   color: #fff;
   border-radius: 16px 16px 4px 16px;
 }

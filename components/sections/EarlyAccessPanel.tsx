@@ -58,12 +58,11 @@ export function EarlyAccessPanel() {
           Choose the category that best fits — it&apos;s included in your
           message so we can route it to the right person.
         </p>
-        <div className="contact-categories" role="list">
+        <div className="contact-categories" role="group" aria-label="Enquiry category">
           {CATEGORIES.map((c) => (
             <button
               type="button"
               key={c.title}
-              role="listitem"
               className={cn("contact-cat", selected === c.title && "selected")}
               aria-pressed={selected === c.title}
               onClick={() => setSelected(c.title)}

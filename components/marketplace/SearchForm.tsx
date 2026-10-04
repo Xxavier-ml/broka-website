@@ -64,6 +64,12 @@ export function SearchForm({
   const focusMenuOpen = open && trimmedQuery.length === 0;
   const suggestionsOpen = open && trimmedQuery.length >= 2 && suggestions.length > 0;
   const menuOpen = focusMenuOpen || suggestionsOpen;
+  const suggestionsId = `${inputId}-suggestions`;
+  const activeOptions = suggestionsOpen
+    ? suggestions.map((suggestion) => suggestion.name)
+    : focusMenuOpen
+      ? [...recentSearches, ...trendingSearches]
+      : [];
 
   useEffect(() => {
     setQuery(value ?? "");
@@ -131,22 +137,26 @@ export function SearchForm({
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (suggestionsOpen && activeIndex >= 0 && suggestions[activeIndex]) {
+    const activeOption = activeOptions[activeIndex];
+    if (menuOpen && activeOption) {
       event.preventDefault();
-      navigateTo(suggestions[activeIndex].name);
+      navigateTo(activeOption);
       return;
     }
     recordSearch(query);
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "ArrowDown" && suggestions.length) {
+    if (event.key === "ArrowDown" && activeOptions.length) {
       event.preventDefault();
       setOpen(true);
-      setActiveIndex((current) => (current + 1) % suggestions.length);
-    } else if (event.key === "ArrowUp" && suggestions.length) {
+      setActiveIndex((current) => (current + 1) % activeOptions.length);
+    } else if (event.key === "ArrowUp" && activeOptions.length) {
       event.preventDefault();
-      setActiveIndex((current) => (current - 1 + suggestions.length) % suggestions.length);
+      setActiveIndex((current) => (current - 1 + activeOptions.length) % activeOptions.length);
+    } else if (event.key === "Enter" && activeOptions[activeIndex]) {
+      event.preventDefault();
+      navigateTo(activeOptions[activeIndex]!);
     } else if (event.key === "Escape") {
       setOpen(false);
       setActiveIndex(-1);
@@ -195,10 +205,12 @@ export function SearchForm({
           autoComplete="off"
           spellCheck="false"
           enterKeyHint="search"
+          role="combobox"
           aria-autocomplete="list"
-          aria-controls={`${inputId}-suggestions`}
+          aria-haspopup="listbox"
+          aria-controls={suggestionsId}
           aria-expanded={menuOpen}
-          aria-activedescendant={activeIndex >= 0 ? `${inputId}-suggestion-${activeIndex}` : undefined}
+          aria-activedescendant={activeOptions[activeIndex] ? `${inputId}-suggestion-${activeIndex}` : undefined}
           className="sform-input"
         />
         {Object.entries(hidden).map(([key, item]) => (item ? <input key={key} type="hidden" name={key} value={item} /> : null))}
@@ -208,11 +220,17 @@ export function SearchForm({
           <button type="submit" className="sform-btn">Search</button>
         ))}
       </form>
-      {menuOpen && (
-        <div id={`${inputId}-suggestions`} className="sform-suggestions" role="listbox" aria-label={focusMenuOpen ? "Recent and popular searches" : "Suggested products"}>
-          {suggestionsOpen ? (
+      <div className="sform-suggestions" hidden={!menuOpen}>
+        {focusMenuOpen && recentSearches.length > 0 && (
+          <div className="sform-menu-heading">
+            <p className="sform-suggestions-label"><Clock3 size={13} aria-hidden="true" /> Recent searches</p>
+            <button type="button" className="sform-menu-clear" onMouseDown={(event) => event.preventDefault()} onClick={clearRecent}>Clear</button>
+          </div>
+        )}
+        <div id={suggestionsId} className="sform-suggestions-list" role="listbox" aria-label={focusMenuOpen ? "Recent and popular searches" : "Suggested products"}>
+          {menuOpen && (suggestionsOpen ? (
             <>
-              <p className="sform-suggestions-label">Matching products</p>
+              <div className="sform-suggestions-label" role="presentation">Matching products</div>
               {suggestions.map((suggestion, index) => (
                 <button
                   type="button"
@@ -224,32 +242,34 @@ export function SearchForm({
                   onMouseDown={(event) => { event.preventDefault(); navigateTo(suggestion.name); }}
                   onMouseEnter={() => setActiveIndex(index)}
                 >
-                  <span className="sform-suggestion-icon"><Search size={15} /></span>
+                  <span className="sform-suggestion-icon" aria-hidden="true"><Search size={15} /></span>
                   <span className="sform-suggestion-copy"><strong>{suggestion.name}</strong><small>{suggestion.category ?? "Marketplace listing"}{suggestion.location ? <><span aria-hidden="true"> · </span><MapPin size={11} /> {suggestion.location}</> : null}</small></span>
                   {suggestion.price != null && <span className="sform-suggestion-price">KSh {suggestion.price.toLocaleString("en-KE")}</span>}
                 </button>
               ))}
-              <p className="sform-suggestions-hint">Use ↑ ↓ to navigate · Enter to search</p>
+              <div className="sform-suggestions-hint" role="presentation">Use ↑ ↓ to navigate · Enter to search</div>
             </>
           ) : (
             <>
               {recentSearches.length > 0 && (
-                <section className="sform-menu-section" aria-labelledby={`${inputId}-recent-label`}>
-                  <div className="sform-menu-heading"><p id={`${inputId}-recent-label`} className="sform-suggestions-label"><Clock3 size={13} /> Recent searches</p><button type="button" className="sform-menu-clear" onMouseDown={(event) => event.preventDefault()} onClick={clearRecent}>Clear</button></div>
-                  {recentSearches.map((term) => <button type="button" role="option" key={term} className="sform-search-chip" onMouseDown={(event) => { event.preventDefault(); navigateTo(term); }}><Clock3 size={14} /> <span>{term}</span></button>)}
-                </section>
-              )}
-              <section className="sform-menu-section" aria-labelledby={`${inputId}-trending-label`}>
-                <p id={`${inputId}-trending-label`} className="sform-suggestions-label"><TrendingUp size={13} /> Popular on BROKA</p>
-                <div className="sform-trending-grid">
-                  {trendingSearches.map((term) => <button type="button" role="option" key={term} className="sform-search-chip" onMouseDown={(event) => { event.preventDefault(); navigateTo(term); }}><Search size={14} /> <span>{term}</span></button>)}
+                <div className="sform-menu-section" role="group" aria-label="Recent searches">
+                  {recentSearches.map((term, index) => <button type="button" role="option" aria-selected={index === activeIndex} id={`${inputId}-suggestion-${index}`} key={term} className="sform-search-chip" onMouseDown={(event) => { event.preventDefault(); navigateTo(term); }} onMouseEnter={() => setActiveIndex(index)}><Clock3 size={14} aria-hidden="true" /> <span>{term}</span></button>)}
                 </div>
-              </section>
-              {recentSearches.length === 0 && <p className="sform-suggestions-hint">Your recent searches will appear here on this device.</p>}
+              )}
+              <div className="sform-menu-section" role="group" aria-label="Popular on BROKA">
+                <div className="sform-suggestions-label" role="presentation"><TrendingUp size={13} aria-hidden="true" /> Popular on BROKA</div>
+                <div className="sform-trending-grid">
+                  {trendingSearches.map((term, index) => {
+                    const optionIndex = recentSearches.length + index;
+                    return <button type="button" role="option" aria-selected={optionIndex === activeIndex} id={`${inputId}-suggestion-${optionIndex}`} key={term} className="sform-search-chip" onMouseDown={(event) => { event.preventDefault(); navigateTo(term); }} onMouseEnter={() => setActiveIndex(optionIndex)}><Search size={14} aria-hidden="true" /> <span>{term}</span></button>;
+                  })}
+                </div>
+              </div>
+              {recentSearches.length === 0 && <div className="sform-suggestions-hint" role="presentation">Your recent searches will appear here on this device.</div>}
             </>
-          )}
+          ))}
         </div>
-      )}
+      </div>
     </div>
   );
 
