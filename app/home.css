@@ -1,0 +1,399 @@
+/* ================================================================
+   HOME HERO — built to the BROKA mockup (components/home/*).
+   ================================================================ */
+
+.hh {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(74px + 36px) 0 44px;
+  overflow: hidden;
+}
+.hh > .wrap { position: relative; z-index: 1; }
+.hh-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  gap: 24px;
+  align-items: center;
+}
+
+/* Entrance: each block rises in, a beat after the one before. */
+.hh-in { animation: hh-in 0.9s cubic-bezier(0.16, 1, 0.3, 1) both; animation-delay: var(--d, 0s); }
+@keyframes hh-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+
+/* ─── Copy ─── */
+.hh-pill {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 18px 9px 13px;
+  margin-bottom: 26px;
+  border-radius: 999px;
+  border: 1px solid rgba(110, 200, 255, 0.35);
+  background: rgba(6, 12, 38, 0.72);
+  font-size: 14.5px;
+  color: var(--c-text-1);
+  box-shadow: 0 0 26px -6px rgba(34, 201, 240, 0.45), inset 0 0 14px rgba(34, 201, 240, 0.08);
+}
+/* The mockup's cyan light along the pill's lower edge. */
+.hh-pill::after {
+  content: "";
+  position: absolute;
+  left: 18%; right: 18%; bottom: -1px;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, transparent, #5FE3FF, transparent);
+  box-shadow: 0 0 12px #22D3EE;
+}
+.hh-flag { border-radius: 3px; flex-shrink: 0; }
+.hh-pill-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #8FEBFF;
+  box-shadow: 0 0 10px #22D3EE;
+  animation: hh-dot 2.2s ease-in-out infinite;
+}
+@keyframes hh-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.55; transform: scale(0.8); } }
+
+.hh-title {
+  display: grid;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(48px, 6.4vw, 96px);
+  line-height: 1.02;
+  letter-spacing: -0.035em;
+  margin-bottom: 22px;
+}
+.hh-title-a {
+  background: linear-gradient(100deg, #CFC6FF 0%, #FFFFFF 38%, #F2EEFF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  padding-bottom: 0.04em;
+}
+.hh-title-b {
+  background: linear-gradient(95deg, #B45CFF 0%, #8A5CFF 40%, #5C7CFF 75%, #4C9BFF 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 28px rgba(124, 92, 255, 0.5));
+  padding-bottom: 0.08em;
+}
+.hh-sub {
+  font-size: clamp(17px, 1.45vw, 20px);
+  line-height: 1.62;
+  color: #DCD6F5;
+  max-width: 540px;
+  margin-bottom: 30px;
+}
+
+.sform-hero {
+  max-width: 580px;
+  padding: 7px 7px 7px 22px;
+  border-radius: 999px;
+  border: 1px solid rgba(124, 92, 255, 0.5);
+  background: rgba(5, 8, 28, 0.78);
+  box-shadow: 0 16px 44px -16px rgba(124, 92, 255, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+.sform-hero .sform-input { font-family: var(--f-body); font-size: 16.5px; padding: 12px 8px; }
+.sform-hero .sform-icon { color: #BDB2F0; }
+.sform-btn-icon {
+  width: 48px; height: 48px;
+  padding: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--grad-brand);
+  box-shadow: 0 6px 20px -6px rgba(124, 92, 255, 0.9);
+}
+.sform-btn-icon:hover { filter: brightness(1.12); }
+
+.hh-orbs {
+  display: flex;
+  gap: 12px;
+  margin-top: 30px;
+  padding: 6px 2px 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+.hh-orbs::-webkit-scrollbar { display: none; }
+.hh-orb { flex: 0 0 auto; width: 80px; display: grid; justify-items: center; gap: 10px; text-align: center; scroll-snap-align: start; }
+.hh-orb-ring {
+  --a: #8B5CF6;
+  --b: #22D3EE;
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 30px;
+  line-height: 1;
+  border: 2.5px solid transparent;
+  background:
+    radial-gradient(circle at 50% 30%, #17204E, #060A22 70%) padding-box,
+    linear-gradient(140deg, var(--a), var(--b)) border-box;
+  box-shadow: 0 0 22px -4px var(--a), 0 0 30px -10px var(--b);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.hh-orb:hover .hh-orb-ring { transform: translateY(-4px) scale(1.06); box-shadow: 0 0 30px -2px var(--a), 0 0 40px -8px var(--b); }
+.hh-orb-more { background: rgba(10, 14, 40, 0.9); border-color: var(--c-rule-2); box-shadow: none; color: var(--c-text-1); font-size: 30px; }
+.hh-orb-label { font-size: 14px; font-weight: 500; color: #E6E1FB; white-space: nowrap; }
+
+/* ─── Visual: Zeno and the orbit ─── */
+.hh-visual { position: relative; }
+.zo { position: relative; width: 100%; max-width: 680px; margin-left: auto; aspect-ratio: 1000 / 940; container-type: inline-size; }
+.tilt { perspective: 1200px; }
+.tilt-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  animation: zo-sway 16s ease-in-out infinite alternate;
+}
+/* The pointer takes over from the idle sway. */
+.tilt.tracking .tilt-inner { animation: none; }
+@keyframes zo-sway {
+  from { transform: rotateX(4deg) rotateY(-8deg); }
+  to   { transform: rotateX(-3deg) rotateY(8deg); }
+}
+.zo-layer { position: absolute; inset: 0; }
+.zo-layer-bubble { transform: translateZ(80px); pointer-events: none; }
+.zo-layer-tiles { transform: translateZ(55px); pointer-events: none; }
+.zo-svg { width: 100%; height: 100%; overflow: visible; }
+
+/* Glow layers around Zeno. HTML, not SVG, and animated only through opacity
+   and transform, so the GPU runs them without redrawing the scene. Positions
+   are the ring's centre in the SVG (500, 474 of 1000 x 940). */
+.zo-aura, .zo-ring-glow, .zo-ring-spin {
+  position: absolute;
+  left: 50%;
+  top: 50.4%;
+  border-radius: 50%;
+  pointer-events: none;
+  translate: -50% -50%;
+}
+.zo-aura {
+  width: 88%;
+  aspect-ratio: 1;
+  background: radial-gradient(circle, rgba(109, 77, 255, 0.5) 0%, rgba(75, 54, 200, 0.16) 45%, rgba(42, 31, 128, 0) 70%);
+  animation: zo-breathe 6s ease-in-out infinite;
+}
+.zo-ring-glow {
+  width: 47.2%;
+  aspect-ratio: 1;
+  box-shadow: 0 0 34px 6px rgba(124, 92, 255, 0.55), inset 0 0 34px 4px rgba(90, 120, 255, 0.35);
+  animation: zo-glow 3.6s ease-in-out infinite;
+}
+.zo-ring-spin {
+  width: 51.6%;
+  aspect-ratio: 1;
+  border: 1.5px dashed rgba(157, 139, 255, 0.55);
+  animation: zo-spin 48s linear infinite;
+}
+@keyframes zo-breathe { 0%, 100% { transform: scale(0.94); opacity: 0.8; } 50% { transform: scale(1.04); opacity: 1; } }
+@keyframes zo-glow { 0%, 100% { opacity: 0.45; } 50% { opacity: 1; } }
+@keyframes zo-spin { to { transform: rotate(360deg); } }
+
+/* Speech bubble, beside Zeno's head. */
+.zo-bubble {
+  position: absolute;
+  left: 63%;
+  top: 25%;
+  display: grid;
+  gap: 0.35em;
+  padding: 0.85em 1.1em;
+  border-radius: 1em;
+  background: rgba(7, 10, 32, 0.9);
+  border: 1px solid rgba(170, 150, 255, 0.45);
+  box-shadow: 0 16px 40px -12px rgba(20, 10, 90, 0.9), 0 0 24px -8px rgba(124, 92, 255, 0.7);
+  font-size: clamp(11px, 2.35cqw, 16px);
+  line-height: 1.35;
+  color: #fff;
+  white-space: nowrap;
+  animation: zo-bubble 6s ease-in-out infinite;
+}
+.zo-bubble::before {
+  content: "";
+  position: absolute;
+  left: -7px;
+  bottom: 22%;
+  width: 12px; height: 12px;
+  background: rgba(7, 10, 32, 0.95);
+  border-left: 1px solid rgba(170, 150, 255, 0.45);
+  border-bottom: 1px solid rgba(170, 150, 255, 0.45);
+  transform: rotate(45deg);
+}
+.zo-bubble-who { display: inline-flex; align-items: center; gap: 6px; color: #B8A6FF; font-size: 0.92em; }
+@keyframes zo-bubble { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+/* Category tiles: glass cards floating on the orbit. */
+.zo-tile { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); pointer-events: auto; }
+.zo-tile-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.9cqw;
+  width: 17cqw;
+  padding: 2.2cqw 1cqw 1.8cqw;
+  border-radius: 3.2cqw;
+  background: linear-gradient(155deg, rgba(150, 125, 255, 0.28) 0%, rgba(18, 22, 64, 0.85) 45%, rgba(6, 8, 28, 0.93) 100%);
+  border: 1px solid rgba(190, 170, 255, 0.42);
+  box-shadow:
+    0 18px 40px -14px rgba(20, 8, 100, 0.95),
+    0 0 26px -8px rgba(124, 92, 255, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  transform: rotate(var(--tilt, 0deg));
+  animation: zo-bob 7s ease-in-out infinite;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.zo-tile:hover .zo-tile-card,
+.zo-tile:focus-visible .zo-tile-card {
+  border-color: #7FE4FA;
+  box-shadow: 0 18px 40px -14px rgba(20, 8, 100, 0.95), 0 0 30px -4px rgba(34, 211, 238, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  animation-play-state: paused;
+}
+.zo-tile-emoji { font-size: 7.4cqw; line-height: 1; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5)); }
+.zo-tile-label { font-size: clamp(10px, 2.3cqw, 15px); font-weight: 600; color: #fff; white-space: nowrap; }
+@keyframes zo-bob {
+  0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+  50% { transform: translateY(-1.8cqw) rotate(calc(var(--tilt, 0deg) * -0.5)); }
+}
+
+/* ─── Kenya ─── */
+.hh-kenya {
+  position: absolute;
+  right: -4%;
+  bottom: 12%;
+  width: min(25vw, 380px);
+  opacity: 0.85;
+  aspect-ratio: 386 / 465;
+  z-index: 0;
+  pointer-events: none;
+}
+.kmap-layer { position: absolute; inset: 0; width: 100%; height: 100%; }
+.kmap-dots circle { fill: #6A90FF; }
+/* Two dot layers fading in turn: whole-layer opacity, which the GPU animates
+   without redrawing hundreds of dots every frame. */
+.kmap-dots { opacity: 0.5; animation: kmap-twinkle 5.2s ease-in-out infinite; }
+.kmap-dots-b { animation-delay: -2.6s; }
+.kmap-links line { stroke: rgba(127, 228, 250, 0.5); stroke-width: 1.3; stroke-dasharray: 4 6; }
+.kmap-ripple {
+  position: absolute;
+  width: 5.2%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid #8FEBFF;
+  translate: -50% -50%;
+  animation: kmap-ripple 3.6s ease-out infinite;
+}
+.kmap-ripple-2 { animation-delay: 1.2s; }
+.kmap-ripple-3 { animation-delay: 2.4s; }
+@keyframes kmap-twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.95; } }
+@keyframes kmap-ripple { 0% { transform: scale(0.7); opacity: 0.95; } 100% { transform: scale(6.5); opacity: 0; } }
+
+/* ─── Stats bar ─── */
+.hh-stats {
+  display: grid;
+  /* One equal column per stat, however many the API could give. */
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  margin: 34px auto 0;
+  max-width: 1100px;
+  border: 1px solid rgba(124, 92, 255, 0.4);
+  border-radius: 22px;
+  background: rgba(5, 8, 28, 0.74);
+  box-shadow: 0 24px 60px -24px rgba(80, 50, 220, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+.hh-stat { position: relative; display: flex; align-items: center; justify-content: center; gap: 16px; padding: 22px 20px; }
+.hh-stat + .hh-stat::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 22%; bottom: 22%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(168, 149, 255, 0.4), transparent);
+}
+.hh-stat-icon {
+  --tone: #8B6BFF;
+  width: 54px; height: 54px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--tone);
+  background: radial-gradient(circle, color-mix(in srgb, var(--tone) 22%, transparent), rgba(5, 8, 28, 0.6) 70%);
+  border: 1.5px solid color-mix(in srgb, var(--tone) 55%, transparent);
+  box-shadow: 0 0 22px -4px color-mix(in srgb, var(--tone) 70%, transparent);
+}
+.hh-stat-violet .hh-stat-icon { --tone: #A58BFF; }
+.hh-stat-amber .hh-stat-icon { --tone: #FBBF24; }
+.hh-stat-cyan .hh-stat-icon { --tone: #4FD8F5; }
+.hh-stat-green .hh-stat-icon { --tone: #34D399; }
+.hh-stat-value { display: block; font-family: var(--f-display); font-size: 27px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; color: #fff; }
+.hh-stat-label { display: block; font-size: 14.5px; color: var(--c-text-2); margin-top: 3px; }
+
+/* ─── Tablet: stack, visual under the copy ─── */
+@media (max-width: 1100px) {
+  .hh { min-height: 0; }
+  .hh-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .hh-visual { width: 100%; max-width: 620px; margin: 0 auto; }
+  .zo { margin: 0 auto; }
+  .hh-kenya { width: min(44vw, 360px); bottom: auto; top: 46%; right: -8%; opacity: 0.55; }
+}
+
+/* ─── Phones ─── */
+@media (max-width: 700px) {
+  .hh { padding: calc(74px + 34px) 0 28px; }
+  .hh-copy { width: 100%; }
+  .hh-pill { font-size: 12px; margin-bottom: 16px; padding: 7px 13px 7px 10px; gap: 8px; }
+  .hh-pill-dot { width: 6px; height: 6px; }
+  .hh-title { font-size: clamp(40px, 12.5vw, 56px); line-height: 1.04; margin-bottom: 14px; }
+  .hh-sub { max-width: 34ch; font-size: 15px; line-height: 1.52; margin-bottom: 18px; }
+  .sform-hero { padding-left: 16px; }
+  .sform-hero .sform-input { font-size: 14px; padding-top: 11px; padding-bottom: 11px; }
+  .sform-btn-icon { width: 44px; height: 44px; }
+  .hh-orbs { gap: 8px; margin-top: 18px; margin-right: calc(var(--gutter) * -1); padding-right: var(--gutter); }
+  .hh-orb { width: 66px; }
+  .hh-orb-ring { width: 54px; height: 54px; font-size: 23px; }
+  .hh-orb-label { font-size: 11px; }
+  /* On phones the orbit becomes a quiet Zeno accent, not a second navigation system. */
+  .hh-visual { margin-top: 8px; }
+  .hh-visual .zo { max-width: 350px; }
+  .zo-layer-tiles, .zo-bubble { display: none; }
+  @keyframes zo-sway {
+    from { transform: rotateX(3deg) rotateY(-5deg); }
+    to   { transform: rotateX(-2deg) rotateY(5deg); }
+  }
+  .hh-kenya { display: none; }
+  .hh-stats { grid-auto-flow: row; grid-template-columns: 1fr 1fr; border-radius: 18px; margin-top: 18px; }
+  .hh-stat { justify-content: flex-start; gap: 10px; padding: 15px 12px; }
+  .hh-stat + .hh-stat::before { display: none; }
+  .hh-stat:nth-child(even) { border-left: 1px solid var(--c-rule); }
+  .hh-stat:nth-child(n + 3) { border-top: 1px solid var(--c-rule); }
+  .hh-stat-icon { width: 40px; height: 40px; }
+  .hh-stat-icon svg { width: 19px; height: 19px; }
+  .hh-stat-value { font-size: 21px; }
+  .hh-stat-label { font-size: 12.5px; }
+}
+
+@media (max-width: 420px) {
+  .hh { padding-top: calc(74px + 26px); }
+  .hh-title { font-size: clamp(38px, 11.8vw, 50px); }
+  .hh-sub { font-size: 14px; }
+  .hh-orb { width: 62px; }
+  .hh-orb-ring { width: 50px; height: 50px; font-size: 21px; }
+  .hh-orb-label { font-size: 10.5px; }
+  .hh-visual .zo { max-width: 320px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hh-in, .tilt-inner, .zo-aura, .zo-ring-glow, .zo-ring-spin, .zo-bubble, .zo-tile-card,
+  .kmap-dots, .kmap-ripple, .hh-pill-dot {
+    animation: none !important;
+  }
+  .tilt-inner { transform: none; }
+  .kmap-ripple { opacity: 0.35; transform: scale(2.2); }
+}
