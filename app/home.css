@@ -67,6 +67,10 @@
   letter-spacing: -0.035em;
   margin-bottom: 22px;
 }
+.hh-title-welcome {
+  font-size: clamp(42px, 5.1vw, 74px);
+  text-wrap: balance;
+}
 .hh-title-a {
   background: linear-gradient(100deg, #CFC6FF 0%, #FFFFFF 38%, #F2EEFF 100%);
   -webkit-background-clip: text;
@@ -294,6 +298,27 @@
 @keyframes kmap-twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.95; } }
 @keyframes kmap-ripple { 0% { transform: scale(0.7); opacity: 0.95; } 100% { transform: scale(6.5); opacity: 0; } }
 
+/* ─── Founders teaser ───
+   Two small cards, sized by the grid rather than a fixed 180px width, so the
+   pair stays centred at every width. */
+.founder-mini-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
+.founder-mini { width: 200px; text-align: center; }
+.founder-mini-avatar {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--c-bg-3), var(--c-bg-4));
+  border: 1px solid var(--c-rule);
+  display: grid;
+  place-items: center;
+  font-family: var(--f-display);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--c-v-light);
+  margin: 0 auto 14px;
+}
+.founder-mini-name { font-size: 15px; font-weight: 600; }
+.founder-mini-role { font-size: 11px; color: var(--c-text-3); margin-top: 3px; }
+
 /* ─── Stats bar ─── */
 .hh-stats {
   display: grid;
@@ -351,6 +376,7 @@
   .hh-pill { font-size: 12px; margin-bottom: 16px; padding: 7px 13px 7px 10px; gap: 8px; }
   .hh-pill-dot { width: 6px; height: 6px; }
   .hh-title { font-size: clamp(40px, 12.5vw, 56px); line-height: 1.04; margin-bottom: 14px; }
+  .hh-title-welcome { font-size: clamp(36px, 10.4vw, 48px); }
   .hh-sub { max-width: 34ch; font-size: 15px; line-height: 1.52; margin-bottom: 18px; }
   .sform-hero { padding-left: 16px; }
   .sform-hero .sform-input { font-size: 14px; padding-top: 11px; padding-bottom: 11px; }

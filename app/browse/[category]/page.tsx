@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { BrowseView, parseBrowseCategory, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
+import { BrowseView, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
 import { listListings } from "@/lib/api/listings";
+import { categoryFromSlug } from "@/lib/categories";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
 
@@ -9,7 +10,7 @@ type Props = { params: Promise<{ category: string }>; searchParams: SearchParams
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: raw } = await params;
-  const category = parseBrowseCategory(raw.replace(/-/g, " "));
+  const category = categoryFromSlug(raw);
   return category
     ? { title: `${category} marketplace`, description: `Browse ${category.toLowerCase()} listings on BROKA.` }
     : { title: "Category not found" };
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function CategoryBrowsePage({ params, searchParams }: Props) {
   const { category: raw } = await params;
-  const category = parseBrowseCategory(raw.replace(/-/g, " "));
+  const category = categoryFromSlug(raw);
   if (!category) notFound();
   const sp = await searchParams;
   const q = firstParam(sp.q);

@@ -1,13 +1,25 @@
 "use client";
-
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { navLinks } from "@/data/navigation";
+import { navLinks, navUtility } from "@/data/navigation";
 import { Menu, X, ChevronDown, Search } from "lucide-react";
 
+/**
+ * The site header.
+ *
+ * Structure rules it follows, so the bar stays readable as pages are added:
+ *  - Four primary entries. A page is never reachable from two labels, and no
+ *    two labels point at the same page (the old "Browse" + "Explore > All
+ *    products" pair did both).
+ *  - One primary call to action: the app. "Sell" stays a nav entry, so the
+ *    seller route is still one click away.
+ *  - Exactly one nav entry is marked current, and it is the most specific
+ *    match — /browse used to light up two entries at once.
+ *  - Menus open on hover as well as click, and every item says what it is.
+ */
 export function Header() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -61,10 +73,11 @@ export function Header() {
   }, [menuOpen]);
 
   const isActive = (href: string) =>
-    href === "/" ? pathname === "/" : pathname.startsWith(href);
-  // A group is active when the page is any of its children (or its own link).
+    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
+  // A group is current when the page is one of its children. Its own link is
+  // one of those children, so a group never double-marks with a sibling entry.
   const isGroupActive = (item: { href: string; children?: { href: string }[] }) =>
-    isActive(item.href) || Boolean(item.children?.some((c) => isActive(c.href)));
+    item.children?.length ? Boolean(item.children.some((c) => isActive(c.href))) : isActive(item.href);
 
   return (
     <>
@@ -78,31 +91,38 @@ export function Header() {
               <span className="hdr-word-tag">Intelligent Commerce</span>
             </span>
           </Link>
-
           {/* Desktop nav */}
           <nav className="hdr-nav" aria-label="Primary navigation" ref={navRef}>
             {navLinks.map((item) =>
               item.children ? (
-                <div className="hdr-dropdown" key={item.label}>
-                  <button
+                <div
+                  className="hdr-dropdown"
+                  key={item.label}
+                  onMouseEnter={() => setOpenGroup(item.label)}
+                  onMouseLeave={() => setOpenGroup((g) => (g === item.label ? null : g))}
+                >
+                  <Link
+                    href={item.href}
                     className={`hdr-dropdown-btn${isGroupActive(item) ? " active" : ""}`}
                     aria-expanded={openGroup === item.label}
                     aria-haspopup="true"
-                    onClick={() => setOpenGroup((g) => (g === item.label ? null : item.label))}
+                    aria-current={isGroupActive(item) ? "page" : undefined}
+                    onClick={() => setOpenGroup(null)}
                   >
                     {item.label}
-                    <motion.span
-                      animate={{ rotate: openGroup === item.label ? 180 : 0 }}
-                      transition={{ duration: 0.2, ease: "easeOut" }}
-                      style={{ display: "inline-flex" }}
-                    >
-                      <ChevronDown className="hdr-dropdown-chevron" size={14} />
-                    </motion.span>
-                  </button>
+                    <ChevronDown className="hdr-dropdown-chevron" size={14} aria-hidden="true" />
+                  </Link>
                   <div className={`hdr-dropdown-menu${openGroup === item.label ? " open" : ""}`} role="menu">
                     {item.children.map((child) => (
-                      <Link key={child.href} href={child.href} role="menuitem">
-                        {child.label}
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        role="menuitem"
+                        className={isActive(child.href) ? "active" : ""}
+                        aria-current={isActive(child.href) ? "page" : undefined}
+                      >
+                        <span className="hdr-menu-label">{child.label}</span>
+                        {child.description && <span className="hdr-menu-desc">{child.description}</span>}
                       </Link>
                     ))}
                   </div>
@@ -119,15 +139,14 @@ export function Header() {
               )
             )}
           </nav>
-
           {/* Actions */}
           <div className="hdr-actions">
             <Link href="/browse" className="hdr-search" aria-label="Search BROKA">
               <Search size={17} aria-hidden="true" />
               <span className="hdr-search-text">Search</span>
             </Link>
-            <Link href="/sell" className="hdr-cta">
-              Start selling
+            <Link href="/download" className="hdr-cta">
+              Get the app
             </Link>
             <button
               className="hdr-burger"
@@ -152,8 +171,7 @@ export function Header() {
           </div>
         </div>
       </header>
-
-      {/* Mobile nav */}
+      {/* Mobile nav: the same groups as the desktop menu, labelled. */}
       <nav
         id="mobile-nav"
         className={`mobile-nav${menuOpen ? " open" : ""}`}
@@ -161,8 +179,25 @@ export function Header() {
         aria-hidden={!menuOpen}
       >
         {navLinks.map((item) =>
-          item.children ? (
-            <div key={item.label}>
+          item.children?.length ? (
+            /* A group shows its heading and its pages. The heading is not
+               itself a link — every page under it is listed, so a separate
+               "all of it" row would just repeat the first one. */
+            <div className="mobile-nav-group" key={item.label}>
+              <p className="mobile-nav-title">{item.label}</p>
+              {item.children.map((child) => (
+                <Link
+                  key={child.href}
+                  href={child.href}
+                  className={`mobile-nav-child${isActive(child.href) ? " active" : ""}`}
+                  onClick={closeMenu}
+                >
+                  {child.label}
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="mobile-nav-group mobile-nav-single" key={item.label}>
               <Link
                 href={item.href}
                 className={isActive(item.href) ? "active" : ""}
@@ -170,32 +205,19 @@ export function Header() {
               >
                 {item.label}
               </Link>
-              {item.children.map((child) => (
-                <Link
-                  key={child.href}
-                  href={child.href}
-                  className={isActive(child.href) ? "active" : ""}
-                  onClick={closeMenu}
-                  style={{ paddingLeft: 44, fontSize: 14, opacity: 0.8 }}
-                >
-                  {child.label}
-                </Link>
-              ))}
             </div>
-          ) : (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={isActive(item.href) ? "active" : ""}
-              onClick={closeMenu}
-            >
-              {item.label}
-            </Link>
           )
         )}
+        <div className="mobile-nav-group mobile-nav-utility">
+          {navUtility.map((link) => (
+            <Link key={link.href} href={link.href} onClick={closeMenu}>
+              {link.label}
+            </Link>
+          ))}
+        </div>
         <div className="mobile-nav-cta">
-            <Link href="/sell" className="btn btn-primary" onClick={closeMenu}>
-              Start selling on BROKA
+          <Link href="/download" className="btn btn-primary" onClick={closeMenu}>
+            Get the BROKA app
           </Link>
         </div>
       </nav>

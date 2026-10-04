@@ -8,13 +8,17 @@ export function EmptyState({
   children,
   actionHref,
   actionLabel,
+  actions,
 }: {
   emoji?: string;
   title: string;
   children?: ReactNode;
   actionHref?: string;
   actionLabel?: string;
+  /** Ways out of a dead end. An empty list page should still be navigable. */
+  actions?: { label: string; href: string; primary?: boolean }[];
 }) {
+  const links = actions ?? (actionHref && actionLabel ? [{ label: actionLabel, href: actionHref }] : []);
   return (
     <div className="state" role="status">
       <span className="state-emoji" aria-hidden="true">
@@ -22,10 +26,18 @@ export function EmptyState({
       </span>
       <h2 className="state-title">{title}</h2>
       {children && <p className="state-body">{children}</p>}
-      {actionHref && actionLabel && (
-        <Link href={actionHref} className="btn btn-ghost btn-sm">
-          {actionLabel}
-        </Link>
+      {links.length > 0 && (
+        <div className="state-actions">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={`btn btn-sm ${link.primary ? "btn-primary" : "btn-ghost"}`}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );

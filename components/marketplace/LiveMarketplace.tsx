@@ -13,13 +13,15 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
   return (
     <section className="sec atm-violet" id="live" aria-labelledby="live-h">
       <div className="wrap">
+        {/* This block is the catalogue window, so it says what is on the
+            platform rather than restating the pitch the hero already made. */}
         <Reveal className="sec-header">
-          <span className="t-eyebrow">The marketplace</span>
+          <span className="t-eyebrow">On BROKA today</span>
           <h2 className="t-h2" id="live-h">
-            Find what matters. Buy with confidence.
+            What&apos;s live right now.
           </h2>
           <p className="t-body-lg" style={{ maxWidth: 620, marginTop: 16 }}>
-            Explore real listings from sellers across Kenya, compare your options, and use Zeno when you want a smarter way to negotiate.
+            Real listings from sellers across Kenya, updated as they are posted. Compare your options here, then negotiate or buy in the BROKA app.
           </p>
         </Reveal>
 
@@ -45,8 +47,10 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
                   <h3 className="t-h4">Featured listings</h3>
                   <Link href="/browse" className="preview-link live-more">Browse all products →</Link>
                 </div>
-                <div className="lgrid lgrid-3">
-                  {data.featuredListings.slice(0, 6).map((listing) => (
+                {/* Four cards fill one row of the desktop grid. Three left an
+                    orphan card and a hole beside it. */}
+                <div className="lgrid">
+                  {data.featuredListings.slice(0, 4).map((listing) => (
                     <ProductCard key={listing.id} listing={listing} />
                   ))}
                 </div>

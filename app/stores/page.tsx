@@ -44,16 +44,18 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
 
       <section className="sec-sm listing-sec" aria-label="Stores">
         <div className="wrap">
-          <div className="toolbar toolbar-single">
-            <SearchForm
-              action="/stores"
-              value={q}
-              placeholder="Search stores by name…"
-              hidden={{ category: category ?? undefined }}
-              label="Search stores"
-            />
+          <div className="filter-panel">
+            <div className="toolbar toolbar-single">
+              <SearchForm
+                action="/stores"
+                value={q}
+                placeholder="Search stores by name…"
+                hidden={{ category: category ?? undefined }}
+                label="Search stores"
+              />
+            </div>
+            <CategoryChips basePath="/stores" active={category} keep={{ q }} />
           </div>
-          <CategoryChips basePath="/stores" active={category} keep={{ q }} />
 
           {failed ? (
             <ApiNotice retryHref={here} />
@@ -61,10 +63,19 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
             <EmptyState
               emoji="🏬"
               title={filtered ? "No stores match" : "No stores yet"}
-              actionHref={filtered ? "/stores" : undefined}
-              actionLabel={filtered ? "Clear search" : undefined}
+              actions={
+                filtered
+                  ? [{ label: "Clear search", href: "/stores" }]
+                  : [
+                      { label: "Browse all products", href: "/browse" },
+                      { label: "See the Auction House", href: "/auctions" },
+                      { label: "Get the app", href: "/download" },
+                    ]
+              }
             >
-              {filtered ? "Try a different name or category." : "New stores open on BROKA every week. Check back soon."}
+              {filtered
+                ? "Try a different name or category."
+                : "New stores open on BROKA every week. In the meantime the catalogue has every listing on the platform."}
             </EmptyState>
           ) : (
             <>

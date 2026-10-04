@@ -53,21 +53,25 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Sea
 
       <section className="sec-sm listing-sec" aria-label="Auctions">
         <div className="wrap">
-          <div className="toolbar">
-            <FilterTabs tabs={tabs} active={filter} label="Auction status" />
-            <SearchForm
-              action="/auctions"
-              value={q}
-              placeholder="Search auctions — cars, land, phones…"
-              hidden={{ status: filter === "live" ? undefined : filter, category: category ?? undefined }}
-              label="Search auctions"
+          {/* Status, search and category in one block, the same shape as the
+              catalogue page, so the two read as one section of the site. */}
+          <div className="filter-panel">
+            <div className="toolbar">
+              <FilterTabs tabs={tabs} active={filter} label="Auction status" />
+              <SearchForm
+                action="/auctions"
+                value={q}
+                placeholder="Search auctions — cars, land, phones…"
+                hidden={{ status: filter === "live" ? undefined : filter, category: category ?? undefined }}
+                label="Search auctions"
+              />
+            </div>
+            <CategoryChips
+              basePath="/auctions"
+              active={category}
+              keep={{ status: filter === "live" ? undefined : filter, q }}
             />
           </div>
-          <CategoryChips
-            basePath="/auctions"
-            active={category}
-            keep={{ status: filter === "live" ? undefined : filter, q }}
-          />
 
           {failed ? (
             <ApiNotice retryHref={here} />
@@ -75,12 +79,19 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Sea
             <EmptyState
               emoji="🔨"
               title={filtered ? "No auctions match" : emptyTitle(filter)}
-              actionHref={filtered ? withQuery("/auctions", { status: filter === "live" ? undefined : filter }) : undefined}
-              actionLabel={filtered ? "Clear search" : undefined}
+              actions={
+                filtered
+                  ? [{ label: "Clear search", href: withQuery("/auctions", { status: filter === "live" ? undefined : filter }) }]
+                  : [
+                      { label: "Browse all products", href: "/browse" },
+                      { label: "See online stores", href: "/stores" },
+                      { label: "Get the app", href: "/download" },
+                    ]
+              }
             >
               {filtered
                 ? "Try a different word or category."
-                : "Nothing is listed under this status right now. Check the other tabs, or come back soon."}
+                : "Nothing is listed under this status right now. Other tabs may have more, and every listing on BROKA is on the catalogue page."}
             </EmptyState>
           ) : (
             <>

@@ -11,23 +11,42 @@ import { getHomeData } from "@/lib/api/home";
 // from fresh data every minute rather than once at deploy time.
 export const revalidate = 60;
 
+/**
+ * The home page, in the order it is meant to be read:
+ *
+ *   1. What BROKA is            — the hero
+ *   2. What is on BROKA today   — live listings
+ *   3. Why it exists            — the problem
+ *   4. What we are building     — the four capabilities
+ *   5. The differentiator       — Zeno
+ *   6. Where it goes            — the vision
+ *   7. How it is built          — the technology
+ *   8. Who is building it       — the founders
+ *   9. What to do next          — the closing call to action
+ *
+ * Every section answers one question and hands off to the next. The page used
+ * to also carry a three-step "Find / Negotiate / Complete" strip that restated
+ * the four capabilities above it in different words, and the four capabilities
+ * restated the eight-step journey on /how-it-works. One framing now, with a
+ * link to the detail.
+ */
 export default async function Home() {
   const market = await getHomeData();
   return (
     <>
-      {/* ─── HERO: pitch, search, Zeno's orbit, live numbers ─ */}
+      {/* ─── 1. HERO: pitch, search, Zeno's orbit, live numbers ─ */}
       <HomeHero data={market} />
 
-      {/* ─── LIVE AUCTIONS + NEW STORES (from the BROKA API) ─ */}
+      {/* ─── 2. LIVE LISTINGS + NEW STORES (from the BROKA API) ─ */}
       <LiveMarketplace data={market} />
 
-      {/* ─── THE COMMERCE PROBLEM ─────────────────────────── */}
-      <section className="sec atm-violet-center has-field" aria-labelledby="prob-h">
+      {/* ─── 3. THE PROBLEM ───────────────────────────────────── */}
+      <section className="sec bg-2" aria-labelledby="prob-h">
         <div className="wrap">
           <Reveal className="home-problem">
-            <span className="t-eyebrow">The problem</span>
+            <span className="t-eyebrow">Why BROKA exists</span>
             <p className="home-problem-statement" id="prob-h">
-              Information doesn&apos;t flow{" "}<br className="br-lg" />where it&apos;s <em>needed.</em>
+              Information doesn&apos;t flow where it&apos;s <em>needed.</em>
             </p>
             <p className="home-problem-body">
               In informal markets across East Africa, buyers and sellers rarely
@@ -43,13 +62,13 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── WHAT BROKA IS ─────────────────────────────────── */}
+      {/* ─── 4. WHAT BROKA IS ─────────────────────────────────── */}
       <section className="sec bg-1" id="about" aria-labelledby="about-h">
         <div className="wrap">
           <Reveal className="sec-header">
             <span className="t-eyebrow">What we&apos;re building</span>
             <h2 className="t-h2" id="about-h">
-              Not another marketplace.{" "}<br className="br-lg" />The intelligence inside one.
+              Not another marketplace. The intelligence inside one.
             </h2>
             <p className="t-body-lg" style={{ maxWidth: 560, marginTop: 16 }}>
               BROKA sits between buyers and sellers — not as an intermediary,
@@ -58,7 +77,6 @@ export default async function Home() {
               together in a single coherent experience.
             </p>
           </Reveal>
-
           <div className="pillars-grid">
             {[
               { num: "01", title: "Discover", body: "Find what you need. Surface who has it. Context-aware, not just keyword-matched." },
@@ -73,23 +91,24 @@ export default async function Home() {
               </Reveal>
             ))}
           </div>
-
-          <div style={{ marginTop: 48, textAlign: "center" }}>
-            <Link href="/what-is-broka" className="preview-link">
-              Full product overview →
+          {/* The eight-step version of this lives on /how-it-works; this is the
+              only place on the home page that points at it. */}
+          <div className="sec-outro">
+            <Link href="/how-it-works" className="preview-link">
+              See the full transaction journey →
             </Link>
           </div>
         </div>
       </section>
 
-      {/* ─── ZENO PREVIEW ──────────────────────────────────── */}
+      {/* ─── 5. ZENO ──────────────────────────────────────────── */}
       <section className="sec atm-violet" aria-labelledby="zeno-prev-h">
         <div className="wrap">
           <div className="grid-2" style={{ gap: 80 }}>
             <Reveal>
               <span className="t-eyebrow">Meet Zeno</span>
               <h2 className="t-h2" id="zeno-prev-h">
-                Intelligence built into{" "}<br className="br-lg" />every transaction.
+                Intelligence built into every transaction.
               </h2>
               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
                 Zeno is not a chatbot attached to a marketplace. Zeno is
@@ -123,44 +142,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── HOW IT CHANGES A TRANSACTION ────────────────── */}
-      <section className="sec bg-2" aria-labelledby="txn-h">
-        <div className="wrap">
-          <Reveal className="sec-header-center">
-            <span className="t-eyebrow">How BROKA works</span>
-            <h2 className="t-h2" id="txn-h">From intent to outcome.</h2>
-            <p className="t-body">
-              A deal that used to take days of phone calls, uncertain pricing and
-              trust built on nothing but a handshake.
-            </p>
-          </Reveal>
-          <div className="grid-3" style={{ gap: 2, border: "1px solid var(--c-rule)", borderRadius: 18, overflow: "hidden" }}>
-            {[
-              { step: "01", title: "Find", body: "Describe what you need in plain language. BROKA surfaces relevant sellers and opportunities." },
-              { step: "02", title: "Negotiate", body: "Zeno assists with context, pricing information, and negotiation — for both sides." },
-              { step: "03", title: "Complete", body: "Move toward agreement, payment and delivery with trust built into the platform." },
-            ].map((s, i) => (
-              <Reveal key={s.step} delay={i * 0.1} style={{ padding: "44px 36px", background: "var(--c-surface)" }}>
-                <div style={{ fontSize: 44, fontWeight: 800, fontFamily: "var(--f-display)", color: "var(--c-v-dim)", letterSpacing: "-0.05em", lineHeight: 1, marginBottom: 20 }}>{s.step}</div>
-                <h3 className="t-h4" style={{ marginBottom: 10 }}>{s.title}</h3>
-                <p className="t-body" style={{ fontSize: 14 }}>{s.body}</p>
-              </Reveal>
-            ))}
-          </div>
-          <div style={{ textAlign: "center", marginTop: 40 }}>
-            <Link href="/how-it-works" className="preview-link">See the full transaction journey →</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ─── KENYA → AFRICA → GLOBAL ─────────────────────── */}
+      {/* ─── 6. KENYA → AFRICA → GLOBAL ───────────────────────── */}
       <section className="sec atm-amber" aria-labelledby="vision-prev-h">
         <div className="wrap">
           <div className="grid-2" style={{ gap: 80, alignItems: "center" }}>
             <Reveal>
               <span className="t-eyebrow t-eyebrow-amber">The vision</span>
               <h2 className="t-h2" id="vision-prev-h">
-                Kenya. East Africa.{" "}<br className="br-lg" />The world.
+                Kenya. East Africa. The world.
               </h2>
               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
                 We are starting in Kenya because that is where we understand
@@ -191,14 +180,14 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── TECHNOLOGY PREVIEW ───────────────────────────── */}
+      {/* ─── 7. TECHNOLOGY ────────────────────────────────────── */}
       <section className="sec bg-1" aria-labelledby="tech-prev-h">
         <div className="wrap">
           <div className="grid-2" style={{ alignItems: "center" }}>
             <Reveal>
               <span className="t-eyebrow">Under the hood</span>
               <h2 className="t-h2" id="tech-prev-h">
-                Engineered for{" "}<br className="br-lg" />real commerce.
+                Engineered for real commerce.
               </h2>
               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
                 BROKA is being built on a technical foundation designed to
@@ -225,7 +214,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* ─── FOUNDERS PREVIEW ─────────────────────────────── */}
+      {/* ─── 8. FOUNDERS ──────────────────────────────────────── */}
       <section className="sec bg-0" aria-labelledby="fnd-prev-h">
         <Reveal className="wrap" style={{ textAlign: "center" }}>
           <span className="t-eyebrow">The founders</span>
@@ -236,14 +225,14 @@ export default async function Home() {
             Xavier and Arnold Ochieng founded BROKA after observing the
             friction and cost in informal commerce first-hand.
           </p>
-          <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 40 }}>
+          <div className="founder-mini-grid">
             {["Xavier", "Arnold Ochieng"].map((name, i) => (
-              <div key={name} className="card card-sm" style={{ width: 180, textAlign: "center" }}>
-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,var(--c-bg-3),var(--c-bg-4))", border: "1px solid var(--c-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--f-display)", fontSize: 18, fontWeight: 700, color: "var(--c-v-light)", margin: "0 auto 14px" }}>
+              <div key={name} className="card card-sm founder-mini">
+                <div className="founder-mini-avatar">
                   {i === 0 ? "X" : "AO"}
                 </div>
-                <div style={{ fontSize: 15, fontWeight: 600 }}>{name}</div>
-                <div style={{ fontSize: 11, color: "var(--c-text-3)", marginTop: 3 }}>Co-Founder</div>
+                <div className="founder-mini-name">{name}</div>
+                <div className="founder-mini-role">Co-Founder</div>
               </div>
             ))}
           </div>
@@ -253,7 +242,7 @@ export default async function Home() {
         </Reveal>
       </section>
 
-      {/* ─── FINAL CTA ─────────────────────────────────────── */}
+      {/* ─── 9. FINAL CTA ─────────────────────────────────────── */}
       <section className="sec atm-violet-center has-field" aria-labelledby="cta-h">
         <FlowMesh />
         <div className="wrap">

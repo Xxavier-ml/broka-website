@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { categorySlug, categoryVisual } from "@/lib/categories";
 import { Sparkles } from "lucide-react";
 import { TiltStage } from "./TiltStage";
 
@@ -43,13 +44,20 @@ const COMETS = [
 
 // x, y: where each tile sits on wide screens; mx, my: on phones, where the
 // scene spans the whole screen width and the outer tiles must come inward.
+//
+// Only the position is set here. The name, the wording and the emoji come from
+// the canonical category list (lib/categories.ts), so a tile, the category rail
+// below it and the catalogue page all call the same category the same thing —
+// the tiles used to say "Vehicles" and "Businesses" beside chips that said
+// "Automobiles" and "Business & Industrial", with two different emoji for
+// Electronics and Fashion.
 const TILES = [
-  { name: "Property", label: "Property", emoji: "🏠", x: 15, y: 20, mx: 14, my: 17, delay: 0, tilt: -6 },
-  { name: "Automobiles", label: "Vehicles", emoji: "🚗", x: 56, y: 5, mx: 50, my: 6, delay: -1.4, tilt: 4 },
-  { name: "Electronics", label: "Electronics", emoji: "🎮", x: 90, y: 14, mx: 86, my: 14, delay: -2.9, tilt: 7 },
-  { name: "Fashion", label: "Fashion", emoji: "🛍️", x: 89, y: 65, mx: 87, my: 74, delay: -4.1, tilt: 6 },
-  { name: "Business & Industrial", label: "Businesses", emoji: "🏢", x: 63, y: 91, mx: 52, my: 95, delay: -2.2, tilt: -5 },
-  { name: "Agriculture", label: "Agriculture", emoji: "🌱", x: 17, y: 77, mx: 13, my: 72, delay: -3.5, tilt: -7 },
+  { name: "Property", x: 15, y: 20, mx: 14, my: 17, delay: 0, tilt: -6 },
+  { name: "Automobiles", x: 56, y: 5, mx: 50, my: 6, delay: -1.4, tilt: 4 },
+  { name: "Electronics", x: 90, y: 14, mx: 86, my: 14, delay: -2.9, tilt: 7 },
+  { name: "Fashion", x: 89, y: 65, mx: 87, my: 74, delay: -4.1, tilt: 6 },
+  { name: "Business & Industrial", x: 63, y: 91, mx: 52, my: 95, delay: -2.2, tilt: -5 },
+  { name: "Agriculture", x: 17, y: 77, mx: 13, my: 72, delay: -3.5, tilt: -7 },
 ] as const;
 
 function Comet({ c, back }: { c: (typeof COMETS)[number]; back: boolean }) {
@@ -165,7 +173,9 @@ export function ZenoOrbit() {
         {TILES.map((t) => (
           <Link
             key={t.name}
-            href={`/search?category=${encodeURIComponent(t.name)}`}
+            /* Straight to the category page. This used to go through
+               /search?category=, which redirects here anyway. */
+            href={`/browse/${categorySlug(t.name)}`}
             className="zo-tile"
             style={{
               ["--x" as string]: `${t.x}%`,
@@ -176,9 +186,9 @@ export function ZenoOrbit() {
           >
             <span className="zo-tile-card" style={{ animationDelay: `${t.delay}s`, ["--tilt" as string]: `${t.tilt}deg` }}>
               <span className="zo-tile-emoji" aria-hidden="true">
-                {t.emoji}
+                {categoryVisual(t.name).emoji}
               </span>
-              <span className="zo-tile-label">{t.label}</span>
+              <span className="zo-tile-label">{categoryVisual(t.name).name}</span>
             </span>
           </Link>
         ))}

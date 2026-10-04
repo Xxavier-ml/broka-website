@@ -20,19 +20,19 @@ const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variabl
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.broka.co.ke"),
-  title: { default: "BROKA — The Intelligence Layer for Commerce", template: "%s | BROKA" },
-  description: "BROKA is building an intelligent commerce platform that connects buyers and sellers — with AI-powered discovery, negotiation and trust built in. Built in Kenya.",
+  title: { default: "BROKA — The Future of Intelligent Commerce", template: "%s | BROKA" },
+  description: "Welcome to BROKA — the future of intelligent commerce. Discover, understand and negotiate better deals with AI-powered tools built in Kenya.",
   keywords: ["BROKA","intelligent commerce","AI","marketplace","Kenya","East Africa","Zeno","negotiation"],
   authors: [{ name: "BROKA" }],
   openGraph: {
-    title: "BROKA — The Intelligence Layer for Commerce",
-    description: "Commerce, intelligently connected. BROKA is building AI-native commerce infrastructure for East Africa and beyond.",
+    title: "BROKA — The Future of Intelligent Commerce",
+    description: "Welcome to BROKA — intelligent discovery, fairer negotiation and trusted commerce, built in Kenya.",
     url: "https://www.broka.co.ke/",
     siteName: "BROKA",
     type: "website",
     locale: "en_KE",
   },
-  twitter: { card: "summary_large_image", title: "BROKA — The Intelligence Layer for Commerce", description: "Commerce, intelligently connected. Built in Kenya." },
+  twitter: { card: "summary_large_image", title: "BROKA — The Future of Intelligent Commerce", description: "Welcome to BROKA — intelligent commerce, built in Kenya." },
   // "./" resolves to each page's own address. A fixed home-page URL here was inherited by
   // every page, telling search engines that all of them are duplicates of the home page.
   alternates: { canonical: "./" },

@@ -81,8 +81,13 @@
   --f-body:    var(--font-noto-serif, 'Noto Serif', Georgia, serif);
   --f-ui:      var(--font-inter, 'Inter', sans-serif);
 
-  /* ─── Spacing ─── */
-  --sp-section: 144px;
+  /* ─── Spacing ───
+     One vertical rhythm for the whole site. At 144px every section carried
+     288px of empty space between its last line and the next section's first,
+     which is what made the long pages read as a series of disconnected
+     panels. 104px keeps the same unhurried feel with an obvious relationship
+     between neighbours. */
+  --sp-section: 104px;
 }
 
 /* ================================================================
@@ -121,8 +126,8 @@ ul,ol { list-style: none; }
   margin: 0 auto;
 }
 .sec { padding: var(--sp-section) 0; }
-.sec-sm { padding: 80px 0; }
-.sec-lg { padding: 160px 0; }
+.sec-sm { padding: 64px 0; }
+.sec-lg { padding: 128px 0; }
 
 /* Background variants */
 .bg-0 { background: var(--c-bg-t); }
@@ -470,7 +475,7 @@ ul,ol { list-style: none; }
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
-  min-width: 200px;
+  min-width: 284px;
   background: rgba(6, 9, 28, 0.96);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
@@ -482,7 +487,8 @@ ul,ol { list-style: none; }
 }
 .hdr-dropdown-menu.open { display: block; animation: dropdown-appear 0.18s ease; }
 .hdr-dropdown-menu a {
-  display: block;
+  display: grid;
+  gap: 3px;
   padding: 10px 14px;
   font-size: 14px;
   color: var(--c-text-2);
@@ -490,6 +496,12 @@ ul,ol { list-style: none; }
   transition: background 0.12s, color 0.12s;
 }
 .hdr-dropdown-menu a:hover { background: var(--c-v-dim); color: #fff; }
+/* Each menu item says what it is, so the label alone does not have to carry
+   the meaning ("Technology" next to "The systems underneath"). */
+.hdr-menu-label { font-size: 14px; font-weight: 600; color: var(--c-text-1); }
+.hdr-menu-desc { font-size: 12px; line-height: 1.45; color: var(--c-text-3); }
+.hdr-dropdown-menu a:hover .hdr-menu-desc { color: var(--c-text-2); }
+.hdr-dropdown-menu a.active .hdr-menu-label { color: var(--c-v-light); }
 
 .hdr-actions {
   margin-left: auto;
@@ -558,15 +570,31 @@ ul,ol { list-style: none; }
 }
 .mobile-nav.open { display: flex; animation: mobile-drop 0.22s ease; }
 .mobile-nav a {
-  padding: 13px 28px;
+  padding: 10px 28px;
   font-size: 16px;
   color: var(--c-text-2);
   font-weight: 500;
-  border-bottom: 1px solid var(--c-rule);
   transition: color 0.15s;
 }
-.mobile-nav a:last-child { border-bottom: none; }
 .mobile-nav a:hover, .mobile-nav a.active { color: #fff; }
+/* The mobile menu shows the same groups as the desktop bar, under the same
+   headings, instead of one flat list where every page looks equally important. */
+.mobile-nav-group { padding: 10px 0 12px; border-bottom: 1px solid var(--c-rule); }
+.mobile-nav-group:last-of-type { border-bottom: none; }
+.mobile-nav-title {
+  padding: 0 28px 6px;
+  font-family: var(--f-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--c-text-3);
+}
+.mobile-nav-child { padding-left: 28px; font-size: 15px; color: var(--c-text-2); }
+/* A page with no children of its own reads as a top-level row. */
+.mobile-nav-single a { font-weight: 600; color: var(--c-text-1); }
+.mobile-nav-utility { display: flex; flex-wrap: wrap; gap: 4px 18px; padding-left: 28px; padding-right: 28px; }
+.mobile-nav-utility a { padding: 6px 0; font-size: 14px; color: var(--c-text-2); }
 .mobile-nav-cta { padding: 16px 28px 0; }
 
 /* ================================================================
@@ -598,13 +626,24 @@ ul,ol { list-style: none; }
   color: var(--c-text-3);
   margin-bottom: 8px;
 }
+.ftr-brand-blurb { max-width: 240px; margin-top: 8px; }
+.ftr-social {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--c-rule);
+}
+.ftr-social a { font-size: 12px; color: var(--c-text-3); transition: color 0.15s; }
+.ftr-social a:hover { color: var(--c-text-1); }
 .ftr-col-title {
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--c-text-1);
-  margin-bottom: 20px;
+  margin-bottom: 16px;
   font-family: var(--f-body);
 }
 .ftr-links { display: grid; gap: 12px; }
@@ -627,7 +666,7 @@ ul,ol { list-style: none; }
    PAGE HERO (inner pages)
    ================================================================ */
 .page-hero {
-  padding: calc(68px + 80px) 0 80px;
+  padding: calc(68px + 64px) 0 60px;
   position: relative;
   overflow: hidden;
 }
@@ -827,10 +866,17 @@ ul,ol { list-style: none; }
   transition: gap 0.2s;
 }
 .preview-link:hover { gap: 10px; }
+/* The closing line of a section: one link, centred, same distance from the
+   content above it on every section that has one. */
+.sec-outro { margin-top: 44px; text-align: center; }
 
-/* Section header block */
-.sec-header { margin-bottom: 52px; }
-.sec-header-center { text-align: center; max-width: 680px; margin: 0 auto 52px; }
+/* Section header block — the one shape every section starts with: eyebrow,
+   headline, one line of explanation. Keeping it identical from section to
+   section is what makes a long page scannable rather than episodic. */
+.sec-header { margin-bottom: 44px; }
+.sec-header-center { text-align: center; max-width: 680px; margin: 0 auto 44px; }
+.sec-header .t-eyebrow { display: block; margin-bottom: 14px; }
+.sec-header-center .t-eyebrow { margin-bottom: 14px; }
 .sec-header h2 { margin-bottom: 16px; }
 .sec-header p { color: var(--c-text-2); font-size: 17px; line-height: 1.7; }
 
@@ -1544,7 +1590,7 @@ textarea.contact-input { resize: vertical; min-height: 72px; }
    RESPONSIVE — TABLET
    ================================================================ */
 @media (max-width: 1024px) {
-  :root { --sp-section: 100px; }
+  :root { --sp-section: 84px; }
   .hero { grid-template-columns: 1fr; min-height: auto; }
   .hero-copy { padding: calc(74px + 60px) var(--gutter) 60px; max-width: 100%; }
   .hero-viz-col { height: 420px; }
@@ -1571,7 +1617,7 @@ textarea.contact-input { resize: vertical; min-height: 72px; }
 }
 
 @media (max-width: 640px) {
-  :root { --gutter: 20px; --sp-section: 88px; }
+  :root { --gutter: 20px; --sp-section: 68px; }
   .hdr-nav { display: none; }
   .hdr-burger { display: flex; }
   .pillars-grid { grid-template-columns: 1fr; }

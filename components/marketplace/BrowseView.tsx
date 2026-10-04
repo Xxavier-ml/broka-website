@@ -4,7 +4,7 @@ import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { ApiNotice, EmptyState } from "./StateMessage";
 import { MobileFilterDrawer } from "./MobileFilterDrawer";
-import { canonicalCategory, CATEGORIES } from "@/lib/categories";
+import { canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import type { ListingPage } from "@/lib/api/listings";
 
@@ -51,24 +51,28 @@ export function BrowseView({
       </section>
       <section className="sec-sm browse-section" aria-label="Marketplace listings">
         <div className="wrap">
-          <div className="browse-categories-head">
-            <span className="browse-category-label">{CATEGORIES.length} categories</span>
-            <span className="browse-category-hint">Swipe to explore</span>
-          </div>
-          <CategoryChips basePath="/browse" active={category ?? null} keep={{ q }} />
-          <div className="browse-toolbar">
-            <div>
-              <p className="browse-count">{failed ? "Marketplace unavailable" : `${result.total.toLocaleString("en-KE")} listings to explore`}</p>
-              {category && <Link href={withQuery("/browse", { q })} className="browse-clear">Clear category</Link>}
+          {/* Categories, the result count and sorting are one control block.
+              Spread across the section they read as unrelated widgets. */}
+          <div className="filter-panel">
+            <div className="browse-categories-head">
+              <span className="browse-category-label">Filter by category</span>
+              <span className="browse-category-hint">Swipe to explore</span>
             </div>
-            <nav className="browse-sort" aria-label="Sort listings">
-              {sortOptions.map((option) => (
-                <Link key={option.key} href={withQuery("/browse", { ...query, sort: option.key === "featured" ? undefined : option.key })} className={sort === option.key ? "active" : ""} aria-current={sort === option.key ? "page" : undefined}>
-                  {option.label}
-                </Link>
-              ))}
-            </nav>
-            <MobileFilterDrawer q={q} category={category} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} />
+            <CategoryChips basePath="/browse" active={category ?? null} keep={{ q }} />
+            <div className="browse-toolbar">
+              <div>
+                <p className="browse-count">{failed ? "Marketplace unavailable" : `${result.total.toLocaleString("en-KE")} listings to explore`}</p>
+                {category && <Link href={withQuery("/browse", { q })} className="browse-clear">Clear category</Link>}
+              </div>
+              <nav className="browse-sort" aria-label="Sort listings">
+                {sortOptions.map((option) => (
+                  <Link key={option.key} href={withQuery("/browse", { ...query, sort: option.key === "featured" ? undefined : option.key })} className={sort === option.key ? "active" : ""} aria-current={sort === option.key ? "page" : undefined}>
+                    {option.label}
+                  </Link>
+                ))}
+              </nav>
+              <MobileFilterDrawer q={q} category={category} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} />
+            </div>
           </div>
           {failed ? (
             <ApiNotice retryHref={withQuery("/browse", query)} />

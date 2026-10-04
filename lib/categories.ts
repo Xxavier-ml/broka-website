@@ -61,3 +61,24 @@ export function canonicalCategory(name: string | null | undefined): string | nul
 
 /** The categories shown as quick filters: what Kenyans list most. */
 export const FEATURED_CATEGORIES = CATEGORIES.slice(0, 6);
+
+/**
+ * The URL slug for a category.
+ *
+ * Category names contain "&", which does not survive a trip through a path
+ * segment: the home page used to build the slug by lowercasing the name and
+ * percent-encoding it, and /browse/[category] turned the hyphens back into
+ * spaces, so "Business & Industrial" arrived as "business %26 industrial" and
+ * answered 404. "&" is spelled out as "and" instead, so the slug and the name
+ * survive the round trip. categoryFromSlug also accepts the older forms, so
+ * links already in the wild still resolve.
+ */
+export function categorySlug(name: string): string {
+  return name.toLowerCase().replace(/\s*&\s*/g, "-and-").replace(/\s+/g, "-");
+}
+
+/** The canonical category a slug refers to, or null if it is not one. */
+export function categoryFromSlug(slug: string): string | null {
+  const decoded = decodeURIComponent(slug).replace(/-and-/g, " & ").replace(/-/g, " ");
+  return canonicalCategory(decoded);
+}

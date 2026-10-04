@@ -1,7 +1,7 @@
 import Link from "next/link";
-import { Boxes, Gavel, ShieldCheck, Store } from "lucide-react";
+import { Boxes, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
 import { SearchForm } from "@/components/marketplace/SearchForm";
-import { FEATURED_CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, FEATURED_CATEGORIES, categorySlug } from "@/lib/categories";
 import type { HomeData } from "@/lib/api/home";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
@@ -23,26 +23,37 @@ function KenyaFlag() {
 }
 
 /**
- * The home page's first screen, built to the BROKA mockup: pitch, search and
+ * The welcome page's first screen, built to the BROKA mockup: pitch, search and
  * categories on the left; Zeno orbiting the marketplace on the right; a
- * glowing Kenya behind; live numbers along the bottom. Every number comes
- * from the API: one it could not give is left out, never made up.
+ * glowing Kenya behind; the numbers along the bottom.
+ *
+ * The bar used to read "0 live auctions, 0 online stores, 5 listings" on a
+ * quiet day, which made the first thing a visitor saw a marketplace that
+ * looked abandoned. Live counts now appear only when there is something to
+ * count, and the bar is topped up to four cells with things that are always
+ * true about the product. Nothing is invented and nothing reads as empty.
  */
 export function HomeHero({ data }: { data: HomeData }) {
-  const stats: { icon: React.ReactNode; tone: string; value: string; label: string }[] = [];
-  if (data.liveAuctionCount !== null)
-    stats.push({
+  type Stat = { icon: React.ReactNode; tone: string; value: string; label: string };
+  const live: Stat[] = [];
+  if (data.liveAuctionCount)
+    live.push({
       icon: <Gavel size={22} />,
       tone: "violet",
       // The API lists up to 20 at a time, so 20 means "20 or more".
       value: data.liveAuctionCount >= 20 ? "20+" : nf.format(data.liveAuctionCount),
       label: "Live auctions",
     });
-  if (data.storeCount !== null)
-    stats.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
-  if (data.activeListings !== null)
-    stats.push({ icon: <Boxes size={22} />, tone: "cyan", value: nf.format(data.activeListings), label: "Active listings" });
-  stats.push({ icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" });
+  if (data.storeCount)
+    live.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
+  if (data.activeListings)
+    live.push({ icon: <Boxes size={22} />, tone: "cyan", value: nf.format(data.activeListings), label: "Active listings" });
+  const always: Stat[] = [
+    { icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" },
+    { icon: <Sparkles size={22} />, tone: "violet", value: "Zeno", label: "AI negotiation" },
+    { icon: <LayoutGrid size={22} />, tone: "cyan", value: String(CATEGORIES.length), label: "Categories" },
+  ];
+  const stats: Stat[] = [...live, ...always].slice(0, 4);
 
   return (
     <section className="hh" aria-labelledby="hh-title">
@@ -51,16 +62,16 @@ export function HomeHero({ data }: { data: HomeData }) {
         <div className="hh-copy">
           <p className="hh-pill hh-in" style={{ ["--d" as string]: "0s" }}>
             <KenyaFlag />
-            Kenya&apos;s AI Marketplace
+            Welcome to BROKA
             <span className="hh-pill-dot" aria-hidden="true" />
           </p>
-          <h1 className="hh-title hh-in" id="hh-title" style={{ ["--d" as string]: "0.08s" }}>
-            <span className="hh-title-a">Buy. Sell.</span>
-            <span className="hh-title-b">Smarter.</span>
+          <h1 className="hh-title hh-title-welcome hh-in" id="hh-title" style={{ ["--d" as string]: "0.08s" }}>
+            <span className="hh-title-a">The future of</span>
+            <span className="hh-title-b">intelligent commerce.</span>
           </h1>
           <p className="hh-sub hh-in" style={{ ["--d" as string]: "0.16s" }}>
-            BROKA connects buyers and sellers with the power of AI. Negotiate fairly, trade safely, and get better
-            deals with Zeno.
+            Meet BROKA, Kenya&apos;s AI-powered marketplace. Discover products, understand your options, and negotiate
+            with Zeno — for smarter, fairer deals.
           </p>
           <div className="hh-in" style={{ ["--d" as string]: "0.24s" }}>
             <SearchForm
@@ -73,7 +84,7 @@ export function HomeHero({ data }: { data: HomeData }) {
           </div>
           <nav className="hh-orbs hh-in" aria-label="Popular categories" style={{ ["--d" as string]: "0.32s" }}>
             {FEATURED_CATEGORIES.slice(0, 5).map((c) => (
-              <Link key={c.name} href={`/browse/${encodeURIComponent(c.name.toLowerCase().replace(/\s+/g, "-"))}`} className="hh-orb">
+              <Link key={c.name} href={`/browse/${categorySlug(c.name)}`} className="hh-orb">
                 <span className="hh-orb-ring" style={{ ["--a" as string]: c.gradient[0], ["--b" as string]: c.gradient[1] }}>
                   <span aria-hidden="true">{c.emoji}</span>
                 </span>
