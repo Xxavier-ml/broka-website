@@ -7,14 +7,16 @@ export function CategoryChips({
   basePath,
   active,
   keep = {},
+  className = "",
 }: {
   basePath: string;
   active?: string | null;
   /** Other query values to carry over when a category is chosen. */
   keep?: Record<string, string | undefined>;
+  className?: string;
 }) {
   return (
-    <nav className="chips" aria-label="Categories">
+    <nav className={`chips${className ? ` ${className}` : ""}`} aria-label="Categories">
       <Link
         href={withQuery(basePath, keep)}
         className={`chip${!active ? " active" : ""}`}
