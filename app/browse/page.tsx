@@ -2,12 +2,15 @@ import type { Metadata } from "next";
 import { BrowseView, parseBrowseCategory, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
+import { categoryPageContent } from "@/lib/category-pages";
 import { firstParam, type SearchParams } from "@/lib/params";
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const sp = await searchParams;
-  if (parseBrowseCategory(firstParam(sp.category)) === "Gaming") {
-    return { title: "Gaming Zone", description: "Explore gaming listings from Kenyan sellers on BROKA." };
+  const category = parseBrowseCategory(firstParam(sp.category));
+  const content = category ? categoryPageContent(category) : null;
+  if (content) {
+    return { title: content.title, description: content.description };
   }
   return {
     title: "Browse the marketplace",
