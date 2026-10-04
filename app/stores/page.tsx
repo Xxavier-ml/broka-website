@@ -36,25 +36,32 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
   return (
     <>
       <PageHero
-        eyebrow="Online stores"
-        headline="Shops you can trust, all in one place."
-        sub="Every BROKA store is run by a real seller with their own link. Look around, read the details and see what is in stock. To make an offer or buy, open the store in the BROKA app."
+        headline="Stores across Kenya"
+        sub="Explore stores from verified Kenyan sellers."
         atmosphere="atm-violet"
+        className="listing-page-hero"
       />
 
-      <section className="sec-sm listing-sec" aria-label="Stores">
+      <section className="sec-sm listing-sec" aria-label="Online stores">
         <div className="wrap">
-          <div className="filter-panel">
-            <div className="toolbar toolbar-single">
-              <SearchForm
-                action="/stores"
-                value={q}
-                placeholder="Search stores by name…"
-                hidden={{ category: category ?? undefined }}
-                label="Search stores"
-              />
-            </div>
+          <div className="listing-route-controls">
             <CategoryChips basePath="/stores" active={category} keep={{ q }} />
+            <SearchForm
+              action="/stores"
+              value={q}
+              placeholder="Search stores by name…"
+              hidden={{ category: category ?? undefined }}
+              label="Search stores"
+              className="sform-lg browse-search browse-search-v0 listing-route-search"
+            />
+          </div>
+
+          <div className="listing-v0-toolbar stores-listing-toolbar">
+            <p className="browse-count" role="status">
+              {failed
+                ? "Stores unavailable"
+                : `${plural(data.total, "store")}${category ? ` in ${category}` : ""}`}
+            </p>
           </div>
 
           {failed ? (
@@ -75,23 +82,19 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
             >
               {filtered
                 ? "Try a different name or category."
-                : "New stores open on BROKA every week. In the meantime the catalogue has every listing on the platform."}
+                : "New stores open on BROKA every week. Browse marketplace products in the meantime."}
             </EmptyState>
           ) : (
             <>
-              <p className="result-count" role="status">
-                {plural(data.total, "store")}
-                {category ? ` in ${category}` : ""}
-              </p>
               <div className="lgrid">
-                {data.items.map((s) => (
-                  <StoreCard key={s.id} store={s} />
+                {data.items.map((store) => (
+                  <StoreCard key={store.id} store={store} />
                 ))}
               </div>
               <Pagination
                 page={page}
                 pageCount={pageCount}
-                hrefFor={(p) => withQuery("/stores", { q, category: category ?? undefined, page: p > 1 ? p : undefined })}
+                hrefFor={(nextPage) => withQuery("/stores", { q, category: category ?? undefined, page: nextPage > 1 ? nextPage : undefined })}
               />
             </>
           )}

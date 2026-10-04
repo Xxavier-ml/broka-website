@@ -45,32 +45,35 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Sea
   return (
     <>
       <PageHero
-        eyebrow="Auction House"
-        headline="Live auctions across Kenya."
-        sub="Vehicles, land, electronics and more, sold to the highest bidder. See the current bid and the time left here. Bidding happens in the BROKA app."
+        headline="Live auctions"
+        sub="Vehicles, land and more. Bidding takes place in the BROKA app."
         atmosphere="atm-amber"
+        className="listing-page-hero"
       />
 
       <section className="sec-sm listing-sec" aria-label="Auctions">
         <div className="wrap">
-          {/* Status, search and category in one block, the same shape as the
-              catalogue page, so the two read as one section of the site. */}
-          <div className="filter-panel">
-            <div className="toolbar">
-              <FilterTabs tabs={tabs} active={filter} label="Auction status" />
-              <SearchForm
-                action="/auctions"
-                value={q}
-                placeholder="Search auctions — cars, land, phones…"
-                hidden={{ status: filter === "live" ? undefined : filter, category: category ?? undefined }}
-                label="Search auctions"
-              />
-            </div>
+          <div className="listing-route-controls">
             <CategoryChips
               basePath="/auctions"
               active={category}
               keep={{ status: filter === "live" ? undefined : filter, q }}
             />
+            <SearchForm
+              action="/auctions"
+              value={q}
+              placeholder="Search cars, land, phones…"
+              hidden={{ status: filter === "live" ? undefined : filter, category: category ?? undefined }}
+              label="Search auctions"
+              className="sform-lg browse-search browse-search-v0 listing-route-search"
+            />
+          </div>
+
+          <div className="listing-v0-toolbar auction-listing-toolbar">
+            <p className="browse-count" role="status">
+              {failed ? "Auctions unavailable" : `${auctions.length} ${auctions.length === 1 ? "auction" : "auctions"}`}
+            </p>
+            <FilterTabs tabs={tabs} active={filter} label="Auction status" />
           </div>
 
           {failed ? (
@@ -90,20 +93,15 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Sea
               }
             >
               {filtered
-                ? "Try a different word or category."
-                : "Nothing is listed under this status right now. Other tabs may have more, and every listing on BROKA is on the catalogue page."}
+                ? "Try another search or category."
+                : "No auctions under this status right now. Try another status or browse all products."}
             </EmptyState>
           ) : (
-            <>
-              <p className="result-count" role="status">
-                {auctions.length} {auctions.length === 1 ? "auction" : "auctions"}
-              </p>
-              <div className="lgrid">
-                {auctions.map((a) => (
-                  <AuctionCard key={a.id} auction={a} />
-                ))}
-              </div>
-            </>
+            <div className="lgrid">
+              {auctions.map((a) => (
+                <AuctionCard key={a.id} auction={a} />
+              ))}
+            </div>
           )}
 
           <AppCta kind="auction" variant="banner" className="listing-cta" />

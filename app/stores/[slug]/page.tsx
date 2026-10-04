@@ -5,6 +5,7 @@ import { AppCta } from "@/components/marketplace/AppCta";
 import { Breadcrumbs } from "@/components/marketplace/DetailParts";
 import { Pagination } from "@/components/marketplace/Pagination";
 import { ProductCard } from "@/components/marketplace/ProductCard";
+import { CategoryRail, type CategoryRailItem } from "@/components/marketplace/CategoryRail";
 import { SearchForm } from "@/components/marketplace/SearchForm";
 import { EmptyState } from "@/components/marketplace/StateMessage";
 import { FilterTabs } from "@/components/marketplace/FilterTabs";
@@ -24,7 +25,6 @@ import { clip, monthYearOf, placeLine, plural } from "@/lib/format";
 import { firstParam, withQuery, type SearchParams } from "@/lib/params";
 import { SITE_URL, mailto } from "@/lib/site";
 import type { SortKey, StoreCategory } from "@/lib/api/types";
-import Link from "next/link";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: SearchParams };
 
@@ -105,6 +105,17 @@ export default async function StorePage({ params, searchParams }: Props) {
   const since = monthYearOf(store.owner?.member_since ?? store.created_at);
   const owner = store.owner;
   const filtered = Boolean(q || category);
+  const storeCategoryItems: CategoryRailItem[] = [
+    { key: "all", href: withQuery(base, { q, sort: query.sort }), label: "All", count: store.listing_count, active: !category },
+    ...categories.map((c) => ({
+      key: c.name,
+      href: withQuery(base, { ...query, category: c.name }),
+      label: c.name,
+      emoji: categoryVisual(c.name).emoji,
+      count: c.count,
+      active: category === c.name,
+    })),
+  ];
 
   return (
     <>
@@ -222,7 +233,27 @@ export default async function StorePage({ params, searchParams }: Props) {
             </EmptyState>
           ) : (
             <>
-              <div className="toolbar">
+              {categories.length > 1 && (
+                <CategoryRail
+                  items={storeCategoryItems}
+                  ariaLabel={`${store.name} product categories`}
+                  className="store-product-category-rail"
+                />
+              )}
+
+              <SearchForm
+                action={base}
+                value={q}
+                placeholder={`Search ${store.name} products…`}
+                hidden={{ category: category ?? undefined, sort: sort === "featured" ? undefined : sort }}
+                label={`Search ${store.name} products`}
+                className="sform-lg browse-search browse-search-v0 store-product-search"
+              />
+
+              <div className="listing-v0-toolbar store-products-toolbar">
+                <p className="browse-count" role="status">
+                  {products.failed ? "Products unavailable" : plural(products.data.total, "product")}
+                </p>
                 <FilterTabs
                   label="Sort products"
                   active={sort}
@@ -232,29 +263,7 @@ export default async function StorePage({ params, searchParams }: Props) {
                     href: withQuery(base, { ...query, sort: s.key === "featured" ? undefined : s.key }),
                   }))}
                 />
-                <SearchForm
-                  action={base}
-                  value={q}
-                  placeholder={`Search ${store.name}…`}
-                  hidden={{ category: category ?? undefined, sort: sort === "featured" ? undefined : sort }}
-                  label={`Search ${store.name}`}
-                />
               </div>
-
-              {categories.length > 1 && (
-                <nav className="chips" aria-label="Product categories">
-                  <FilterChip href={withQuery(base, { q, sort: query.sort })} active={!category} label="All" count={store.listing_count} />
-                  {categories.map((c) => (
-                    <FilterChip
-                      key={c.name}
-                      href={withQuery(base, { ...query, category: c.name })}
-                      active={category === c.name}
-                      label={`${categoryVisual(c.name).emoji} ${c.name}`}
-                      count={c.count}
-                    />
-                  ))}
-                </nav>
-              )}
 
               {products.failed ? (
                 <EmptyState emoji="📡" title="We can't load this store's products right now">
@@ -271,9 +280,6 @@ export default async function StorePage({ params, searchParams }: Props) {
                 </EmptyState>
               ) : (
                 <>
-                  <p className="result-count" role="status">
-                    {plural(products.data.total, "product")}
-                  </p>
                   <div className="lgrid">
                     {products.data.items.map((l) => (
                       <ProductCard key={l.id} listing={l} />
@@ -293,13 +299,5 @@ export default async function StorePage({ params, searchParams }: Props) {
         </div>
       </section>
     </>
-  );
-}
-
-function FilterChip({ href, active, label, count }: { href: string; active: boolean; label: string; count: number }) {
-  return (
-    <Link href={href} className={`chip${active ? " active" : ""}`} aria-current={active ? "page" : undefined} scroll={false}>
-      {label} <span className="chip-count">{count}</span>
-    </Link>
   );
 }

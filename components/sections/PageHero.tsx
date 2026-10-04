@@ -4,11 +4,22 @@ interface PageHeroProps {
   sub?: string;
   children?: React.ReactNode;
   atmosphere?: string;
+  className?: string;
 }
 
-export function PageHero({ eyebrow, headline, sub, children, atmosphere = "atm-violet" }: PageHeroProps) {
+export function PageHero({
+  eyebrow,
+  headline,
+  sub,
+  children,
+  atmosphere = "atm-violet",
+  className = "",
+}: PageHeroProps) {
   return (
-    <section className={`page-hero has-field ${atmosphere}`} aria-labelledby="page-hero-heading">
+    <section
+      className={`page-hero has-field ${atmosphere}${className ? ` ${className}` : ""}`}
+      aria-labelledby="page-hero-heading"
+    >
       <div className="wrap">
         {eyebrow && <span className="t-eyebrow page-hero-kicker">{eyebrow}</span>}
         <h1 className="t-h1 page-hero-headline" id="page-hero-heading">{headline}</h1>

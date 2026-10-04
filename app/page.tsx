@@ -4,6 +4,7 @@ import { Magnetic } from "@/components/ui/Magnetic";
 import { ZenoDemo } from "@/components/zeno/ZenoDemo";
 import { FlowMesh } from "@/components/visuals/FlowMesh";
 import { HomeHero } from "@/components/home/HomeHero";
+import { BrandMotion } from "@/components/home/BrandMotion";
 import { LiveMarketplace } from "@/components/marketplace/LiveMarketplace";
 import { getHomeData } from "@/lib/api/home";
 
@@ -247,6 +248,7 @@ export default async function Home() {
         <FlowMesh />
         <div className="wrap">
           <Reveal className="final-cta">
+            <BrandMotion />
             <span className="t-eyebrow" style={{ textAlign: "center", display: "block" }}>Get involved</span>
             <h2 className="t-h1" id="cta-h" style={{ marginBottom: 20, textAlign: "center" }}>
               Commerce is changing.

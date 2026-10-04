@@ -9,8 +9,9 @@ import { ApiNotice, EmptyState } from "./StateMessage";
 import { MobileFilterDrawer } from "./MobileFilterDrawer";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
+import { CategoryChips } from "./CategoryChips";
 
-type CategorySort = "featured" | "recent" | "price_low" | "price_high";
+ type CategorySort = "featured" | "recent" | "price_low" | "price_high";
 const sortOptions: { key: CategorySort; label: string }[] = [
   { key: "featured", label: "Featured" },
   { key: "recent", label: "Newest" },
@@ -54,6 +55,7 @@ export function CategoryLanding({
     min_price: minPrice?.toString(),
     max_price: maxPrice?.toString(),
     county,
+    sort: sort === "featured" ? undefined : sort,
   };
   const activeFilters = {
     condition,
@@ -66,49 +68,40 @@ export function CategoryLanding({
 
   return (
     <>
-      <section className="category-hero browse-hero" style={theme} aria-labelledby="category-page-title">
-        <div className="wrap category-hero-grid">
+      <section className="category-hero browse-hero category-hero-listing" style={theme} aria-labelledby="category-page-title">
+        <div className="wrap category-listing-hero">
           <div className="category-hero-copy">
             <Link href="/browse" className="category-back">
-              <ArrowLeft size={15} aria-hidden="true" /> All categories
+              <ArrowLeft size={15} aria-hidden="true" /> All products
             </Link>
-            <p className="category-kicker">
-              <span aria-hidden="true">{visual.emoji}</span> BROKA {content.category.toUpperCase()}
-            </p>
             <h1 className="category-title" id="category-page-title">
               {content.titleLead} <span>{content.titleAccent}</span>
             </h1>
             <p className="category-intro">{content.intro}</p>
-            <SearchForm
-              action={route}
-              value={q}
-              placeholder={content.searchPlaceholder}
-              hidden={activeFilters}
-              label={`Search ${content.category} listings`}
-              className="sform-lg category-search"
-            />
           </div>
-          <div className="category-art" aria-hidden="true">
-            <span className="category-art-orbit" />
-            <span className="category-art-core">{visual.emoji}</span>
-            <span className="category-art-label">DISCOVER · COMPARE · NEGOTIATE</span>
-          </div>
+          <CategoryChips
+            basePath="/browse"
+            active={content.category}
+            keep={preserved}
+            className="category-listing-rail"
+          />
+          <SearchForm
+            action={route}
+            value={q}
+            placeholder={content.searchPlaceholder}
+            hidden={activeFilters}
+            label={`Search ${content.category} listings`}
+            className="sform-lg browse-search browse-search-v0 category-search"
+          />
         </div>
       </section>
 
-      <section className="category-results browse-section" aria-labelledby="category-listings-title">
+      <section className="category-results browse-section" aria-label={`${content.category} listings`}>
         <div className="wrap">
-          <header className="category-results-head">
-            <div>
-              <span className="t-eyebrow">The {content.category} marketplace</span>
-              <h2 id="category-listings-title">{content.category} listings</h2>
-            </div>
-            <p className="browse-count" aria-live="polite">
-              {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} listings`}
+          <div className="listing-v0-toolbar category-results-toolbar">
+            <p className="browse-count" role="status">
+              {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "listing" : "listings"}`}
             </p>
-          </header>
-
-          <div className="category-toolbar">
             <nav className="browse-sort" aria-label={`Sort ${content.category} listings`}>
               {sortOptions.map((option) => (
                 <Link

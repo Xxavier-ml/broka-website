@@ -1,8 +1,9 @@
-import Link from "next/link";
+import { CategoryRail } from "./CategoryRail";
+import type { CategoryRailItem } from "./CategoryRail";
 import { CATEGORIES, categorySlug } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 
-/** A scrollable rail of category links, like the app's Home. "All" clears the filter. */
+/** Shared marketplace category rail. "All" clears only the category selection. */
 export function CategoryChips({
   basePath,
   active,
@@ -15,27 +16,24 @@ export function CategoryChips({
   keep?: Record<string, string | undefined>;
   className?: string;
 }) {
+  const items: CategoryRailItem[] = [
+    { key: "all", href: withQuery(basePath, keep), label: "All", active: !active },
+    ...CATEGORIES.map((category) => ({
+      key: category.name,
+      href: basePath === "/browse"
+        ? withQuery(`/browse/${categorySlug(category.name)}`, keep)
+        : withQuery(basePath, { ...keep, category: category.name }),
+      label: category.name,
+      emoji: category.emoji,
+      active: active === category.name,
+    })),
+  ];
+
   return (
-    <nav className={`chips${className ? ` ${className}` : ""}`} aria-label="Categories">
-      <Link
-        href={withQuery(basePath, keep)}
-        className={`chip${!active ? " active" : ""}`}
-        aria-current={!active ? "page" : undefined}
-        scroll={false}
-      >
-        All
-      </Link>
-      {CATEGORIES.map((c) => (
-        <Link
-          key={c.name}
-          href={withQuery(`/browse/${categorySlug(c.name)}`, keep)}
-          className={`chip${active === c.name ? " active" : ""}`}
-          aria-current={active === c.name ? "page" : undefined}
-          scroll={false}
-        >
-          <span aria-hidden="true">{c.emoji}</span> {c.name}
-        </Link>
-      ))}
-    </nav>
+    <CategoryRail
+      items={items}
+      ariaLabel="Marketplace categories"
+      className={`listing-category-rail${className ? ` ${className}` : ""}`}
+    />
   );
 }

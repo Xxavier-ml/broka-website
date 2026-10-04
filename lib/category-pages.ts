@@ -50,7 +50,7 @@ export function categoryPageContent(name: string): CategoryPageContent | null {
     titleLead,
     titleAccent,
     description: `Browse ${copy.subject} on BROKA. Explore listings from Kenyan sellers and providers.`,
-    intro: `Explore ${copy.subject} on BROKA. Compare listing details, then negotiate with confidence.`,
+    intro: `Explore ${copy.subject} from Kenyan sellers on BROKA.`,
     searchPlaceholder: copy.searchPlaceholder,
   };
 }

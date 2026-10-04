@@ -42,36 +42,37 @@ export function BrowseView({
     return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={result} failed={failed} />;
   }
 
-  const heading = category ? `${category} for every kind of buyer` : q ? `Results for “${q}”` : "Browse the marketplace";
+  const heading = category ? `${category} for every kind of buyer` : q ? `Results for “${q}”` : "Browse products";
   const query = { q, category, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county };
 
   return (
     <>
-      <section className="browse-hero">
+      <section className="browse-hero browse-hero-v0" aria-labelledby="browse-page-title">
         <div className="wrap">
-          <span className="t-eyebrow">BROKA marketplace</span>
-          <h1 className="t-h1">{heading}</h1>
-          <p className="t-body-lg">Discover products from Kenyan sellers, then negotiate or buy with more context.</p>
-          <SearchForm action="/browse" value={q} placeholder="Search products or places…" hidden={{ category }} className="sform-lg browse-search" label="Search marketplace" />
-        </div>
-      </section>
-      <section className="browse-section" aria-label="Marketplace listings">
-        <div className="wrap">
-          <div className="browse-category-group">
-            <div className="browse-categories-head">
-              <h2 className="browse-category-label">Explore categories</h2>
-              <span className="browse-category-hint">21 categories · swipe to explore</span>
-            </div>
+          <div className="browse-v0-intro">
+            <h1 className="t-h1" id="browse-page-title">{heading}</h1>
+            <p className="t-body-lg browse-v0-support">Explore products from Kenyan sellers.</p>
+          </div>
+          <div className="browse-v0-controls">
             <CategoryChips
               basePath="/browse"
               active={category ?? null}
-              className="browse-category-rail"
+              className="browse-category-rail browse-v0-category-rail"
               keep={{ q, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county }}
             />
+            <SearchForm action="/browse" value={q} placeholder="Search products or places…" hidden={{ category }} className="sform-lg browse-search browse-search-v0" label="Search marketplace" />
           </div>
-          <div className="browse-toolbar">
+        </div>
+      </section>
+      <section className="browse-section browse-v0-results" aria-label="Marketplace listings">
+        <div className="wrap">
+          <div className="browse-toolbar browse-v0-toolbar listing-v0-toolbar">
             <div>
-              <p className="browse-count">{failed ? "Marketplace unavailable" : `${result.total.toLocaleString("en-KE")} listings to explore`}</p>
+              <p className="browse-count" role="status">
+                {failed
+                  ? "Marketplace unavailable"
+                  : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "listing" : "listings"}`}
+              </p>
               {category && <Link href={withQuery("/browse", { q })} className="browse-clear">Clear category</Link>}
             </div>
             <nav className="browse-sort" aria-label="Sort listings">
