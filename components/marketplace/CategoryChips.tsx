@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, categorySlug } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 
 /** A scrollable rail of category links, like the app's Home. "All" clears the filter. */
@@ -26,7 +26,7 @@ export function CategoryChips({
       {CATEGORIES.map((c) => (
         <Link
           key={c.name}
-          href={withQuery(basePath, { ...keep, category: c.name })}
+          href={withQuery(`/browse/${categorySlug(c.name)}`, keep)}
           className={`chip${active === c.name ? " active" : ""}`}
           aria-current={active === c.name ? "page" : undefined}
           scroll={false}

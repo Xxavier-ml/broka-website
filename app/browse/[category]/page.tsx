@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { BrowseView, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
 import { listListings } from "@/lib/api/listings";
 import { categoryFromSlug } from "@/lib/categories";
+import { categoryPageContent } from "@/lib/category-pages";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
 
@@ -11,8 +12,9 @@ type Props = { params: Promise<{ category: string }>; searchParams: SearchParams
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: raw } = await params;
   const category = categoryFromSlug(raw);
-  return category
-    ? { title: `${category} marketplace`, description: `Browse ${category.toLowerCase()} listings on BROKA.` }
+  const content = category ? categoryPageContent(category) : null;
+  return content
+    ? { title: content.title, description: content.description }
     : { title: "Category not found" };
 }
 

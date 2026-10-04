@@ -2,12 +2,21 @@ import type { Metadata } from "next";
 import { BrowseView, parseBrowseCategory, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
+import { categoryPageContent } from "@/lib/category-pages";
 import { firstParam, type SearchParams } from "@/lib/params";
 
-export const metadata: Metadata = {
-  title: "Browse the marketplace",
-  description: "Discover products, stores, and smarter deals on BROKA.",
-};
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const sp = await searchParams;
+  const category = parseBrowseCategory(firstParam(sp.category));
+  const content = category ? categoryPageContent(category) : null;
+  if (content) {
+    return { title: content.title, description: content.description };
+  }
+  return {
+    title: "Browse the marketplace",
+    description: "Discover products, stores, and smarter deals on BROKA.",
+  };
+}
 
 export default async function BrowsePage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;

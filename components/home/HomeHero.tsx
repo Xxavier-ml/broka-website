@@ -70,8 +70,7 @@ export function HomeHero({ data }: { data: HomeData }) {
             <span className="hh-title-b">intelligent commerce.</span>
           </h1>
           <p className="hh-sub hh-in" style={{ ["--d" as string]: "0.16s" }}>
-            Meet BROKA, Kenya&apos;s AI-powered marketplace. Discover products, understand your options, and negotiate
-            with Zeno — for smarter, fairer deals.
+            AI-powered discovery. Fairer negotiation. Better deals, backed by trust.
           </p>
           <div className="hh-in" style={{ ["--d" as string]: "0.24s" }}>
             <SearchForm

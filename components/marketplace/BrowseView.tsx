@@ -7,6 +7,7 @@ import { MobileFilterDrawer } from "./MobileFilterDrawer";
 import { canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import type { ListingPage } from "@/lib/api/listings";
+import { CategoryLanding } from "./CategoryLanding";
 
 const sortOptions = [
   { key: "featured", label: "Featured" },
@@ -36,6 +37,11 @@ export function BrowseView({
   result: ListingPage;
   failed: boolean;
 }) {
+  const canonical = canonicalCategory(category);
+  if (canonical) {
+    return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={result} failed={failed} />;
+  }
+
   const heading = category ? `${category} for every kind of buyer` : q ? `Results for “${q}”` : "Browse the marketplace";
   const query = { q, category, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county };
 
@@ -58,7 +64,11 @@ export function BrowseView({
               <span className="browse-category-label">Filter by category</span>
               <span className="browse-category-hint">Swipe to explore</span>
             </div>
-            <CategoryChips basePath="/browse" active={category ?? null} keep={{ q }} />
+            <CategoryChips
+              basePath="/browse"
+              active={category ?? null}
+              keep={{ q, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county }}
+            />
             <div className="browse-toolbar">
               <div>
                 <p className="browse-count">{failed ? "Marketplace unavailable" : `${result.total.toLocaleString("en-KE")} listings to explore`}</p>
