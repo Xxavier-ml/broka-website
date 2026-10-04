@@ -23,11 +23,13 @@ const sortOptions = [
   { value: "price_low", label: "Price: low to high" },
   { value: "price_high", label: "Price: high to low" },
 ] as const;
-type PriceKey = (typeof priceRanges)[number]["value"];
+const CUSTOM_PRICE_KEY = "custom" as const;
+type PriceKey = (typeof priceRanges)[number]["value"] | typeof CUSTOM_PRICE_KEY;
 type FilterState = { condition: string; price: PriceKey; county: string; sort: string };
 
 function priceKey(min?: number, max?: number): PriceKey {
-  return priceRanges.find((range) => range.min === min && range.max === max)?.value ?? "";
+  return priceRanges.find((range) => range.min === min && range.max === max)?.value
+    ?? (min != null || max != null ? CUSTOM_PRICE_KEY : "");
 }
 
 export function MobileFilterDrawer({
@@ -74,11 +76,16 @@ export function MobileFilterDrawer({
   const navigate = (next: typeof local) => {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
-    if (category) params.set("category", category);
+    if (category && pathname === "/browse") params.set("category", category);
     if (next.condition) params.set("condition", next.condition);
-    const price = priceRanges.find((range) => range.value === next.price);
-    if (price?.min != null) params.set("min_price", String(price.min));
-    if (price?.max != null) params.set("max_price", String(price.max));
+    if (next.price === CUSTOM_PRICE_KEY) {
+      if (minPrice != null) params.set("min_price", String(minPrice));
+      if (maxPrice != null) params.set("max_price", String(maxPrice));
+    } else {
+      const price = priceRanges.find((range) => range.value === next.price);
+      if (price?.min != null) params.set("min_price", String(price.min));
+      if (price?.max != null) params.set("max_price", String(price.max));
+    }
     if (next.county.trim()) params.set("county", next.county.trim());
     if (next.sort && next.sort !== "featured") params.set("sort", next.sort);
     startTransition(() => router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, { scroll: false }));
@@ -123,17 +130,18 @@ export function MobileFilterDrawer({
               </label>
               <label className="mobile-filter-field">Price range
                 <select value={local.price} onChange={(event) => update("price", event.target.value)}>
+                  {local.price === CUSTOM_PRICE_KEY && <option value={CUSTOM_PRICE_KEY} disabled>Current custom range</option>}
                   {priceRanges.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                 </select>
               </label>
               <label className="mobile-filter-field">County <span className="mobile-filter-optional">optional</span>
-                <input value={local.county} onChange={(event) => setLocal((current) => ({ ...current, county: event.target.value }))} onBlur={() => navigate(local)} placeholder="e.g. Nairobi" inputMode="text" />
+                <input value={local.county} onChange={(event) => setLocal((current) => ({ ...current, county: event.target.value }))} placeholder="e.g. Nairobi" inputMode="text" />
               </label>
               {pending && <p className="mobile-filter-status" role="status">Updating listings…</p>}
             </div>
             <footer className="mobile-filter-footer">
               <button type="button" className="btn btn-ghost" onClick={clear}><RotateCcw size={15} /> Clear all</button>
-              <button type="button" className="btn btn-primary" onClick={() => setOpen(false)}><Check size={15} /> View results</button>
+              <button type="button" className="btn btn-primary" onClick={() => { navigate(local); setOpen(false); }}><Check size={15} /> View results</button>
             </footer>
           </section>
         </div>

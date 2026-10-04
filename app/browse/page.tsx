@@ -4,10 +4,16 @@ import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
 
-export const metadata: Metadata = {
-  title: "Browse the marketplace",
-  description: "Discover products, stores, and smarter deals on BROKA.",
-};
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const sp = await searchParams;
+  if (parseBrowseCategory(firstParam(sp.category)) === "Gaming") {
+    return { title: "Gaming Zone", description: "Explore gaming listings from Kenyan sellers on BROKA." };
+  }
+  return {
+    title: "Browse the marketplace",
+    description: "Discover products, stores, and smarter deals on BROKA.",
+  };
+}
 
 export default async function BrowsePage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;

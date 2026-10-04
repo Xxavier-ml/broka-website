@@ -11,7 +11,9 @@ type Props = { params: Promise<{ category: string }>; searchParams: SearchParams
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: raw } = await params;
   const category = categoryFromSlug(raw);
-  return category
+  return category === "Gaming"
+    ? { title: "Gaming Zone", description: "Explore gaming listings from Kenyan sellers on BROKA." }
+    : category
     ? { title: `${category} marketplace`, description: `Browse ${category.toLowerCase()} listings on BROKA.` }
     : { title: "Category not found" };
 }

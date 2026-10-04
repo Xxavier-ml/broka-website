@@ -7,6 +7,7 @@ import { MobileFilterDrawer } from "./MobileFilterDrawer";
 import { canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import type { ListingPage } from "@/lib/api/listings";
+import { GamingZone } from "./GamingZone";
 
 const sortOptions = [
   { key: "featured", label: "Featured" },
@@ -36,6 +37,10 @@ export function BrowseView({
   result: ListingPage;
   failed: boolean;
 }) {
+  if (canonicalCategory(category) === "Gaming") {
+    return <GamingZone q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={result} failed={failed} />;
+  }
+
   const heading = category ? `${category} for every kind of buyer` : q ? `Results for “${q}”` : "Browse the marketplace";
   const query = { q, category, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county };
 
