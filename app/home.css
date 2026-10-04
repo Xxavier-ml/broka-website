@@ -415,6 +415,84 @@
   .hh-visual .zo { max-width: 320px; }
 }
 
+/* ─── Mobile welcome: quiet the canvas and make the hierarchy feel considered ─── */
+@media (max-width: 700px) {
+  /* Keep the network animation as a faint atmosphere, not a texture behind every word. */
+  .hh::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(5, 6, 16, 0.94) 0%, rgba(5, 6, 16, 0.86) 68%, rgba(5, 6, 16, 0.96) 100%),
+      radial-gradient(ellipse at 82% 8%, rgba(117, 82, 234, 0.16), transparent 48%);
+  }
+
+  .hh-pill {
+    gap: 8px;
+    padding: 0;
+    border: 0;
+    margin-bottom: 19px;
+    background: none;
+    box-shadow: none;
+    color: #B9B5D0;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .hh-pill::after,
+  .hh-flag { display: none; }
+  .hh-pill-dot { width: 5px; height: 5px; }
+
+  .hh-title-welcome {
+    font-size: clamp(34px, 9.2vw, 40px);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+    margin-bottom: 17px;
+  }
+  .hh-sub {
+    max-width: 31ch;
+    margin-bottom: 22px;
+    color: #B9B8CB;
+    font-size: 14px;
+    line-height: 1.58;
+  }
+
+  .sform-hero {
+    max-width: none;
+    padding: 5px 5px 5px 14px;
+    border-color: rgba(223, 220, 255, 0.14);
+    border-radius: 16px;
+    background: rgba(13, 14, 27, 0.92);
+    box-shadow: 0 12px 32px -16px rgba(0, 0, 0, 0.8);
+  }
+  .sform-hero .sform-input { padding: 9px 6px; font-size: 13px; }
+  .sform-btn-icon { width: 38px; height: 38px; box-shadow: 0 4px 14px -7px rgba(124, 92, 255, 0.8); }
+
+  /* Trade the oversized emoji bubbles for clean, swipeable category labels. */
+  .hh-orbs { gap: 8px; margin-top: 20px; }
+  .hh-orb {
+    width: auto;
+    min-height: 34px;
+    padding: 0 12px;
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid rgba(223, 220, 255, 0.12);
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.035);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .hh-orb-ring { display: none; }
+  .hh-orb-label { color: #D6D2E5; font-size: 10px; font-weight: 500; letter-spacing: 0.01em; }
+
+  .hh-visual { margin-top: 16px; }
+  .hh-visual .zo { max-width: 300px; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hh-in, .tilt-inner, .zo-aura, .zo-ring-glow, .zo-ring-spin, .zo-bubble, .zo-tile-card,
   .kmap-dots, .kmap-ripple, .hh-pill-dot {
