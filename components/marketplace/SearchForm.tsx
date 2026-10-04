@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, Clock3, MapPin, Search, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { MobileFilterDrawer, type MobileFilterDrawerProps } from "./MobileFilterDrawer";
 
 interface Suggestion {
   id: string;
@@ -35,6 +36,8 @@ export function SearchForm({
   label = "Search",
   className = "",
   iconSubmit = false,
+  filters,
+  filterRowClassName = "",
 }: {
   action: string;
   value?: string;
@@ -43,6 +46,8 @@ export function SearchForm({
   label?: string;
   className?: string;
   iconSubmit?: boolean;
+  filters?: Omit<MobileFilterDrawerProps, "q" | "iconOnly">;
+  filterRowClassName?: string;
 }) {
   const router = useRouter();
   const inputId = useId();
@@ -166,11 +171,17 @@ export function SearchForm({
     try { window.localStorage.removeItem(RECENT_SEARCHES_KEY); } catch { /* storage can be unavailable */ }
   };
 
-  return (
+  const searchField = (
     <div ref={shellRef} className={shellClass}>
       <form action={action} method="get" role="search" className={`sform ${className}`.trim()} onSubmit={onSubmit}>
         <label className="sr-only" htmlFor={inputId}>{label}</label>
-        <Search size={18} aria-hidden="true" className="sform-icon" />
+        {filters ? (
+          <button type="submit" className="sform-search-submit" aria-label={label}>
+            <Search size={19} aria-hidden="true" />
+          </button>
+        ) : (
+          <Search size={18} aria-hidden="true" className="sform-icon" />
+        )}
         <input
           id={inputId}
           name="q"
@@ -183,6 +194,7 @@ export function SearchForm({
           maxLength={100}
           autoComplete="off"
           spellCheck="false"
+          enterKeyHint="search"
           aria-autocomplete="list"
           aria-controls={`${inputId}-suggestions`}
           aria-expanded={menuOpen}
@@ -190,11 +202,11 @@ export function SearchForm({
           className="sform-input"
         />
         {Object.entries(hidden).map(([key, item]) => (item ? <input key={key} type="hidden" name={key} value={item} /> : null))}
-        {iconSubmit ? (
+        {!filters && (iconSubmit ? (
           <button type="submit" className="sform-btn sform-btn-icon" aria-label="Search"><ArrowRight size={18} aria-hidden="true" /></button>
         ) : (
           <button type="submit" className="sform-btn">Search</button>
-        )}
+        ))}
       </form>
       {menuOpen && (
         <div id={`${inputId}-suggestions`} className="sform-suggestions" role="listbox" aria-label={focusMenuOpen ? "Recent and popular searches" : "Suggested products"}>
@@ -238,6 +250,15 @@ export function SearchForm({
           )}
         </div>
       )}
+    </div>
+  );
+
+  if (!filters) return searchField;
+
+  return (
+    <div className={`search-control-row ${filterRowClassName}`.trim()}>
+      {searchField}
+      <MobileFilterDrawer {...filters} q={trimmedQuery || undefined} iconOnly />
     </div>
   );
 }

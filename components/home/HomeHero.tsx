@@ -78,7 +78,8 @@ export function HomeHero({ data }: { data: HomeData }) {
               placeholder="Search listings - phones, cars, land, houses…"
               label="Search BROKA"
               className="sform-hero"
-              iconSubmit
+              filters={{ action: "/browse", sort: "featured", deferApply: true }}
+              filterRowClassName="home-search-filter-row"
             />
           </div>
           <nav className="hh-orbs hh-in" aria-label="Popular categories" style={{ ["--d" as string]: "0.32s" }}>

@@ -6,7 +6,6 @@ import { categoryPageContent } from "@/lib/category-pages";
 import { categorySlug, categoryVisual } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import { ApiNotice, EmptyState } from "./StateMessage";
-import { MobileFilterDrawer } from "./MobileFilterDrawer";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { CategoryChips } from "./CategoryChips";
@@ -92,6 +91,8 @@ export function CategoryLanding({
             hidden={activeFilters}
             label={`Search ${content.category} listings`}
             className="sform-lg browse-search browse-search-v0 category-search"
+            filters={{ action: route, category: content.category, condition, minPrice, maxPrice, county, sort }}
+            filterRowClassName="category-search-filter-row"
           />
         </div>
       </section>
@@ -117,15 +118,6 @@ export function CategoryLanding({
                 </Link>
               ))}
             </nav>
-            <MobileFilterDrawer
-              q={q}
-              category={content.category}
-              condition={condition}
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              county={county}
-              sort={sort}
-            />
           </div>
 
           {failed ? (

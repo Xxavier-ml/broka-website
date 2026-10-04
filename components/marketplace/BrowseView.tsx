@@ -3,7 +3,6 @@ import { CategoryChips } from "./CategoryChips";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { ApiNotice, EmptyState } from "./StateMessage";
-import { MobileFilterDrawer } from "./MobileFilterDrawer";
 import { canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import type { ListingPage } from "@/lib/api/listings";
@@ -60,7 +59,16 @@ export function BrowseView({
               className="browse-category-rail browse-v0-category-rail"
               keep={{ q, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county }}
             />
-            <SearchForm action="/browse" value={q} placeholder="Search products or places…" hidden={{ category }} className="sform-lg browse-search browse-search-v0" label="Search marketplace" />
+            <SearchForm
+              action="/browse"
+              value={q}
+              placeholder="Search products or places…"
+              hidden={{ category }}
+              className="sform-lg browse-search browse-search-v0"
+              label="Search marketplace"
+              filters={{ action: "/browse", category, condition, minPrice, maxPrice, county, sort }}
+              filterRowClassName="browse-search-filter-row"
+            />
           </div>
         </div>
       </section>
@@ -82,7 +90,6 @@ export function BrowseView({
                 </Link>
               ))}
             </nav>
-            <MobileFilterDrawer q={q} category={category} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} />
           </div>
           {failed ? (
             <ApiNotice retryHref={withQuery("/browse", query)} />

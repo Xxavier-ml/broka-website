@@ -32,15 +32,8 @@ function priceKey(min?: number, max?: number): PriceKey {
     ?? (min != null || max != null ? CUSTOM_PRICE_KEY : "");
 }
 
-export function MobileFilterDrawer({
-  q,
-  category,
-  condition,
-  minPrice,
-  maxPrice,
-  county,
-  sort,
-}: {
+export type MobileFilterDrawerProps = {
+  action?: string;
   q?: string;
   category?: string;
   condition?: string;
@@ -48,14 +41,31 @@ export function MobileFilterDrawer({
   maxPrice?: number;
   county?: string;
   sort: string;
-}) {
+  iconOnly?: boolean;
+  deferApply?: boolean;
+};
+
+export function MobileFilterDrawer({
+  action,
+  q,
+  category,
+  condition,
+  minPrice,
+  maxPrice,
+  county,
+  sort,
+  iconOnly = false,
+  deferApply = false,
+}: MobileFilterDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
-  const activeCount = [condition, minPrice != null || maxPrice != null, county, sort !== "featured"].filter(Boolean).length;
   const initialPrice = useMemo(() => priceKey(minPrice, maxPrice), [minPrice, maxPrice]);
   const [local, setLocal] = useState<FilterState>({ condition: condition ?? "", price: initialPrice, county: county ?? "", sort: sort || "featured" });
+  const activeCount = deferApply
+    ? [local.condition, local.price, local.county, local.sort !== "featured"].filter(Boolean).length
+    : [condition, minPrice != null || maxPrice != null, county, sort !== "featured"].filter(Boolean).length;
 
   useEffect(() => {
     setLocal({ condition: condition ?? "", price: initialPrice, county: county ?? "", sort: sort || "featured" });
@@ -74,6 +84,7 @@ export function MobileFilterDrawer({
   }, [open]);
 
   const navigate = (next: typeof local) => {
+    const target = action ?? pathname;
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (category && pathname === "/browse") params.set("category", category);
@@ -88,26 +99,33 @@ export function MobileFilterDrawer({
     }
     if (next.county.trim()) params.set("county", next.county.trim());
     if (next.sort && next.sort !== "featured") params.set("sort", next.sort);
-    startTransition(() => router.replace(`${pathname}${params.toString() ? `?${params}` : ""}`, { scroll: false }));
+    startTransition(() => router.replace(`${target}${params.toString() ? `?${params}` : ""}`, { scroll: false }));
   };
 
   const update = (key: keyof typeof local, value: string) => {
     const next = { ...local, [key]: value };
     setLocal(next);
-    navigate(next);
+    if (!deferApply) navigate(next);
   };
 
   const clear = () => {
     const next: FilterState = { condition: "", price: "", county: "", sort: "featured" };
     setLocal(next);
-    navigate(next);
+    if (!deferApply) navigate(next);
   };
 
   return (
     <>
-      <button type="button" className="mobile-filter-trigger" onClick={() => setOpen(true)} aria-haspopup="dialog" aria-expanded={open}>
+      <button
+        type="button"
+        className={`mobile-filter-trigger${iconOnly ? " mobile-filter-trigger--icon" : ""}`}
+        onClick={() => setOpen(true)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={iconOnly ? `Filters and sort${activeCount ? `, ${activeCount} active` : ""}` : undefined}
+      >
         <SlidersHorizontal size={17} aria-hidden="true" />
-        Filters & sort
+        <span className={iconOnly ? "sr-only" : undefined}>Filters & sort</span>
         {activeCount > 0 && <span className="mobile-filter-count">{activeCount}</span>}
       </button>
       {open && (

@@ -132,7 +132,7 @@ The shared header is a compact, fixed dark-glass bar with a fine lower divider, 
 
  ### Inputs & Forms
 
- Search is the primary control on listing routes. It should read as one crisp, full-width dark field with a subtle violet/cyan border, clear focus ring, leading search glyph, and a high-contrast submit action. Do not box the icon separately unless a specific accessibility or hierarchy need calls for it. Preserve current GET form submission, query parameters, and search suggestions.
+ Search is the primary control on discovery routes: a dark, pill-shaped field with a restrained cool-blue edge, clear focus ring, and a leading magnifier that can submit the query. Place a separate compact square sliders button immediately beside it; do not put a text “Search” button inside the field. The sliders open the existing filter sheet and show an active-count badge when relevant. On the home page, keep filter edits as a draft until “View results” sends the typed query and selected filters to browse. Preserve GET submission, autocomplete, analytics, and existing query parameters on listing routes.
 
  ### Marketplace Category Rail
 
@@ -172,7 +172,7 @@ Describe the interface as **ink-navy connected commerce**, **real-product-first*
 
  ### Component Prompts
 
-1. “Design a BROKA browse page with a compact Montserrat title, one useful support line, an unboxed horizontal category lane above a prominent dark search field, and real Kenyan marketplace product cards beginning close below the controls. Preserve the deep navy network background, violet focus/active states, cyan accents, and two-column mobile inventory grid.”
+1. “Design a BROKA browse page with a compact Montserrat title, one useful support line, an unboxed horizontal category lane above a prominent dark pill search field, and a separate square sliders button immediately to its right. Keep real Kenyan marketplace product cards close below the controls. Preserve the deep navy network background, violet focus/active states, cyan accents, and two-column mobile inventory grid.”
 2. “Create a lightweight BROKA listing flow: concise title/context, category strip before search, then a compact result count and filters. The category lane should move slowly and continuously after a brief initial settle, with an unobtrusive pause control, visible keyboard focus, and a reduced-motion static-scroll fallback.”
  3. “Refine product cards for fast phone scanning: full-bleed real product photo, small condition badge, compact category label, bold product name and KES price, then quiet location metadata. Keep the existing dark glass treatment restrained so photography remains the main feature.”
 
