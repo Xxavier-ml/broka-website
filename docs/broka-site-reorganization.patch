@@ -1,0 +1,1549 @@
+From ebf1d67075468a497fb35d458c53738e9c3f4eba Mon Sep 17 00:00:00 2001
+From: Xxavier-ml <Xxavier-ml@users.noreply.github.com>
+Date: Sun, 4 Oct 2026 11:42:34 +0000
+Subject: [PATCH] Reorganize the site: one taxonomy, one rhythm, one story per
+ page
+
+The site had grown a second structure on top of its first. This puts the
+navigation, the marketplace pages and the home page back into one shape.
+
+Navigation (data/navigation.ts, Header, Footer)
+- "Browse" and "Explore > All products" both went to /browse, so two labels
+  named one page and /browse lit up two nav entries at once. One "Marketplace"
+  group now holds Browse, Auctions and Stores.
+- The header carried "Sell" and a "Start selling" button to the same page; the
+  button is now the app, which is what the site is for.
+- The footer filed Roadmap under Product and Vision under Company, and spent a
+  whole column on three social links. Header, mobile menu and footer now read
+  from the same four groups; social links sit under the brand.
+- Desktop menus open on hover and say what each item is.
+
+Home page
+- Dropped the "Find / Negotiate / Complete" strip, which restated the four
+  capabilities above it in different words. The eight-step version lives on
+  /how-it-works, which the capabilities section now links to.
+- The hero showed "0 live auctions, 0 online stores" on a quiet day. Live
+  counts appear only when there is something to count; the bar is topped up
+  with things that are always true.
+- The featured grid showed four cards in a three-column grid, leaving an
+  orphan card and a hole. Four cards, four columns.
+- Section order is now a narrative, and the section list is documented.
+
+Pages and rhythm
+- Every section carried 144px top and bottom - 288px of empty space between
+  one section's last line and the next section's first. Now 104px, with one
+  consistent eyebrow/headline/lead shape.
+- Headlines set with hard br tags broke into orphans ("Information doesn't /
+  flow / where it's needed."). The breaks are gone and text-wrap: balance
+  does the work.
+- The catalogue hero was 585px of marketing above the products; it is now a
+  header. Category chips ran 2924px inside a 1240px box, hiding 13 of 21
+  categories behind a "swipe" hint on desktop; they wrap on wide screens.
+- Status tabs, search and categories are one filter panel instead of three
+  controls floating on the starfield.
+- Empty auction and store lists offered nothing to do next; they now link to
+  the catalogue, the other marketplace and the app.
+- tsconfig.tsbuildinfo is ignored.
+---
+ .gitignore                                 |   1 +
+ app/auctions/page.tsx                      |  43 +++++---
+ app/browse/[category]/page.tsx             |   7 +-
+ app/globals.css                            |  80 +++++++++++----
+ app/home.css                               |  26 +++++
+ app/layout.tsx                             |  10 +-
+ app/marketplace.css                        |  56 +++++++++--
+ app/page.tsx                               | 101 +++++++++----------
+ app/stores/page.tsx                        |  35 ++++---
+ components/home/HomeHero.tsx               |  51 ++++++----
+ components/home/ZenoOrbit.tsx              |  28 ++++--
+ components/layout/Footer.tsx               |  76 +++++++-------
+ components/layout/Header.tsx               | 112 ++++++++++++---------
+ components/marketplace/BrowseView.tsx      |  40 ++++----
+ components/marketplace/LiveMarketplace.tsx |  14 ++-
+ components/marketplace/StateMessage.tsx    |  20 +++-
+ data/navigation.ts                         |  86 ++++++++++++++--
+ lib/categories.ts                          |  21 ++++
+ 18 files changed, 541 insertions(+), 266 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 04ef9cf..1055e6d 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -5,3 +5,4 @@ out/
+ .env.local
+ *.log
+ .DS_Store
++*.tsbuildinfo
+diff --git a/app/auctions/page.tsx b/app/auctions/page.tsx
+index 6a21c77..804c08f 100644
+--- a/app/auctions/page.tsx
++++ b/app/auctions/page.tsx
+@@ -53,21 +53,25 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Sea
+ 
+       <section className="sec-sm listing-sec" aria-label="Auctions">
+         <div className="wrap">
+-          <div className="toolbar">
+-            <FilterTabs tabs={tabs} active={filter} label="Auction status" />
+-            <SearchForm
+-              action="/auctions"
+-              value={q}
+-              placeholder="Search auctions — cars, land, phones…"
+-              hidden={{ status: filter === "live" ? undefined : filter, category: category ?? undefined }}
+-              label="Search auctions"
++          {/* Status, search and category in one block, the same shape as the
++              catalogue page, so the two read as one section of the site. */}
++          <div className="filter-panel">
++            <div className="toolbar">
++              <FilterTabs tabs={tabs} active={filter} label="Auction status" />
++              <SearchForm
++                action="/auctions"
++                value={q}
++                placeholder="Search auctions — cars, land, phones…"
++                hidden={{ status: filter === "live" ? undefined : filter, category: category ?? undefined }}
++                label="Search auctions"
++              />
++            </div>
++            <CategoryChips
++              basePath="/auctions"
++              active={category}
++              keep={{ status: filter === "live" ? undefined : filter, q }}
+             />
+           </div>
+-          <CategoryChips
+-            basePath="/auctions"
+-            active={category}
+-            keep={{ status: filter === "live" ? undefined : filter, q }}
+-          />
+ 
+           {failed ? (
+             <ApiNotice retryHref={here} />
+@@ -75,12 +79,19 @@ export default async function AuctionsPage({ searchParams }: { searchParams: Sea
+             <EmptyState
+               emoji="🔨"
+               title={filtered ? "No auctions match" : emptyTitle(filter)}
+-              actionHref={filtered ? withQuery("/auctions", { status: filter === "live" ? undefined : filter }) : undefined}
+-              actionLabel={filtered ? "Clear search" : undefined}
++              actions={
++                filtered
++                  ? [{ label: "Clear search", href: withQuery("/auctions", { status: filter === "live" ? undefined : filter }) }]
++                  : [
++                      { label: "Browse all products", href: "/browse" },
++                      { label: "See online stores", href: "/stores" },
++                      { label: "Get the app", href: "/download" },
++                    ]
++              }
+             >
+               {filtered
+                 ? "Try a different word or category."
+-                : "Nothing is listed under this status right now. Check the other tabs, or come back soon."}
++                : "Nothing is listed under this status right now. Other tabs may have more, and every listing on BROKA is on the catalogue page."}
+             </EmptyState>
+           ) : (
+             <>
+diff --git a/app/browse/[category]/page.tsx b/app/browse/[category]/page.tsx
+index 5e3a486..41580c1 100644
+--- a/app/browse/[category]/page.tsx
++++ b/app/browse/[category]/page.tsx
+@@ -1,7 +1,8 @@
+ import type { Metadata } from "next";
+ import { notFound } from "next/navigation";
+-import { BrowseView, parseBrowseCategory, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
++import { BrowseView, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
+ import { listListings } from "@/lib/api/listings";
++import { categoryFromSlug } from "@/lib/categories";
+ import { orFallback } from "@/lib/api/client";
+ import { firstParam, type SearchParams } from "@/lib/params";
+ 
+@@ -9,7 +10,7 @@ type Props = { params: Promise<{ category: string }>; searchParams: SearchParams
+ 
+ export async function generateMetadata({ params }: Props): Promise<Metadata> {
+   const { category: raw } = await params;
+-  const category = parseBrowseCategory(raw.replace(/-/g, " "));
++  const category = categoryFromSlug(raw);
+   return category
+     ? { title: `${category} marketplace`, description: `Browse ${category.toLowerCase()} listings on BROKA.` }
+     : { title: "Category not found" };
+@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
+ 
+ export default async function CategoryBrowsePage({ params, searchParams }: Props) {
+   const { category: raw } = await params;
+-  const category = parseBrowseCategory(raw.replace(/-/g, " "));
++  const category = categoryFromSlug(raw);
+   if (!category) notFound();
+   const sp = await searchParams;
+   const q = firstParam(sp.q);
+diff --git a/app/globals.css b/app/globals.css
+index db52010..b101ea1 100644
+--- a/app/globals.css
++++ b/app/globals.css
+@@ -81,8 +81,13 @@
+   --f-body:    var(--font-noto-serif, 'Noto Serif', Georgia, serif);
+   --f-ui:      var(--font-inter, 'Inter', sans-serif);
+ 
+-  /* ─── Spacing ─── */
+-  --sp-section: 144px;
++  /* ─── Spacing ───
++     One vertical rhythm for the whole site. At 144px every section carried
++     288px of empty space between its last line and the next section's first,
++     which is what made the long pages read as a series of disconnected
++     panels. 104px keeps the same unhurried feel with an obvious relationship
++     between neighbours. */
++  --sp-section: 104px;
+ }
+ 
+ /* ================================================================
+@@ -121,8 +126,8 @@ ul,ol { list-style: none; }
+   margin: 0 auto;
+ }
+ .sec { padding: var(--sp-section) 0; }
+-.sec-sm { padding: 80px 0; }
+-.sec-lg { padding: 160px 0; }
++.sec-sm { padding: 64px 0; }
++.sec-lg { padding: 128px 0; }
+ 
+ /* Background variants */
+ .bg-0 { background: var(--c-bg-t); }
+@@ -470,7 +475,7 @@ ul,ol { list-style: none; }
+   position: absolute;
+   top: calc(100% + 10px);
+   left: 0;
+-  min-width: 200px;
++  min-width: 284px;
+   background: rgba(6, 9, 28, 0.96);
+   backdrop-filter: blur(18px);
+   -webkit-backdrop-filter: blur(18px);
+@@ -482,7 +487,8 @@ ul,ol { list-style: none; }
+ }
+ .hdr-dropdown-menu.open { display: block; animation: dropdown-appear 0.18s ease; }
+ .hdr-dropdown-menu a {
+-  display: block;
++  display: grid;
++  gap: 3px;
+   padding: 10px 14px;
+   font-size: 14px;
+   color: var(--c-text-2);
+@@ -490,6 +496,12 @@ ul,ol { list-style: none; }
+   transition: background 0.12s, color 0.12s;
+ }
+ .hdr-dropdown-menu a:hover { background: var(--c-v-dim); color: #fff; }
++/* Each menu item says what it is, so the label alone does not have to carry
++   the meaning ("Technology" next to "The systems underneath"). */
++.hdr-menu-label { font-size: 14px; font-weight: 600; color: var(--c-text-1); }
++.hdr-menu-desc { font-size: 12px; line-height: 1.45; color: var(--c-text-3); }
++.hdr-dropdown-menu a:hover .hdr-menu-desc { color: var(--c-text-2); }
++.hdr-dropdown-menu a.active .hdr-menu-label { color: var(--c-v-light); }
+ 
+ .hdr-actions {
+   margin-left: auto;
+@@ -558,15 +570,31 @@ ul,ol { list-style: none; }
+ }
+ .mobile-nav.open { display: flex; animation: mobile-drop 0.22s ease; }
+ .mobile-nav a {
+-  padding: 13px 28px;
++  padding: 10px 28px;
+   font-size: 16px;
+   color: var(--c-text-2);
+   font-weight: 500;
+-  border-bottom: 1px solid var(--c-rule);
+   transition: color 0.15s;
+ }
+-.mobile-nav a:last-child { border-bottom: none; }
+ .mobile-nav a:hover, .mobile-nav a.active { color: #fff; }
++/* The mobile menu shows the same groups as the desktop bar, under the same
++   headings, instead of one flat list where every page looks equally important. */
++.mobile-nav-group { padding: 10px 0 12px; border-bottom: 1px solid var(--c-rule); }
++.mobile-nav-group:last-of-type { border-bottom: none; }
++.mobile-nav-title {
++  padding: 0 28px 6px;
++  font-family: var(--f-ui);
++  font-size: 10px;
++  font-weight: 700;
++  letter-spacing: 0.12em;
++  text-transform: uppercase;
++  color: var(--c-text-3);
++}
++.mobile-nav-child { padding-left: 28px; font-size: 15px; color: var(--c-text-2); }
++/* A page with no children of its own reads as a top-level row. */
++.mobile-nav-single a { font-weight: 600; color: var(--c-text-1); }
++.mobile-nav-utility { display: flex; flex-wrap: wrap; gap: 4px 18px; padding-left: 28px; padding-right: 28px; }
++.mobile-nav-utility a { padding: 6px 0; font-size: 14px; color: var(--c-text-2); }
+ .mobile-nav-cta { padding: 16px 28px 0; }
+ 
+ /* ================================================================
+@@ -598,13 +626,24 @@ ul,ol { list-style: none; }
+   color: var(--c-text-3);
+   margin-bottom: 8px;
+ }
++.ftr-brand-blurb { max-width: 240px; margin-top: 8px; }
++.ftr-social {
++  display: flex;
++  flex-wrap: wrap;
++  gap: 8px 16px;
++  margin-top: 20px;
++  padding-top: 18px;
++  border-top: 1px solid var(--c-rule);
++}
++.ftr-social a { font-size: 12px; color: var(--c-text-3); transition: color 0.15s; }
++.ftr-social a:hover { color: var(--c-text-1); }
+ .ftr-col-title {
+   font-size: 10px;
+   font-weight: 700;
+   letter-spacing: 0.1em;
+   text-transform: uppercase;
+   color: var(--c-text-1);
+-  margin-bottom: 20px;
++  margin-bottom: 16px;
+   font-family: var(--f-body);
+ }
+ .ftr-links { display: grid; gap: 12px; }
+@@ -627,7 +666,7 @@ ul,ol { list-style: none; }
+    PAGE HERO (inner pages)
+    ================================================================ */
+ .page-hero {
+-  padding: calc(68px + 80px) 0 80px;
++  padding: calc(68px + 64px) 0 60px;
+   position: relative;
+   overflow: hidden;
+ }
+@@ -827,10 +866,17 @@ ul,ol { list-style: none; }
+   transition: gap 0.2s;
+ }
+ .preview-link:hover { gap: 10px; }
+-
+-/* Section header block */
+-.sec-header { margin-bottom: 52px; }
+-.sec-header-center { text-align: center; max-width: 680px; margin: 0 auto 52px; }
++/* The closing line of a section: one link, centred, same distance from the
++   content above it on every section that has one. */
++.sec-outro { margin-top: 44px; text-align: center; }
++
++/* Section header block — the one shape every section starts with: eyebrow,
++   headline, one line of explanation. Keeping it identical from section to
++   section is what makes a long page scannable rather than episodic. */
++.sec-header { margin-bottom: 44px; }
++.sec-header-center { text-align: center; max-width: 680px; margin: 0 auto 44px; }
++.sec-header .t-eyebrow { display: block; margin-bottom: 14px; }
++.sec-header-center .t-eyebrow { margin-bottom: 14px; }
+ .sec-header h2 { margin-bottom: 16px; }
+ .sec-header p { color: var(--c-text-2); font-size: 17px; line-height: 1.7; }
+ 
+@@ -1544,7 +1590,7 @@ textarea.contact-input { resize: vertical; min-height: 72px; }
+    RESPONSIVE — TABLET
+    ================================================================ */
+ @media (max-width: 1024px) {
+-  :root { --sp-section: 100px; }
++  :root { --sp-section: 84px; }
+   .hero { grid-template-columns: 1fr; min-height: auto; }
+   .hero-copy { padding: calc(74px + 60px) var(--gutter) 60px; max-width: 100%; }
+   .hero-viz-col { height: 420px; }
+@@ -1571,7 +1617,7 @@ textarea.contact-input { resize: vertical; min-height: 72px; }
+ }
+ 
+ @media (max-width: 640px) {
+-  :root { --gutter: 20px; --sp-section: 88px; }
++  :root { --gutter: 20px; --sp-section: 68px; }
+   .hdr-nav { display: none; }
+   .hdr-burger { display: flex; }
+   .pillars-grid { grid-template-columns: 1fr; }
+diff --git a/app/home.css b/app/home.css
+index e676571..8e052ac 100644
+--- a/app/home.css
++++ b/app/home.css
+@@ -67,6 +67,10 @@
+   letter-spacing: -0.035em;
+   margin-bottom: 22px;
+ }
++.hh-title-welcome {
++  font-size: clamp(42px, 5.1vw, 74px);
++  text-wrap: balance;
++}
+ .hh-title-a {
+   background: linear-gradient(100deg, #CFC6FF 0%, #FFFFFF 38%, #F2EEFF 100%);
+   -webkit-background-clip: text;
+@@ -294,6 +298,27 @@
+ @keyframes kmap-twinkle { 0%, 100% { opacity: 0.35; } 50% { opacity: 0.95; } }
+ @keyframes kmap-ripple { 0% { transform: scale(0.7); opacity: 0.95; } 100% { transform: scale(6.5); opacity: 0; } }
+ 
++/* ─── Founders teaser ───
++   Two small cards, sized by the grid rather than a fixed 180px width, so the
++   pair stays centred at every width. */
++.founder-mini-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px; }
++.founder-mini { width: 200px; text-align: center; }
++.founder-mini-avatar {
++  width: 52px; height: 52px;
++  border-radius: 50%;
++  background: linear-gradient(135deg, var(--c-bg-3), var(--c-bg-4));
++  border: 1px solid var(--c-rule);
++  display: grid;
++  place-items: center;
++  font-family: var(--f-display);
++  font-size: 18px;
++  font-weight: 700;
++  color: var(--c-v-light);
++  margin: 0 auto 14px;
++}
++.founder-mini-name { font-size: 15px; font-weight: 600; }
++.founder-mini-role { font-size: 11px; color: var(--c-text-3); margin-top: 3px; }
++
+ /* ─── Stats bar ─── */
+ .hh-stats {
+   display: grid;
+@@ -351,6 +376,7 @@
+   .hh-pill { font-size: 12px; margin-bottom: 16px; padding: 7px 13px 7px 10px; gap: 8px; }
+   .hh-pill-dot { width: 6px; height: 6px; }
+   .hh-title { font-size: clamp(40px, 12.5vw, 56px); line-height: 1.04; margin-bottom: 14px; }
++  .hh-title-welcome { font-size: clamp(36px, 10.4vw, 48px); }
+   .hh-sub { max-width: 34ch; font-size: 15px; line-height: 1.52; margin-bottom: 18px; }
+   .sform-hero { padding-left: 16px; }
+   .sform-hero .sform-input { font-size: 14px; padding-top: 11px; padding-bottom: 11px; }
+diff --git a/app/layout.tsx b/app/layout.tsx
+index 84ad2e6..c9126a3 100644
+--- a/app/layout.tsx
++++ b/app/layout.tsx
+@@ -20,19 +20,19 @@ const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variabl
+ 
+ export const metadata: Metadata = {
+   metadataBase: new URL("https://www.broka.co.ke"),
+-  title: { default: "BROKA — The Intelligence Layer for Commerce", template: "%s | BROKA" },
+-  description: "BROKA is building an intelligent commerce platform that connects buyers and sellers — with AI-powered discovery, negotiation and trust built in. Built in Kenya.",
++  title: { default: "BROKA — The Future of Intelligent Commerce", template: "%s | BROKA" },
++  description: "Welcome to BROKA — the future of intelligent commerce. Discover, understand and negotiate better deals with AI-powered tools built in Kenya.",
+   keywords: ["BROKA","intelligent commerce","AI","marketplace","Kenya","East Africa","Zeno","negotiation"],
+   authors: [{ name: "BROKA" }],
+   openGraph: {
+-    title: "BROKA — The Intelligence Layer for Commerce",
+-    description: "Commerce, intelligently connected. BROKA is building AI-native commerce infrastructure for East Africa and beyond.",
++    title: "BROKA — The Future of Intelligent Commerce",
++    description: "Welcome to BROKA — intelligent discovery, fairer negotiation and trusted commerce, built in Kenya.",
+     url: "https://www.broka.co.ke/",
+     siteName: "BROKA",
+     type: "website",
+     locale: "en_KE",
+   },
+-  twitter: { card: "summary_large_image", title: "BROKA — The Intelligence Layer for Commerce", description: "Commerce, intelligently connected. Built in Kenya." },
++  twitter: { card: "summary_large_image", title: "BROKA — The Future of Intelligent Commerce", description: "Welcome to BROKA — intelligent commerce, built in Kenya." },
+   // "./" resolves to each page's own address. A fixed home-page URL here was inherited by
+   // every page, telling search engines that all of them are duplicates of the home page.
+   alternates: { canonical: "./" },
+diff --git a/app/marketplace.css b/app/marketplace.css
+index 72999aa..09cf6b2 100644
+--- a/app/marketplace.css
++++ b/app/marketplace.css
+@@ -30,20 +30,26 @@
+ .skip-link:focus { transform: translateY(0); }
+ 
+ /* ─── Browse catalogue ─── */
++/* The catalogue header. It used to be a 585px marketing hero, which pushed
++   the first product below the fold on a page whose whole job is products. It
++   now introduces the catalogue, then gets out of the way. */
+ .browse-hero {
+   position: relative;
+   z-index: 1;
+-  padding: calc(74px + 76px) 0 58px;
++  padding: calc(74px + 44px) 0 26px;
+   background: radial-gradient(ellipse 70% 120% at 75% 0%, rgba(124, 92, 255, 0.14), transparent 65%);
+ }
+-.browse-hero h1 { max-width: 760px; margin-bottom: 18px; }
++.browse-hero h1 { max-width: 760px; margin-bottom: 14px; }
+ .browse-hero p { max-width: 620px; }
+-.browse-search { margin-top: 30px; max-width: 760px; }
++.browse-search { margin-top: 22px; max-width: 760px; }
+ .browse-section { position: relative; z-index: 1; }
+-.browse-categories-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
++.browse-categories-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+ .browse-category-label { color: var(--c-text-2); font: 600 12px var(--f-ui); }
+ .browse-category-hint { color: var(--c-text-3); font: 11px var(--f-ui); }
+-.browse-toolbar { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 30px 0 24px; }
++/* Only narrow screens scroll the rail, so the "swipe" hint is a pointer
++   affordance and is hidden where there is no swiping to do. */
++@media (min-width: 1025px) { .browse-category-hint { display: none; } }
++.browse-toolbar { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin: 22px 0 22px; }
+ .browse-count { color: var(--c-text-2); font-size: 13px; }
+ .browse-clear { display: inline-flex; margin-top: 5px; color: var(--c-v-light); font: 12px var(--f-ui); }
+ .browse-sort { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+@@ -192,12 +198,28 @@
+ .discover-note { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--c-text-3); text-align: center; }
+ 
+ /* ─── Listing sections ─── */
+-.listing-sec { position: relative; z-index: 1; padding-top: 40px; }
++.listing-sec { position: relative; z-index: 1; padding-top: 28px; }
+ .toolbar { display: flex; flex-wrap: wrap; gap: 14px 18px; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+ .toolbar-single { justify-content: center; }
+ .toolbar .sform { flex: 1 1 320px; max-width: 460px; }
+ .toolbar-single .sform { max-width: 620px; }
+-.result-count { font-size: 13px; color: var(--c-text-3); margin: 22px 0 16px; }
++/* Status tabs, search and categories in one panel. Loose over the moving
++   background they read as three unrelated controls floating on a starfield. */
++.filter-panel {
++  display: grid;
++  gap: 14px;
++  padding: 18px;
++  border: 1px solid var(--c-rule);
++  border-radius: 20px;
++  background: rgba(7, 10, 30, 0.62);
++  backdrop-filter: blur(14px);
++  -webkit-backdrop-filter: blur(14px);
++  margin-bottom: 28px;
++}
++.filter-panel .toolbar,
++.filter-panel .browse-toolbar { margin: 0; }
++.filter-panel .chips { padding: 0; }
++.result-count { font-size: 13px; color: var(--c-text-3); margin: 0 0 16px; }
+ 
+ .ftabs {
+   display: inline-flex;
+@@ -215,7 +237,21 @@
+ .ftab:hover { color: var(--c-text-1); background: var(--c-surface); }
+ .ftab.active { color: #fff; background: var(--c-v); }
+ 
+-.chips { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 10px; scrollbar-width: thin; scrollbar-color: var(--c-rule-2) transparent; -webkit-overflow-scrolling: touch; }
++/* Category filters. On a desktop the rail ran off the right edge of the
++   viewport — 2924px of chips inside a 1240px box — so 13 of the 21 categories
++   were unreachable, with only a "swipe" hint on a mouse. Wide screens now
++   show every category; narrow ones keep the swipeable rail. */
++.chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 4px 2px 2px; }
++@media (max-width: 1024px) {
++  .chips {
++    flex-wrap: nowrap;
++    overflow-x: auto;
++    padding-bottom: 10px;
++    scrollbar-width: thin;
++    scrollbar-color: var(--c-rule-2) transparent;
++    -webkit-overflow-scrolling: touch;
++  }
++}
+ .chip {
+   flex-shrink: 0;
+   display: inline-flex; align-items: center; gap: 6px;
+@@ -324,7 +360,9 @@
+ .t-sm > svg, .state-body > svg { display: inline; vertical-align: -2px; margin-right: 4px; }
+ 
+ /* ─── States ─── */
+-.state { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 56px 24px; border: 1px dashed var(--c-rule-2); border-radius: 20px; background: rgba(7, 10, 30, 0.5); max-width: 640px; margin: 28px auto; }
++/* An empty list is still a page someone has to use: it says what is missing
++   and offers the three things they can do instead. */
++.state { display: grid; justify-items: center; gap: 10px; text-align: center; padding: 44px 24px; border: 1px dashed var(--c-rule-2); border-radius: 20px; background: rgba(7, 10, 30, 0.5); max-width: 680px; margin: 8px auto 28px; }
+ .state-warn { border-color: rgba(245, 158, 11, 0.4); }
+ .state-emoji { font-size: 40px; }
+ .state-title { font-size: 20px; font-weight: 700; }
+diff --git a/app/page.tsx b/app/page.tsx
+index 81981dc..124e33f 100644
+--- a/app/page.tsx
++++ b/app/page.tsx
+@@ -11,23 +11,42 @@ import { getHomeData } from "@/lib/api/home";
+ // from fresh data every minute rather than once at deploy time.
+ export const revalidate = 60;
+ 
++/**
++ * The home page, in the order it is meant to be read:
++ *
++ *   1. What BROKA is            — the hero
++ *   2. What is on BROKA today   — live listings
++ *   3. Why it exists            — the problem
++ *   4. What we are building     — the four capabilities
++ *   5. The differentiator       — Zeno
++ *   6. Where it goes            — the vision
++ *   7. How it is built          — the technology
++ *   8. Who is building it       — the founders
++ *   9. What to do next          — the closing call to action
++ *
++ * Every section answers one question and hands off to the next. The page used
++ * to also carry a three-step "Find / Negotiate / Complete" strip that restated
++ * the four capabilities above it in different words, and the four capabilities
++ * restated the eight-step journey on /how-it-works. One framing now, with a
++ * link to the detail.
++ */
+ export default async function Home() {
+   const market = await getHomeData();
+   return (
+     <>
+-      {/* ─── HERO: pitch, search, Zeno's orbit, live numbers ─ */}
++      {/* ─── 1. HERO: pitch, search, Zeno's orbit, live numbers ─ */}
+       <HomeHero data={market} />
+ 
+-      {/* ─── LIVE AUCTIONS + NEW STORES (from the BROKA API) ─ */}
++      {/* ─── 2. LIVE LISTINGS + NEW STORES (from the BROKA API) ─ */}
+       <LiveMarketplace data={market} />
+ 
+-      {/* ─── THE COMMERCE PROBLEM ─────────────────────────── */}
+-      <section className="sec atm-violet-center has-field" aria-labelledby="prob-h">
++      {/* ─── 3. THE PROBLEM ───────────────────────────────────── */}
++      <section className="sec bg-2" aria-labelledby="prob-h">
+         <div className="wrap">
+           <Reveal className="home-problem">
+-            <span className="t-eyebrow">The problem</span>
++            <span className="t-eyebrow">Why BROKA exists</span>
+             <p className="home-problem-statement" id="prob-h">
+-              Information doesn&apos;t flow{" "}<br className="br-lg" />where it&apos;s <em>needed.</em>
++              Information doesn&apos;t flow where it&apos;s <em>needed.</em>
+             </p>
+             <p className="home-problem-body">
+               In informal markets across East Africa, buyers and sellers rarely
+@@ -43,13 +62,13 @@ export default async function Home() {
+         </div>
+       </section>
+ 
+-      {/* ─── WHAT BROKA IS ─────────────────────────────────── */}
++      {/* ─── 4. WHAT BROKA IS ─────────────────────────────────── */}
+       <section className="sec bg-1" id="about" aria-labelledby="about-h">
+         <div className="wrap">
+           <Reveal className="sec-header">
+             <span className="t-eyebrow">What we&apos;re building</span>
+             <h2 className="t-h2" id="about-h">
+-              Not another marketplace.{" "}<br className="br-lg" />The intelligence inside one.
++              Not another marketplace. The intelligence inside one.
+             </h2>
+             <p className="t-body-lg" style={{ maxWidth: 560, marginTop: 16 }}>
+               BROKA sits between buyers and sellers — not as an intermediary,
+@@ -58,7 +77,6 @@ export default async function Home() {
+               together in a single coherent experience.
+             </p>
+           </Reveal>
+-
+           <div className="pillars-grid">
+             {[
+               { num: "01", title: "Discover", body: "Find what you need. Surface who has it. Context-aware, not just keyword-matched." },
+@@ -73,23 +91,24 @@ export default async function Home() {
+               </Reveal>
+             ))}
+           </div>
+-
+-          <div style={{ marginTop: 48, textAlign: "center" }}>
+-            <Link href="/what-is-broka" className="preview-link">
+-              Full product overview →
++          {/* The eight-step version of this lives on /how-it-works; this is the
++              only place on the home page that points at it. */}
++          <div className="sec-outro">
++            <Link href="/how-it-works" className="preview-link">
++              See the full transaction journey →
+             </Link>
+           </div>
+         </div>
+       </section>
+ 
+-      {/* ─── ZENO PREVIEW ──────────────────────────────────── */}
++      {/* ─── 5. ZENO ──────────────────────────────────────────── */}
+       <section className="sec atm-violet" aria-labelledby="zeno-prev-h">
+         <div className="wrap">
+           <div className="grid-2" style={{ gap: 80 }}>
+             <Reveal>
+               <span className="t-eyebrow">Meet Zeno</span>
+               <h2 className="t-h2" id="zeno-prev-h">
+-                Intelligence built into{" "}<br className="br-lg" />every transaction.
++                Intelligence built into every transaction.
+               </h2>
+               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
+                 Zeno is not a chatbot attached to a marketplace. Zeno is
+@@ -123,44 +142,14 @@ export default async function Home() {
+         </div>
+       </section>
+ 
+-      {/* ─── HOW IT CHANGES A TRANSACTION ────────────────── */}
+-      <section className="sec bg-2" aria-labelledby="txn-h">
+-        <div className="wrap">
+-          <Reveal className="sec-header-center">
+-            <span className="t-eyebrow">How BROKA works</span>
+-            <h2 className="t-h2" id="txn-h">From intent to outcome.</h2>
+-            <p className="t-body">
+-              A deal that used to take days of phone calls, uncertain pricing and
+-              trust built on nothing but a handshake.
+-            </p>
+-          </Reveal>
+-          <div className="grid-3" style={{ gap: 2, border: "1px solid var(--c-rule)", borderRadius: 18, overflow: "hidden" }}>
+-            {[
+-              { step: "01", title: "Find", body: "Describe what you need in plain language. BROKA surfaces relevant sellers and opportunities." },
+-              { step: "02", title: "Negotiate", body: "Zeno assists with context, pricing information, and negotiation — for both sides." },
+-              { step: "03", title: "Complete", body: "Move toward agreement, payment and delivery with trust built into the platform." },
+-            ].map((s, i) => (
+-              <Reveal key={s.step} delay={i * 0.1} style={{ padding: "44px 36px", background: "var(--c-surface)" }}>
+-                <div style={{ fontSize: 44, fontWeight: 800, fontFamily: "var(--f-display)", color: "var(--c-v-dim)", letterSpacing: "-0.05em", lineHeight: 1, marginBottom: 20 }}>{s.step}</div>
+-                <h3 className="t-h4" style={{ marginBottom: 10 }}>{s.title}</h3>
+-                <p className="t-body" style={{ fontSize: 14 }}>{s.body}</p>
+-              </Reveal>
+-            ))}
+-          </div>
+-          <div style={{ textAlign: "center", marginTop: 40 }}>
+-            <Link href="/how-it-works" className="preview-link">See the full transaction journey →</Link>
+-          </div>
+-        </div>
+-      </section>
+-
+-      {/* ─── KENYA → AFRICA → GLOBAL ─────────────────────── */}
++      {/* ─── 6. KENYA → AFRICA → GLOBAL ───────────────────────── */}
+       <section className="sec atm-amber" aria-labelledby="vision-prev-h">
+         <div className="wrap">
+           <div className="grid-2" style={{ gap: 80, alignItems: "center" }}>
+             <Reveal>
+               <span className="t-eyebrow t-eyebrow-amber">The vision</span>
+               <h2 className="t-h2" id="vision-prev-h">
+-                Kenya. East Africa.{" "}<br className="br-lg" />The world.
++                Kenya. East Africa. The world.
+               </h2>
+               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
+                 We are starting in Kenya because that is where we understand
+@@ -191,14 +180,14 @@ export default async function Home() {
+         </div>
+       </section>
+ 
+-      {/* ─── TECHNOLOGY PREVIEW ───────────────────────────── */}
++      {/* ─── 7. TECHNOLOGY ────────────────────────────────────── */}
+       <section className="sec bg-1" aria-labelledby="tech-prev-h">
+         <div className="wrap">
+           <div className="grid-2" style={{ alignItems: "center" }}>
+             <Reveal>
+               <span className="t-eyebrow">Under the hood</span>
+               <h2 className="t-h2" id="tech-prev-h">
+-                Engineered for{" "}<br className="br-lg" />real commerce.
++                Engineered for real commerce.
+               </h2>
+               <p className="t-body-lg" style={{ marginTop: 20, marginBottom: 32 }}>
+                 BROKA is being built on a technical foundation designed to
+@@ -225,7 +214,7 @@ export default async function Home() {
+         </div>
+       </section>
+ 
+-      {/* ─── FOUNDERS PREVIEW ─────────────────────────────── */}
++      {/* ─── 8. FOUNDERS ──────────────────────────────────────── */}
+       <section className="sec bg-0" aria-labelledby="fnd-prev-h">
+         <Reveal className="wrap" style={{ textAlign: "center" }}>
+           <span className="t-eyebrow">The founders</span>
+@@ -236,14 +225,14 @@ export default async function Home() {
+             Xavier and Arnold Ochieng founded BROKA after observing the
+             friction and cost in informal commerce first-hand.
+           </p>
+-          <div style={{ display: "flex", gap: 20, justifyContent: "center", marginBottom: 40 }}>
++          <div className="founder-mini-grid">
+             {["Xavier", "Arnold Ochieng"].map((name, i) => (
+-              <div key={name} className="card card-sm" style={{ width: 180, textAlign: "center" }}>
+-                <div style={{ width: 52, height: 52, borderRadius: "50%", background: "linear-gradient(135deg,var(--c-bg-3),var(--c-bg-4))", border: "1px solid var(--c-rule)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--f-display)", fontSize: 18, fontWeight: 700, color: "var(--c-v-light)", margin: "0 auto 14px" }}>
++              <div key={name} className="card card-sm founder-mini">
++                <div className="founder-mini-avatar">
+                   {i === 0 ? "X" : "AO"}
+                 </div>
+-                <div style={{ fontSize: 15, fontWeight: 600 }}>{name}</div>
+-                <div style={{ fontSize: 11, color: "var(--c-text-3)", marginTop: 3 }}>Co-Founder</div>
++                <div className="founder-mini-name">{name}</div>
++                <div className="founder-mini-role">Co-Founder</div>
+               </div>
+             ))}
+           </div>
+@@ -253,7 +242,7 @@ export default async function Home() {
+         </Reveal>
+       </section>
+ 
+-      {/* ─── FINAL CTA ─────────────────────────────────────── */}
++      {/* ─── 9. FINAL CTA ─────────────────────────────────────── */}
+       <section className="sec atm-violet-center has-field" aria-labelledby="cta-h">
+         <FlowMesh />
+         <div className="wrap">
+diff --git a/app/stores/page.tsx b/app/stores/page.tsx
+index 9bf5f73..f0d7b61 100644
+--- a/app/stores/page.tsx
++++ b/app/stores/page.tsx
+@@ -44,16 +44,18 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
+ 
+       <section className="sec-sm listing-sec" aria-label="Stores">
+         <div className="wrap">
+-          <div className="toolbar toolbar-single">
+-            <SearchForm
+-              action="/stores"
+-              value={q}
+-              placeholder="Search stores by name…"
+-              hidden={{ category: category ?? undefined }}
+-              label="Search stores"
+-            />
++          <div className="filter-panel">
++            <div className="toolbar toolbar-single">
++              <SearchForm
++                action="/stores"
++                value={q}
++                placeholder="Search stores by name…"
++                hidden={{ category: category ?? undefined }}
++                label="Search stores"
++              />
++            </div>
++            <CategoryChips basePath="/stores" active={category} keep={{ q }} />
+           </div>
+-          <CategoryChips basePath="/stores" active={category} keep={{ q }} />
+ 
+           {failed ? (
+             <ApiNotice retryHref={here} />
+@@ -61,10 +63,19 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
+             <EmptyState
+               emoji="🏬"
+               title={filtered ? "No stores match" : "No stores yet"}
+-              actionHref={filtered ? "/stores" : undefined}
+-              actionLabel={filtered ? "Clear search" : undefined}
++              actions={
++                filtered
++                  ? [{ label: "Clear search", href: "/stores" }]
++                  : [
++                      { label: "Browse all products", href: "/browse" },
++                      { label: "See the Auction House", href: "/auctions" },
++                      { label: "Get the app", href: "/download" },
++                    ]
++              }
+             >
+-              {filtered ? "Try a different name or category." : "New stores open on BROKA every week. Check back soon."}
++              {filtered
++                ? "Try a different name or category."
++                : "New stores open on BROKA every week. In the meantime the catalogue has every listing on the platform."}
+             </EmptyState>
+           ) : (
+             <>
+diff --git a/components/home/HomeHero.tsx b/components/home/HomeHero.tsx
+index 785de32..c7e4bad 100644
+--- a/components/home/HomeHero.tsx
++++ b/components/home/HomeHero.tsx
+@@ -1,7 +1,7 @@
+ import Link from "next/link";
+-import { Boxes, Gavel, ShieldCheck, Store } from "lucide-react";
++import { Boxes, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
+ import { SearchForm } from "@/components/marketplace/SearchForm";
+-import { FEATURED_CATEGORIES } from "@/lib/categories";
++import { CATEGORIES, FEATURED_CATEGORIES, categorySlug } from "@/lib/categories";
+ import type { HomeData } from "@/lib/api/home";
+ import { KenyaMap } from "./KenyaMap";
+ import { ZenoOrbit } from "./ZenoOrbit";
+@@ -23,26 +23,37 @@ function KenyaFlag() {
+ }
+ 
+ /**
+- * The home page's first screen, built to the BROKA mockup: pitch, search and
++ * The welcome page's first screen, built to the BROKA mockup: pitch, search and
+  * categories on the left; Zeno orbiting the marketplace on the right; a
+- * glowing Kenya behind; live numbers along the bottom. Every number comes
+- * from the API: one it could not give is left out, never made up.
++ * glowing Kenya behind; the numbers along the bottom.
++ *
++ * The bar used to read "0 live auctions, 0 online stores, 5 listings" on a
++ * quiet day, which made the first thing a visitor saw a marketplace that
++ * looked abandoned. Live counts now appear only when there is something to
++ * count, and the bar is topped up to four cells with things that are always
++ * true about the product. Nothing is invented and nothing reads as empty.
+  */
+ export function HomeHero({ data }: { data: HomeData }) {
+-  const stats: { icon: React.ReactNode; tone: string; value: string; label: string }[] = [];
+-  if (data.liveAuctionCount !== null)
+-    stats.push({
++  type Stat = { icon: React.ReactNode; tone: string; value: string; label: string };
++  const live: Stat[] = [];
++  if (data.liveAuctionCount)
++    live.push({
+       icon: <Gavel size={22} />,
+       tone: "violet",
+       // The API lists up to 20 at a time, so 20 means "20 or more".
+       value: data.liveAuctionCount >= 20 ? "20+" : nf.format(data.liveAuctionCount),
+       label: "Live auctions",
+     });
+-  if (data.storeCount !== null)
+-    stats.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
+-  if (data.activeListings !== null)
+-    stats.push({ icon: <Boxes size={22} />, tone: "cyan", value: nf.format(data.activeListings), label: "Active listings" });
+-  stats.push({ icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" });
++  if (data.storeCount)
++    live.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
++  if (data.activeListings)
++    live.push({ icon: <Boxes size={22} />, tone: "cyan", value: nf.format(data.activeListings), label: "Active listings" });
++  const always: Stat[] = [
++    { icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" },
++    { icon: <Sparkles size={22} />, tone: "violet", value: "Zeno", label: "AI negotiation" },
++    { icon: <LayoutGrid size={22} />, tone: "cyan", value: String(CATEGORIES.length), label: "Categories" },
++  ];
++  const stats: Stat[] = [...live, ...always].slice(0, 4);
+ 
+   return (
+     <section className="hh" aria-labelledby="hh-title">
+@@ -51,16 +62,16 @@ export function HomeHero({ data }: { data: HomeData }) {
+         <div className="hh-copy">
+           <p className="hh-pill hh-in" style={{ ["--d" as string]: "0s" }}>
+             <KenyaFlag />
+-            Kenya&apos;s AI Marketplace
++            Welcome to BROKA
+             <span className="hh-pill-dot" aria-hidden="true" />
+           </p>
+-          <h1 className="hh-title hh-in" id="hh-title" style={{ ["--d" as string]: "0.08s" }}>
+-            <span className="hh-title-a">Buy. Sell.</span>
+-            <span className="hh-title-b">Smarter.</span>
++          <h1 className="hh-title hh-title-welcome hh-in" id="hh-title" style={{ ["--d" as string]: "0.08s" }}>
++            <span className="hh-title-a">The future of</span>
++            <span className="hh-title-b">intelligent commerce.</span>
+           </h1>
+           <p className="hh-sub hh-in" style={{ ["--d" as string]: "0.16s" }}>
+-            BROKA connects buyers and sellers with the power of AI. Negotiate fairly, trade safely, and get better
+-            deals with Zeno.
++            Meet BROKA, Kenya&apos;s AI-powered marketplace. Discover products, understand your options, and negotiate
++            with Zeno — for smarter, fairer deals.
+           </p>
+           <div className="hh-in" style={{ ["--d" as string]: "0.24s" }}>
+             <SearchForm
+@@ -73,7 +84,7 @@ export function HomeHero({ data }: { data: HomeData }) {
+           </div>
+           <nav className="hh-orbs hh-in" aria-label="Popular categories" style={{ ["--d" as string]: "0.32s" }}>
+             {FEATURED_CATEGORIES.slice(0, 5).map((c) => (
+-              <Link key={c.name} href={`/browse/${encodeURIComponent(c.name.toLowerCase().replace(/\s+/g, "-"))}`} className="hh-orb">
++              <Link key={c.name} href={`/browse/${categorySlug(c.name)}`} className="hh-orb">
+                 <span className="hh-orb-ring" style={{ ["--a" as string]: c.gradient[0], ["--b" as string]: c.gradient[1] }}>
+                   <span aria-hidden="true">{c.emoji}</span>
+                 </span>
+diff --git a/components/home/ZenoOrbit.tsx b/components/home/ZenoOrbit.tsx
+index 92e9116..2778cce 100644
+--- a/components/home/ZenoOrbit.tsx
++++ b/components/home/ZenoOrbit.tsx
+@@ -1,4 +1,5 @@
+ import Link from "next/link";
++import { categorySlug, categoryVisual } from "@/lib/categories";
+ import { Sparkles } from "lucide-react";
+ import { TiltStage } from "./TiltStage";
+ 
+@@ -43,13 +44,20 @@ const COMETS = [
+ 
+ // x, y: where each tile sits on wide screens; mx, my: on phones, where the
+ // scene spans the whole screen width and the outer tiles must come inward.
++//
++// Only the position is set here. The name, the wording and the emoji come from
++// the canonical category list (lib/categories.ts), so a tile, the category rail
++// below it and the catalogue page all call the same category the same thing —
++// the tiles used to say "Vehicles" and "Businesses" beside chips that said
++// "Automobiles" and "Business & Industrial", with two different emoji for
++// Electronics and Fashion.
+ const TILES = [
+-  { name: "Property", label: "Property", emoji: "🏠", x: 15, y: 20, mx: 14, my: 17, delay: 0, tilt: -6 },
+-  { name: "Automobiles", label: "Vehicles", emoji: "🚗", x: 56, y: 5, mx: 50, my: 6, delay: -1.4, tilt: 4 },
+-  { name: "Electronics", label: "Electronics", emoji: "🎮", x: 90, y: 14, mx: 86, my: 14, delay: -2.9, tilt: 7 },
+-  { name: "Fashion", label: "Fashion", emoji: "🛍️", x: 89, y: 65, mx: 87, my: 74, delay: -4.1, tilt: 6 },
+-  { name: "Business & Industrial", label: "Businesses", emoji: "🏢", x: 63, y: 91, mx: 52, my: 95, delay: -2.2, tilt: -5 },
+-  { name: "Agriculture", label: "Agriculture", emoji: "🌱", x: 17, y: 77, mx: 13, my: 72, delay: -3.5, tilt: -7 },
++  { name: "Property", x: 15, y: 20, mx: 14, my: 17, delay: 0, tilt: -6 },
++  { name: "Automobiles", x: 56, y: 5, mx: 50, my: 6, delay: -1.4, tilt: 4 },
++  { name: "Electronics", x: 90, y: 14, mx: 86, my: 14, delay: -2.9, tilt: 7 },
++  { name: "Fashion", x: 89, y: 65, mx: 87, my: 74, delay: -4.1, tilt: 6 },
++  { name: "Business & Industrial", x: 63, y: 91, mx: 52, my: 95, delay: -2.2, tilt: -5 },
++  { name: "Agriculture", x: 17, y: 77, mx: 13, my: 72, delay: -3.5, tilt: -7 },
+ ] as const;
+ 
+ function Comet({ c, back }: { c: (typeof COMETS)[number]; back: boolean }) {
+@@ -165,7 +173,9 @@ export function ZenoOrbit() {
+         {TILES.map((t) => (
+           <Link
+             key={t.name}
+-            href={`/search?category=${encodeURIComponent(t.name)}`}
++            /* Straight to the category page. This used to go through
++               /search?category=, which redirects here anyway. */
++            href={`/browse/${categorySlug(t.name)}`}
+             className="zo-tile"
+             style={{
+               ["--x" as string]: `${t.x}%`,
+@@ -176,9 +186,9 @@ export function ZenoOrbit() {
+           >
+             <span className="zo-tile-card" style={{ animationDelay: `${t.delay}s`, ["--tilt" as string]: `${t.tilt}deg` }}>
+               <span className="zo-tile-emoji" aria-hidden="true">
+-                {t.emoji}
++                {categoryVisual(t.name).emoji}
+               </span>
+-              <span className="zo-tile-label">{t.label}</span>
++              <span className="zo-tile-label">{categoryVisual(t.name).name}</span>
+             </span>
+           </Link>
+         ))}
+diff --git a/components/layout/Footer.tsx b/components/layout/Footer.tsx
+index 3032dff..430356b 100644
+--- a/components/layout/Footer.tsx
++++ b/components/layout/Footer.tsx
+@@ -1,21 +1,33 @@
+ import Link from "next/link";
+ import Image from "next/image";
+ import { Mail, MessageCircle, Phone } from "lucide-react";
++import { footerNav, navLegal } from "@/data/navigation";
+ import { CONTACT, SOCIAL, mailto } from "@/lib/site";
+ 
++/**
++ * The footer reads from the same taxonomy as the header (data/navigation.ts).
++ * Its columns are the same four groups, so nothing here can drift out of step
++ * with the top bar, and the social links no longer take a whole column of
++ * their own away from the pages people are actually looking for.
++ */
+ export function Footer() {
+   const year = new Date().getFullYear();
++  const social = [
++    { label: "X / Twitter", href: SOCIAL.x },
++    { label: "LinkedIn", href: SOCIAL.linkedin },
++    { label: "GitHub", href: SOCIAL.github },
++  ];
+   return (
+     <footer className="ftr" aria-label="Site footer">
+       <div className="wrap">
+         <div className="ftr-grid">
+-          <div>
++          <div className="ftr-brand-col">
+             <div className="ftr-brand">
+               <Image src="/assets/broka-mark.png" alt="" width={34} height={34} />
+               <span className="ftr-brand-name">BROKA</span>
+             </div>
+             <p className="ftr-brand-tag">Future of Intelligent Commerce</p>
+-            <p className="t-sm" style={{ maxWidth: 240, marginTop: 8 }}>
++            <p className="t-sm ftr-brand-blurb">
+               An intelligent commerce platform connecting buyers and sellers in
+               East Africa and beyond.
+             </p>
+@@ -30,49 +42,35 @@ export function Footer() {
+                 <MessageCircle size={14} aria-hidden="true" /> WhatsApp us
+               </a>
+             </address>
+-          </div>
+-          <div>
+-            <p className="ftr-col-title">Marketplace</p>
+-            <nav className="ftr-links" aria-label="Marketplace links">
+-              <Link href="/auctions">Auction House</Link>
+-              <Link href="/stores">Online stores</Link>
+-              <Link href="/search">Search</Link>
+-              <Link href="/download">Get the app</Link>
+-            </nav>
+-          </div>
+-          <div>
+-            <p className="ftr-col-title">Product</p>
+-            <nav className="ftr-links" aria-label="Product links">
+-              <Link href="/what-is-broka">What is BROKA</Link>
+-              <Link href="/how-it-works">How it works</Link>
+-              <Link href="/zeno">Meet Zeno</Link>
+-              <Link href="/technology">Technology</Link>
+-              <Link href="/roadmap">Roadmap</Link>
+-            </nav>
+-          </div>
+-          <div>
+-            <p className="ftr-col-title">Company</p>
+-            <nav className="ftr-links" aria-label="Company links">
+-              <Link href="/vision">Vision</Link>
+-              <Link href="/founders">Founders</Link>
+-              <Link href="/faq">FAQ</Link>
+-              <Link href="/contact">Contact</Link>
+-            </nav>
+-          </div>
+-          <div>
+-            <p className="ftr-col-title">Follow</p>
+-            <nav className="ftr-links" aria-label="Social links">
+-              <a href={SOCIAL.x} target="_blank" rel="noopener noreferrer">X / Twitter</a>
+-              <a href={SOCIAL.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
+-              <a href={SOCIAL.github} target="_blank" rel="noopener noreferrer">GitHub</a>
++            <nav className="ftr-social" aria-label="Social links">
++              {social.map((s) => (
++                <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer">
++                  {s.label}
++                </a>
++              ))}
+             </nav>
+           </div>
++          {footerNav.map((group) => (
++            <div key={group.title}>
++              <p className="ftr-col-title">{group.title}</p>
++              <nav className="ftr-links" aria-label={`${group.title} links`}>
++                {group.links.map((link) => (
++                  <Link key={link.href} href={link.href}>
++                    {link.label}
++                  </Link>
++                ))}
++              </nav>
++            </div>
++          ))}
+         </div>
+         <div className="ftr-bottom">
+           <p className="ftr-copy">&copy; {year} BROKA. All rights reserved.</p>
+           <nav className="ftr-legal" aria-label="Legal">
+-            <Link href="/privacy">Privacy</Link>
+-            <Link href="/terms">Terms</Link>
++            {navLegal.map((link) => (
++              <Link key={link.href} href={link.href}>
++                {link.label}
++              </Link>
++            ))}
+           </nav>
+           <p className="ftr-built">Built in <em>Kenya.</em> Designed for a global market.</p>
+         </div>
+diff --git a/components/layout/Header.tsx b/components/layout/Header.tsx
+index e01facd..3a37544 100644
+--- a/components/layout/Header.tsx
++++ b/components/layout/Header.tsx
+@@ -1,13 +1,25 @@
+ "use client";
+-
+ import { useState, useRef, useEffect } from "react";
+ import Link from "next/link";
+ import Image from "next/image";
+ import { usePathname } from "next/navigation";
+ import { motion, AnimatePresence } from "framer-motion";
+-import { navLinks } from "@/data/navigation";
++import { navLinks, navUtility } from "@/data/navigation";
+ import { Menu, X, ChevronDown, Search } from "lucide-react";
+ 
++/**
++ * The site header.
++ *
++ * Structure rules it follows, so the bar stays readable as pages are added:
++ *  - Four primary entries. A page is never reachable from two labels, and no
++ *    two labels point at the same page (the old "Browse" + "Explore > All
++ *    products" pair did both).
++ *  - One primary call to action: the app. "Sell" stays a nav entry, so the
++ *    seller route is still one click away.
++ *  - Exactly one nav entry is marked current, and it is the most specific
++ *    match — /browse used to light up two entries at once.
++ *  - Menus open on hover as well as click, and every item says what it is.
++ */
+ export function Header() {
+   const pathname = usePathname();
+   const [menuOpen, setMenuOpen] = useState(false);
+@@ -61,10 +73,11 @@ export function Header() {
+   }, [menuOpen]);
+ 
+   const isActive = (href: string) =>
+-    href === "/" ? pathname === "/" : pathname.startsWith(href);
+-  // A group is active when the page is any of its children (or its own link).
++    href === "/" ? pathname === "/" : pathname === href || pathname.startsWith(`${href}/`);
++  // A group is current when the page is one of its children. Its own link is
++  // one of those children, so a group never double-marks with a sibling entry.
+   const isGroupActive = (item: { href: string; children?: { href: string }[] }) =>
+-    isActive(item.href) || Boolean(item.children?.some((c) => isActive(c.href)));
++    item.children?.length ? Boolean(item.children.some((c) => isActive(c.href))) : isActive(item.href);
+ 
+   return (
+     <>
+@@ -78,31 +91,38 @@ export function Header() {
+               <span className="hdr-word-tag">Intelligent Commerce</span>
+             </span>
+           </Link>
+-
+           {/* Desktop nav */}
+           <nav className="hdr-nav" aria-label="Primary navigation" ref={navRef}>
+             {navLinks.map((item) =>
+               item.children ? (
+-                <div className="hdr-dropdown" key={item.label}>
+-                  <button
++                <div
++                  className="hdr-dropdown"
++                  key={item.label}
++                  onMouseEnter={() => setOpenGroup(item.label)}
++                  onMouseLeave={() => setOpenGroup((g) => (g === item.label ? null : g))}
++                >
++                  <Link
++                    href={item.href}
+                     className={`hdr-dropdown-btn${isGroupActive(item) ? " active" : ""}`}
+                     aria-expanded={openGroup === item.label}
+                     aria-haspopup="true"
+-                    onClick={() => setOpenGroup((g) => (g === item.label ? null : item.label))}
++                    aria-current={isGroupActive(item) ? "page" : undefined}
++                    onClick={() => setOpenGroup(null)}
+                   >
+                     {item.label}
+-                    <motion.span
+-                      animate={{ rotate: openGroup === item.label ? 180 : 0 }}
+-                      transition={{ duration: 0.2, ease: "easeOut" }}
+-                      style={{ display: "inline-flex" }}
+-                    >
+-                      <ChevronDown className="hdr-dropdown-chevron" size={14} />
+-                    </motion.span>
+-                  </button>
++                    <ChevronDown className="hdr-dropdown-chevron" size={14} aria-hidden="true" />
++                  </Link>
+                   <div className={`hdr-dropdown-menu${openGroup === item.label ? " open" : ""}`} role="menu">
+                     {item.children.map((child) => (
+-                      <Link key={child.href} href={child.href} role="menuitem">
+-                        {child.label}
++                      <Link
++                        key={child.href}
++                        href={child.href}
++                        role="menuitem"
++                        className={isActive(child.href) ? "active" : ""}
++                        aria-current={isActive(child.href) ? "page" : undefined}
++                      >
++                        <span className="hdr-menu-label">{child.label}</span>
++                        {child.description && <span className="hdr-menu-desc">{child.description}</span>}
+                       </Link>
+                     ))}
+                   </div>
+@@ -119,15 +139,14 @@ export function Header() {
+               )
+             )}
+           </nav>
+-
+           {/* Actions */}
+           <div className="hdr-actions">
+             <Link href="/browse" className="hdr-search" aria-label="Search BROKA">
+               <Search size={17} aria-hidden="true" />
+               <span className="hdr-search-text">Search</span>
+             </Link>
+-            <Link href="/sell" className="hdr-cta">
+-              Start selling
++            <Link href="/download" className="hdr-cta">
++              Get the app
+             </Link>
+             <button
+               className="hdr-burger"
+@@ -152,8 +171,7 @@ export function Header() {
+           </div>
+         </div>
+       </header>
+-
+-      {/* Mobile nav */}
++      {/* Mobile nav: the same groups as the desktop menu, labelled. */}
+       <nav
+         id="mobile-nav"
+         className={`mobile-nav${menuOpen ? " open" : ""}`}
+@@ -161,41 +179,45 @@ export function Header() {
+         aria-hidden={!menuOpen}
+       >
+         {navLinks.map((item) =>
+-          item.children ? (
+-            <div key={item.label}>
+-              <Link
+-                href={item.href}
+-                className={isActive(item.href) ? "active" : ""}
+-                onClick={closeMenu}
+-              >
+-                {item.label}
+-              </Link>
++          item.children?.length ? (
++            /* A group shows its heading and its pages. The heading is not
++               itself a link — every page under it is listed, so a separate
++               "all of it" row would just repeat the first one. */
++            <div className="mobile-nav-group" key={item.label}>
++              <p className="mobile-nav-title">{item.label}</p>
+               {item.children.map((child) => (
+                 <Link
+                   key={child.href}
+                   href={child.href}
+-                  className={isActive(child.href) ? "active" : ""}
++                  className={`mobile-nav-child${isActive(child.href) ? " active" : ""}`}
+                   onClick={closeMenu}
+-                  style={{ paddingLeft: 44, fontSize: 14, opacity: 0.8 }}
+                 >
+                   {child.label}
+                 </Link>
+               ))}
+             </div>
+           ) : (
+-            <Link
+-              key={item.href}
+-              href={item.href}
+-              className={isActive(item.href) ? "active" : ""}
+-              onClick={closeMenu}
+-            >
+-              {item.label}
+-            </Link>
++            <div className="mobile-nav-group mobile-nav-single" key={item.label}>
++              <Link
++                href={item.href}
++                className={isActive(item.href) ? "active" : ""}
++                onClick={closeMenu}
++              >
++                {item.label}
++              </Link>
++            </div>
+           )
+         )}
++        <div className="mobile-nav-group mobile-nav-utility">
++          {navUtility.map((link) => (
++            <Link key={link.href} href={link.href} onClick={closeMenu}>
++              {link.label}
++            </Link>
++          ))}
++        </div>
+         <div className="mobile-nav-cta">
+-            <Link href="/sell" className="btn btn-primary" onClick={closeMenu}>
+-              Start selling on BROKA
++          <Link href="/download" className="btn btn-primary" onClick={closeMenu}>
++            Get the BROKA app
+           </Link>
+         </div>
+       </nav>
+diff --git a/components/marketplace/BrowseView.tsx b/components/marketplace/BrowseView.tsx
+index 112d3ab..be1169a 100644
+--- a/components/marketplace/BrowseView.tsx
++++ b/components/marketplace/BrowseView.tsx
+@@ -4,7 +4,7 @@ import { ProductCard } from "./ProductCard";
+ import { SearchForm } from "./SearchForm";
+ import { ApiNotice, EmptyState } from "./StateMessage";
+ import { MobileFilterDrawer } from "./MobileFilterDrawer";
+-import { canonicalCategory, CATEGORIES } from "@/lib/categories";
++import { canonicalCategory } from "@/lib/categories";
+ import { withQuery } from "@/lib/params";
+ import type { ListingPage } from "@/lib/api/listings";
+ 
+@@ -51,24 +51,28 @@ export function BrowseView({
+       </section>
+       <section className="sec-sm browse-section" aria-label="Marketplace listings">
+         <div className="wrap">
+-          <div className="browse-categories-head">
+-            <span className="browse-category-label">{CATEGORIES.length} categories</span>
+-            <span className="browse-category-hint">Swipe to explore</span>
+-          </div>
+-          <CategoryChips basePath="/browse" active={category ?? null} keep={{ q }} />
+-          <div className="browse-toolbar">
+-            <div>
+-              <p className="browse-count">{failed ? "Marketplace unavailable" : `${result.total.toLocaleString("en-KE")} listings to explore`}</p>
+-              {category && <Link href={withQuery("/browse", { q })} className="browse-clear">Clear category</Link>}
++          {/* Categories, the result count and sorting are one control block.
++              Spread across the section they read as unrelated widgets. */}
++          <div className="filter-panel">
++            <div className="browse-categories-head">
++              <span className="browse-category-label">Filter by category</span>
++              <span className="browse-category-hint">Swipe to explore</span>
++            </div>
++            <CategoryChips basePath="/browse" active={category ?? null} keep={{ q }} />
++            <div className="browse-toolbar">
++              <div>
++                <p className="browse-count">{failed ? "Marketplace unavailable" : `${result.total.toLocaleString("en-KE")} listings to explore`}</p>
++                {category && <Link href={withQuery("/browse", { q })} className="browse-clear">Clear category</Link>}
++              </div>
++              <nav className="browse-sort" aria-label="Sort listings">
++                {sortOptions.map((option) => (
++                  <Link key={option.key} href={withQuery("/browse", { ...query, sort: option.key === "featured" ? undefined : option.key })} className={sort === option.key ? "active" : ""} aria-current={sort === option.key ? "page" : undefined}>
++                    {option.label}
++                  </Link>
++                ))}
++              </nav>
++              <MobileFilterDrawer q={q} category={category} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} />
+             </div>
+-            <nav className="browse-sort" aria-label="Sort listings">
+-              {sortOptions.map((option) => (
+-                <Link key={option.key} href={withQuery("/browse", { ...query, sort: option.key === "featured" ? undefined : option.key })} className={sort === option.key ? "active" : ""} aria-current={sort === option.key ? "page" : undefined}>
+-                  {option.label}
+-                </Link>
+-              ))}
+-            </nav>
+-            <MobileFilterDrawer q={q} category={category} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} />
+           </div>
+           {failed ? (
+             <ApiNotice retryHref={withQuery("/browse", query)} />
+diff --git a/components/marketplace/LiveMarketplace.tsx b/components/marketplace/LiveMarketplace.tsx
+index 9192ffc..d5ad757 100644
+--- a/components/marketplace/LiveMarketplace.tsx
++++ b/components/marketplace/LiveMarketplace.tsx
+@@ -13,13 +13,15 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
+   return (
+     <section className="sec atm-violet" id="live" aria-labelledby="live-h">
+       <div className="wrap">
++        {/* This block is the catalogue window, so it says what is on the
++            platform rather than restating the pitch the hero already made. */}
+         <Reveal className="sec-header">
+-          <span className="t-eyebrow">The marketplace</span>
++          <span className="t-eyebrow">On BROKA today</span>
+           <h2 className="t-h2" id="live-h">
+-            Find what matters. Buy with confidence.
++            What&apos;s live right now.
+           </h2>
+           <p className="t-body-lg" style={{ maxWidth: 620, marginTop: 16 }}>
+-            Explore real listings from sellers across Kenya, compare your options, and use Zeno when you want a smarter way to negotiate.
++            Real listings from sellers across Kenya, updated as they are posted. Compare your options here, then negotiate or buy in the BROKA app.
+           </p>
+         </Reveal>
+ 
+@@ -45,8 +47,10 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
+                   <h3 className="t-h4">Featured listings</h3>
+                   <Link href="/browse" className="preview-link live-more">Browse all products →</Link>
+                 </div>
+-                <div className="lgrid lgrid-3">
+-                  {data.featuredListings.slice(0, 6).map((listing) => (
++                {/* Four cards fill one row of the desktop grid. Three left an
++                    orphan card and a hole beside it. */}
++                <div className="lgrid">
++                  {data.featuredListings.slice(0, 4).map((listing) => (
+                     <ProductCard key={listing.id} listing={listing} />
+                   ))}
+                 </div>
+diff --git a/components/marketplace/StateMessage.tsx b/components/marketplace/StateMessage.tsx
+index 27f786a..417beaa 100644
+--- a/components/marketplace/StateMessage.tsx
++++ b/components/marketplace/StateMessage.tsx
+@@ -8,13 +8,17 @@ export function EmptyState({
+   children,
+   actionHref,
+   actionLabel,
++  actions,
+ }: {
+   emoji?: string;
+   title: string;
+   children?: ReactNode;
+   actionHref?: string;
+   actionLabel?: string;
++  /** Ways out of a dead end. An empty list page should still be navigable. */
++  actions?: { label: string; href: string; primary?: boolean }[];
+ }) {
++  const links = actions ?? (actionHref && actionLabel ? [{ label: actionLabel, href: actionHref }] : []);
+   return (
+     <div className="state" role="status">
+       <span className="state-emoji" aria-hidden="true">
+@@ -22,10 +26,18 @@ export function EmptyState({
+       </span>
+       <h2 className="state-title">{title}</h2>
+       {children && <p className="state-body">{children}</p>}
+-      {actionHref && actionLabel && (
+-        <Link href={actionHref} className="btn btn-ghost btn-sm">
+-          {actionLabel}
+-        </Link>
++      {links.length > 0 && (
++        <div className="state-actions">
++          {links.map((link) => (
++            <Link
++              key={link.href}
++              href={link.href}
++              className={`btn btn-sm ${link.primary ? "btn-primary" : "btn-ghost"}`}
++            >
++              {link.label}
++            </Link>
++          ))}
++        </div>
+       )}
+     </div>
+   );
+diff --git a/data/navigation.ts b/data/navigation.ts
+index 39ce6d0..070835e 100644
+--- a/data/navigation.ts
++++ b/data/navigation.ts
+@@ -1,38 +1,108 @@
++/**
++ * One taxonomy for the whole site.
++ *
++ * Before this file there were two: the header offered "Browse" and an
++ * "Explore" menu whose first item was also /browse, while the footer filed
++ * Roadmap under Product and Vision under Company. The same page could be
++ * reached by two labels, and two labels pointed at the same page.
++ *
++ * Now there is one grouping — Marketplace, Product, Company, Get started —
++ * and the header, the mobile menu and the footer all read from it. A page is
++ * added or moved in exactly one place.
++ */
++
+ export interface NavLink {
+   label: string;
+   href: string;
++  /** The one line under the label in the desktop menu. Omitted for plain links. */
++  description?: string;
+ }
+ 
+ export interface NavGroup {
+   label: string;
++  /** Where the group label itself goes — the most useful page in the group. */
+   href: string;
+   children?: NavLink[];
+ }
+ 
+-// Commerce-first navigation: the marketing story remains available through About.
++/** The header's primary navigation. Four entries, no page listed twice. */
+ export const navLinks: NavGroup[] = [
+-  { label: "Browse", href: "/browse" },
+   {
+-    label: "Explore",
+-    href: "/auctions",
++    label: "Marketplace",
++    href: "/browse",
+     children: [
+-      { label: "All products", href: "/browse" },
+-      { label: "Auction House", href: "/auctions" },
+-      { label: "Stores", href: "/stores" },
++      { label: "Browse all products", href: "/browse", description: "Every listing on BROKA, by category" },
++      { label: "Auction House", href: "/auctions", description: "Live, ending soon and upcoming auctions" },
++      { label: "Online stores", href: "/stores", description: "Seller storefronts and what they sell" },
+     ],
+   },
+-  { label: "Sell", href: "/sell" },
+   { label: "Zeno", href: "/zeno" },
++  { label: "Sell", href: "/sell" },
+   {
+     label: "About",
+     href: "/what-is-broka",
+     children: [
++      { label: "What is BROKA", href: "/what-is-broka", description: "The platform in one page" },
++      { label: "How it works", href: "/how-it-works", description: "From intent to outcome, step by step" },
++      { label: "Technology", href: "/technology", description: "The systems underneath" },
++      { label: "Vision", href: "/vision", description: "Kenya, East Africa, then the world" },
++      { label: "Founders", href: "/founders", description: "Who is building BROKA" },
++      { label: "Roadmap", href: "/roadmap", description: "What has shipped, what comes next" },
++    ],
++  },
++];
++
++/** Pages that belong in the footer and the mobile menu but not the top bar. */
++export const navUtility: NavLink[] = [
++  { label: "Get the app", href: "/download" },
++  { label: "FAQ", href: "/faq" },
++  { label: "Contact", href: "/contact" },
++];
++
++/**
++ * The footer's columns. Built from the same groups as the header, so a
++ * visitor who learns the site from the top bar can find the same things at
++ * the bottom of every page.
++ */
++export const footerNav: { title: string; links: NavLink[] }[] = [
++  {
++    title: "Marketplace",
++    links: [
++      { label: "Browse all products", href: "/browse" },
++      { label: "Auction House", href: "/auctions" },
++      { label: "Online stores", href: "/stores" },
++    ],
++  },
++  {
++    title: "Product",
++    links: [
+       { label: "What is BROKA", href: "/what-is-broka" },
+       { label: "How it works", href: "/how-it-works" },
++      { label: "Meet Zeno", href: "/zeno" },
+       { label: "Technology", href: "/technology" },
++    ],
++  },
++  {
++    title: "Company",
++    links: [
+       { label: "Vision", href: "/vision" },
+       { label: "Founders", href: "/founders" },
++      { label: "Roadmap", href: "/roadmap" },
+       { label: "FAQ", href: "/faq" },
+     ],
+   },
++  {
++    title: "Get started",
++    links: [
++      { label: "Get the app", href: "/download" },
++      { label: "Sell on BROKA", href: "/sell" },
++      { label: "Contact us", href: "/contact" },
++    ],
++  },
++];
++
++/** Legal links, kept out of the columns so they never compete with the rest. */
++export const navLegal: NavLink[] = [
++  { label: "Privacy", href: "/privacy" },
++  { label: "Terms", href: "/terms" },
+ ];
+diff --git a/lib/categories.ts b/lib/categories.ts
+index 4d059fb..be4b050 100644
+--- a/lib/categories.ts
++++ b/lib/categories.ts
+@@ -61,3 +61,24 @@ export function canonicalCategory(name: string | null | undefined): string | nul
+ 
+ /** The categories shown as quick filters: what Kenyans list most. */
+ export const FEATURED_CATEGORIES = CATEGORIES.slice(0, 6);
++
++/**
++ * The URL slug for a category.
++ *
++ * Category names contain "&", which does not survive a trip through a path
++ * segment: the home page used to build the slug by lowercasing the name and
++ * percent-encoding it, and /browse/[category] turned the hyphens back into
++ * spaces, so "Business & Industrial" arrived as "business %26 industrial" and
++ * answered 404. "&" is spelled out as "and" instead, so the slug and the name
++ * survive the round trip. categoryFromSlug also accepts the older forms, so
++ * links already in the wild still resolve.
++ */
++export function categorySlug(name: string): string {
++  return name.toLowerCase().replace(/\s*&\s*/g, "-and-").replace(/\s+/g, "-");
++}
++
++/** The canonical category a slug refers to, or null if it is not one. */
++export function categoryFromSlug(slug: string): string | null {
++  const decoded = decodeURIComponent(slug).replace(/-and-/g, " & ").replace(/-/g, " ");
++  return canonicalCategory(decoded);
++}
+-- 
+2.43.0
+
