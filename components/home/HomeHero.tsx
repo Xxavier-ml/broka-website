@@ -1,8 +1,11 @@
 import Link from "next/link";
-import { Boxes, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
+import { ArrowUpRight, Boxes, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
 import { SearchForm } from "@/components/marketplace/SearchForm";
 import { CATEGORIES, FEATURED_CATEGORIES, categorySlug } from "@/lib/categories";
+import { coverImage } from "@/lib/api/images";
 import type { HomeData } from "@/lib/api/home";
+import { formatUnitPrice, placeLine } from "@/lib/format";
+import { Media } from "@/components/marketplace/Media";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
 
@@ -34,6 +37,11 @@ function KenyaFlag() {
  * true about the product. Nothing is invented and nothing reads as empty.
  */
 export function HomeHero({ data }: { data: HomeData }) {
+  const spotlight = data.featuredListings.find((listing) => coverImage(listing));
+  const spotlightImage = spotlight ? coverImage(spotlight) : null;
+  const spotlightPlace = spotlight
+    ? placeLine(spotlight.location_name, spotlight.location_county)
+    : null;
   type Stat = { icon: React.ReactNode; tone: string; value: string; label: string };
   const live: Stat[] = [];
   if (data.liveAuctionCount)
@@ -82,6 +90,14 @@ export function HomeHero({ data }: { data: HomeData }) {
               filterRowClassName="home-search-filter-row"
             />
           </div>
+          <div className="hh-actions hh-in" style={{ ["--d" as string]: "0.28s" }}>
+            <Link href="/download" className="btn btn-primary hh-action-primary">
+              Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+            <Link href="/browse" className="hh-action-link">
+              Explore the marketplace <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+          </div>
           <nav className="hh-orbs hh-in" aria-label="Popular categories" style={{ ["--d" as string]: "0.32s" }}>
             {FEATURED_CATEGORIES.slice(0, 5).map((c) => (
               <Link key={c.name} href={`/browse/${categorySlug(c.name)}`} className="hh-orb">
@@ -102,6 +118,25 @@ export function HomeHero({ data }: { data: HomeData }) {
 
         <div className="hh-visual">
           <ZenoOrbit />
+          {spotlight && spotlightImage && (
+            <Link className="hh-spotlight" href={`/listings/${spotlight.id}`} prefetch={false}>
+              <span className="hh-spotlight-media">
+                <Media image={spotlightImage} category={spotlight.category} alt={spotlight.name} />
+              </span>
+              <span className="hh-spotlight-copy">
+                <span className="hh-spotlight-kicker">
+                  <span className="hh-spotlight-live" aria-hidden="true" />
+                  Featured on BROKA
+                </span>
+                <span className="hh-spotlight-name">{spotlight.name}</span>
+                <span className="hh-spotlight-meta">
+                  <strong>{formatUnitPrice(spotlight.price, spotlight.price_unit)}</strong>
+                  {spotlightPlace && <span>· {spotlightPlace}</span>}
+                </span>
+              </span>
+              <ArrowUpRight className="hh-spotlight-arrow" size={17} aria-hidden="true" />
+            </Link>
+          )}
         </div>
       </div>
 
