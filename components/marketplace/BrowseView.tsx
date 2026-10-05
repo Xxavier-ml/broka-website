@@ -49,8 +49,13 @@ export function BrowseView({
       <section className="browse-hero browse-hero-v0" aria-labelledby="browse-page-title">
         <div className="wrap">
           <div className="browse-v0-intro">
+            <span className="browse-route-kicker">BROKA / LIVE MARKET</span>
             <h1 className="t-h1" id="browse-page-title">{heading}</h1>
             <p className="t-body-lg browse-v0-support">Explore products from Kenyan sellers.</p>
+          </div>
+          <div className="browse-route-signal" aria-label="Live marketplace status">
+            <span className="browse-route-signal-dot" aria-hidden="true" />
+            <span><b>LIVE CATALOGUE</b><small>Listings update as sellers post</small></span>
           </div>
           <div className="browse-v0-controls">
             <CategoryChips

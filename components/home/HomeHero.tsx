@@ -116,8 +116,25 @@ export function HomeHero({ data }: { data: HomeData }) {
           </nav>
         </div>
 
-        <div className="hh-visual">
-          <ZenoOrbit />
+        <div className="hh-visual hh-v0-visual">
+          <div className="hh-v0-visual-head">
+            <span className="hh-v0-overline">ZENO / INTELLIGENCE CORE</span>
+            <span className="hh-v0-status"><span aria-hidden="true" /> processing commerce signals</span>
+          </div>
+          <div className="hh-v0-coreframe">
+            <ZenoOrbit />
+            <span className="hh-v0-signal hh-v0-signal-buyer">BUYER <b>intent</b></span>
+            <span className="hh-v0-signal hh-v0-signal-offer">OFFER <b>context</b></span>
+            <span className="hh-v0-signal hh-v0-signal-trust">TRUST <b>signal</b></span>
+            <div className="hh-v0-query" aria-label="Simulated Zeno product moment">
+              <div className="hh-v0-query-kicker"><span aria-hidden="true">↗</span> SIMULATED PRODUCT MOMENT</div>
+              <div className="hh-v0-query-copy">Find a 55-inch TV under <strong>KSh 50,000</strong></div>
+              <div className="hh-v0-query-footer">
+                <span><b>Intent understood</b><small>size · category · budget</small></span>
+                <span className="hh-v0-query-arrow" aria-hidden="true">→</span>
+              </div>
+            </div>
+          </div>
           {spotlight && spotlightImage && (
             <Link className="hh-spotlight" href={`/listings/${spotlight.id}`} prefetch={false}>
               <span className="hh-spotlight-media">
