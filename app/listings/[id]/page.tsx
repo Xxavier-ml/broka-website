@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { MapPin, Truck, Eye, Tag } from "lucide-react";
+import { Handshake, MapPin, ShieldCheck, Truck, Eye, Tag, ChevronLeft } from "lucide-react";
 import { getListing } from "@/lib/api/listings";
 import { coverImage, galleryImages } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
@@ -80,7 +81,7 @@ export default async function ListingPage({ params }: Props) {
           },
         }}
       />
-      <section className="detail-top" aria-labelledby="listing-h">
+      <section className="detail-top detail-app-shell" aria-labelledby="listing-h">
         <div className="wrap">
           <Breadcrumbs
             items={[
@@ -89,6 +90,11 @@ export default async function ListingPage({ params }: Props) {
               { label: l.name },
             ]}
           />
+          <div className="detail-app-toolbar">
+            <Link href="/browse" className="detail-app-back"><ChevronLeft size={16} aria-hidden="true" /> Browse marketplace</Link>
+            <span className="detail-app-kicker">BROKA / LISTING DETAIL</span>
+            <span className="detail-app-sale-badge">DIRECT SALE</span>
+          </div>
           <div className="detail-grid">
             <Gallery images={images} alt={l.name} fallback={<Media image={null} category={l.category} alt={l.name} />} />
 
@@ -108,30 +114,33 @@ export default async function ListingPage({ params }: Props) {
                 </p>
               )}
 
-              <div className="bidbox">
-                <span className="bidbox-label">Price</span>
-                <span className="bidbox-amount">{formatUnitPrice(l.price, l.price_unit)}</span>
-                <span className="bidbox-time">
-                  <Tag size={13} aria-hidden="true" /> {l.price_negotiable ? "Open to offers" : "Fixed price"}
-                </span>
+              <div className="detail-terms-block">
+                <p className="detail-section-label">DEAL TERMS</p>
+                <div className="detail-terms-grid">
+                  <div className="detail-term detail-term-price">
+                    <span className="detail-term-label"><Handshake size={15} aria-hidden="true" /> PRICE</span>
+                    <strong>{l.price_negotiable ? "Negotiable" : "Fixed price"}</strong>
+                    <p>{l.price_negotiable ? "Make an offer in the BROKA app" : "Seller's asking price"}</p>
+                    <b>{formatUnitPrice(l.price, l.price_unit)}</b>
+                  </div>
+                  <div className="detail-term detail-term-delivery">
+                    <span className="detail-term-label"><Truck size={15} aria-hidden="true" /> DELIVERY</span>
+                    <strong>{l.delivery_available ? "Seller delivers" : "Pickup only"}</strong>
+                    <p>{l.delivery_available ? (l.delivery_note || "The seller can arrange delivery") : "Collect it from the seller"}</p>
+                  </div>
+                </div>
               </div>
 
-              <Facts
-                items={[
-                  ...(l.quantity && l.quantity > 1 ? [{ label: "Available", value: `${l.quantity}${l.price_unit ? ` ${l.price_unit}s` : ""}` }] : []),
-                  ...(condition ? [{ label: "Condition", value: condition }] : []),
-                  {
-                    label: "Delivery",
-                    value: (
-                      <>
-                        <Truck size={13} aria-hidden="true" /> {l.delivery_available ? "Available" : "Pickup only"}
-                      </>
-                    ),
-                  },
-                  { label: "Category", value: l.category },
-                ]}
-              />
-              {l.delivery_available && l.delivery_note && <p className="t-sm">{l.delivery_note}</p>}
+              <div className="detail-meta-facts">
+                <Facts
+                  items={[
+                    ...(l.quantity && l.quantity > 1 ? [{ label: "Available", value: `${l.quantity}${l.price_unit ? ` ${l.price_unit}s` : ""}` }] : []),
+                    ...(condition ? [{ label: "Condition", value: condition }] : []),
+                    { label: "Category", value: <><Tag size={13} aria-hidden="true" /> {l.category}</> },
+                    { label: "Trust", value: <><ShieldCheck size={13} aria-hidden="true" /> Escrow protected</> },
+                  ]}
+                />
+              </div>
 
               <AppCta kind="product" />
             </div>
@@ -151,6 +160,11 @@ export default async function ListingPage({ params }: Props) {
               verified={l.seller_verified}
               rating={l.seller_rating}
               deals={l.seller_completed_deals}
+              dcr={l.seller_dcr}
+              dcrProvisional={l.seller_dcr_provisional}
+              responseMinutes={l.seller_response_minutes}
+              dealTimeMinutes={l.seller_avg_deal_time_minutes}
+              timedDeals={l.seller_timed_deals}
               store={l.store_slug && l.store_name ? { slug: l.store_slug, name: l.store_name } : null}
             />
             <p className="t-sm views">

@@ -46,6 +46,13 @@ export interface Listing {
   seller_verified: boolean;
   seller_rating: number | null;
   seller_completed_deals: number;
+  /** Buyer-facing snapshot from the public listing-detail response. */
+  seller_dcr?: number | null;
+  seller_dcr_provisional?: boolean;
+  seller_response_minutes?: number | null;
+  seller_standing_as_of?: string | null;
+  seller_avg_deal_time_minutes?: number | null;
+  seller_timed_deals?: number;
   store_id: string | null;
   store_name: string | null;
   store_slug: string | null;
