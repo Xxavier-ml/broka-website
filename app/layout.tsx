@@ -5,6 +5,7 @@ import "./marketplace.css";
 import "./site.css";
 import "./home.css";
 import "./redesign.css";
+import "./category-cards.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
