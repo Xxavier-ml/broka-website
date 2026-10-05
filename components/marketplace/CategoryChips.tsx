@@ -20,6 +20,7 @@ export function CategoryChips({
   className?: string;
 }) {
   const railRef = useRef<HTMLElement>(null);
+  const activeIndexRef = useRef(0);
   const [autoScroll, setAutoScroll] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const items = [
@@ -47,20 +48,26 @@ export function CategoryChips({
 
   useEffect(() => {
     const rail = railRef.current;
-    if (!rail || !autoScroll || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!rail || !autoScroll || window.matchMedia("(prefers-reduced-motion: reduce)").matches || !window.matchMedia("(max-width: 620px)").matches) return;
 
-    let frame = 0;
-    let last = performance.now();
-    const tick = (now: number) => {
-      if (now - last >= 32 && rail.scrollWidth > rail.clientWidth) {
-        rail.scrollLeft += 0.55;
-        if (rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 1) rail.scrollTo({ left: 0, behavior: "smooth" });
-        last = now;
-      }
-      frame = requestAnimationFrame(tick);
+    let timer: number | undefined;
+    const advanceToNextCard = () => {
+      const card = rail.querySelector<HTMLElement>(".category-card");
+      if (!card || rail.scrollWidth <= rail.clientWidth) return;
+      const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
+      const nextIndex = activeIndexRef.current >= items.length - 1 ? 0 : activeIndexRef.current + 1;
+      activeIndexRef.current = nextIndex;
+      setActiveIndex(nextIndex);
+      rail.scrollTo({ left: nextIndex * (card.offsetWidth + gap), behavior: "smooth" });
     };
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
+    const scheduleNext = () => {
+      timer = window.setTimeout(() => {
+        advanceToNextCard();
+        scheduleNext();
+      }, 2200);
+    };
+    scheduleNext();
+    return () => { if (timer) window.clearTimeout(timer); };
   }, [autoScroll]);
 
   const moveByCard = (direction: -1 | 1) => {
@@ -69,6 +76,7 @@ export function CategoryChips({
     if (!rail || !card) return;
     const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
     const nextIndex = Math.max(0, Math.min(items.length - 1, activeIndex + direction));
+    activeIndexRef.current = nextIndex;
     rail.scrollTo({ left: nextIndex * (card.offsetWidth + gap), behavior: "smooth" });
     setActiveIndex(nextIndex);
     setAutoScroll(false);
@@ -86,7 +94,9 @@ export function CategoryChips({
           const card = rail.querySelector<HTMLElement>(".category-card");
           if (!card) return;
           const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
-          setActiveIndex(Math.round(rail.scrollLeft / (card.offsetWidth + gap)));
+          const nextIndex = Math.round(rail.scrollLeft / (card.offsetWidth + gap));
+          activeIndexRef.current = nextIndex;
+          setActiveIndex(nextIndex);
         }}
         onPointerDown={(event) => {
           if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
