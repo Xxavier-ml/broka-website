@@ -66,8 +66,15 @@ main, .ftr { position: relative; z-index: 1; }
 
 /* ─── Contact page: ways to reach BROKA ─── */
 .reach { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; margin-bottom: 8px; }
-.ccard { display: grid; gap: 6px; align-content: start; padding: 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(7, 10, 30, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: border-color 0.2s, transform 0.2s; }
-a.ccard:hover { border-color: var(--c-rule-v); transform: translateY(-3px); }
+.ccard { display: grid; gap: 6px; align-content: start; padding: 24px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(7, 10, 30, 0.72); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); transition: transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+a.ccard:hover { border-color: var(--c-rule-v); }
+@media (hover: hover) and (pointer: fine) {
+  a.ccard:hover { transform: translateY(-2px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ccard { transition: none; }
+  a.ccard:hover { transform: none; }
+}
 .ccard-icon { width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center; color: var(--c-v-light); background: var(--c-v-dim); border: 1px solid var(--c-rule-v); margin-bottom: 8px; }
 .ccard-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-text-3); }
 .ccard-value { font-family: var(--f-display); font-size: 18px; font-weight: 700; letter-spacing: -0.02em; overflow-wrap: anywhere; }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { categorySlug, categoryVisual } from "@/lib/categories";
 import { Sparkles } from "lucide-react";
 import { TiltStage } from "./TiltStage";
+import { OrbitComet } from "./OrbitComet";
 
 /**
  * Zeno at the centre of BROKA's marketplace, as in the mockup: the robot in a
@@ -59,22 +60,6 @@ const TILES = [
   { name: "Business & Industrial", x: 63, y: 91, mx: 52, my: 95, delay: -2.2, tilt: -5 },
   { name: "Agriculture", x: 17, y: 77, mx: 13, my: 72, delay: -3.5, tilt: -7 },
 ] as const;
-
-function Comet({ c, back }: { c: (typeof COMETS)[number]; back: boolean }) {
-  // Drawn twice (behind and in front of Zeno, each clipped to its half) on
-  // the same timeline, so it looks like one light going round.
-  return (
-    <g clipPath={`url(#${back ? "zo-back" : "zo-front"})`}>
-      <g transform={`rotate(${TILT} ${CX} ${CY})`}>
-        <g>
-          <circle r={c.r * 5} fill="url(#zo-glow)" opacity="0.9" />
-          <circle r={c.r} fill={c.color} />
-          <animateMotion dur={`${c.dur}s`} begin={`${c.begin}s`} repeatCount="indefinite" path={ORBIT} />
-        </g>
-      </g>
-    </g>
-  );
-}
 
 function OrbitHalf({ back }: { back: boolean }) {
   return (
@@ -140,7 +125,18 @@ export function ZenoOrbit() {
 
           <OrbitHalf back />
           {COMETS.map((c, i) => (
-            <Comet key={`b${i}`} c={c} back />
+            <OrbitComet
+              key={`b${i}`}
+              path={ORBIT}
+              duration={c.dur}
+              begin={c.begin}
+              radius={c.r}
+              color={c.color}
+              back
+              rotation={TILT}
+              centerX={CX}
+              centerY={CY}
+            />
           ))}
 
           {/* Zeno, faded softly at the edge of his own ring. */}
@@ -149,7 +145,18 @@ export function ZenoOrbit() {
 
           <OrbitHalf back={false} />
           {COMETS.map((c, i) => (
-            <Comet key={`f${i}`} c={c} back={false} />
+            <OrbitComet
+              key={`f${i}`}
+              path={ORBIT}
+              duration={c.dur}
+              begin={c.begin}
+              radius={c.r}
+              color={c.color}
+              back={false}
+              rotation={TILT}
+              centerX={CX}
+              centerY={CY}
+            />
           ))}
         </svg>
         <div className="zo-ring-glow" aria-hidden="true" />

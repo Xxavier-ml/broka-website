@@ -3,7 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { navLinks, navUtility } from "@/data/navigation";
 import { Menu, X, ChevronDown, Search } from "lucide-react";
 
@@ -22,6 +22,7 @@ import { Menu, X, ChevronDown, Search } from "lucide-react";
  */
 export function Header() {
   const pathname = usePathname();
+  const reduceMotion = useReducedMotion() ?? false;
   const [menuOpen, setMenuOpen] = useState(false);
   // Which dropdown is open (by its label), if any. One at a time.
   const [openGroup, setOpenGroup] = useState<string | null>(null);
@@ -155,18 +156,14 @@ export function Header() {
               aria-controls="mobile-nav"
               onClick={() => setMenuOpen((v) => !v)}
             >
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={menuOpen ? "close" : "open"}
-                  initial={{ opacity: 0, rotate: -90 }}
-                  animate={{ opacity: 1, rotate: 0 }}
-                  exit={{ opacity: 0, rotate: 90 }}
-                  transition={{ duration: 0.18 }}
-                  style={{ display: "inline-flex" }}
-                >
-                  {menuOpen ? <X size={20} /> : <Menu size={20} />}
-                </motion.span>
-              </AnimatePresence>
+              <motion.span
+                initial={false}
+                animate={{ rotate: reduceMotion ? 0 : menuOpen ? 90 : 0 }}
+                transition={{ duration: reduceMotion ? 0.12 : 0.18, ease: [0.2, 0.8, 0.2, 1] }}
+                style={{ display: "inline-flex" }}
+              >
+                {menuOpen ? <X size={20} /> : <Menu size={20} />}
+              </motion.span>
             </button>
           </div>
         </div>

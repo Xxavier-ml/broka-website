@@ -141,9 +141,11 @@
     radial-gradient(circle at 50% 30%, #17204E, #060A22 70%) padding-box,
     linear-gradient(140deg, var(--a), var(--b)) border-box;
   box-shadow: 0 0 22px -4px var(--a), 0 0 30px -10px var(--b);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.hh-orb:hover .hh-orb-ring { transform: translateY(-4px) scale(1.06); box-shadow: 0 0 30px -2px var(--a), 0 0 40px -8px var(--b); }
+@media (hover: hover) and (pointer: fine) {
+  .hh-orb:hover .hh-orb-ring { transform: translateY(-4px) scale(1.04); }
+}
 .hh-orb-more { background: rgba(10, 14, 40, 0.9); border-color: var(--c-rule-2); box-shadow: none; color: var(--c-text-1); font-size: 30px; }
 .hh-orb-label { font-size: 14px; font-weight: 500; color: #E6E1FB; white-space: nowrap; }
 
@@ -251,13 +253,14 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.22);
   transform: rotate(var(--tilt, 0deg));
   animation: zo-bob 7s ease-in-out infinite;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: border-color 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-.zo-tile:hover .zo-tile-card,
 .zo-tile:focus-visible .zo-tile-card {
   border-color: #7FE4FA;
-  box-shadow: 0 18px 40px -14px rgba(20, 8, 100, 0.95), 0 0 30px -4px rgba(34, 211, 238, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.3);
   animation-play-state: paused;
+}
+@media (hover: hover) and (pointer: fine) {
+  .zo-tile:hover .zo-tile-card { border-color: #7FE4FA; animation-play-state: paused; }
 }
 .zo-tile-emoji { font-size: 7.4cqw; line-height: 1; filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5)); }
 .zo-tile-label { font-size: clamp(10px, 2.3cqw, 15px); font-weight: 600; color: #fff; white-space: nowrap; }
@@ -500,5 +503,7 @@
     animation: none !important;
   }
   .tilt-inner { transform: none; }
+  .hh-orb-ring { transition: none; }
+  .hh-orb:hover .hh-orb-ring { transform: none; }
   .kmap-ripple { opacity: 0.35; transform: scale(2.2); }
 }

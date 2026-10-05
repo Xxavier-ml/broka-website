@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, type ReactNode } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import { motion, useMotionTemplate, useMotionValue, useSpring } from "framer-motion";
 import { usePrefersReducedMotion } from "@/hooks/useDeviceCapability";
 
 /**
@@ -29,6 +29,7 @@ export function Magnetic({
   const y = useMotionValue(0);
   const springX = useSpring(x, { stiffness: 240, damping: 18, mass: 0.4 });
   const springY = useSpring(y, { stiffness: 240, damping: 18, mass: 0.4 });
+  const transform = useMotionTemplate`translate3d(${springX}px, ${springY}px, 0)`;
 
   const handleMove = (e: React.PointerEvent<HTMLSpanElement>) => {
     if (reduced || e.pointerType !== "mouse") return;
@@ -50,7 +51,7 @@ export function Magnetic({
     <motion.span
       ref={ref}
       className={className}
-      style={{ x: springX, y: springY, display: "inline-flex" }}
+      style={{ transform, display: "inline-flex" }}
       onPointerMove={handleMove}
       onPointerLeave={reset}
     >

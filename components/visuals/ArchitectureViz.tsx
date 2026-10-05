@@ -1,4 +1,11 @@
+"use client";
+
+import { useReducedMotion } from "framer-motion";
+
 export function ArchitectureViz() {
+  const reduceMotion = useReducedMotion();
+  const showSignals = reduceMotion === false;
+
   return (
     <div className="tech-arch-wrap">
       <svg viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg" role="img"
@@ -76,7 +83,7 @@ export function ArchitectureViz() {
         ))}
 
         {/* Signal dots on vertical lines */}
-        {[0, 1, 2].map((i) => {
+        {showSignals && [0, 1, 2].map((i) => {
           const x = [160, 340, 520][i];
           return (
             <circle key={i} r="3" fill="rgba(107,86,255,0.6)">
@@ -85,10 +92,12 @@ export function ArchitectureViz() {
             </circle>
           );
         })}
-        <circle r="3" fill="rgba(107,86,255,0.55)">
-          <animateMotion dur="1.6s" repeatCount="indefinite" begin="0.2s"
-            path="M 340 196 L 340 244" />
-        </circle>
+        {showSignals && (
+          <circle r="3" fill="rgba(107,86,255,0.55)">
+            <animateMotion dur="1.6s" repeatCount="indefinite" begin="0.2s"
+              path="M 340 196 L 340 244" />
+          </circle>
+        )}
       </svg>
     </div>
   );
