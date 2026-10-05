@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CATEGORIES, categorySlug } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 
@@ -16,6 +19,8 @@ export function CategoryChips({
   keep?: Record<string, string | undefined>;
   className?: string;
 }) {
+  const railRef = useRef<HTMLElement>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
   const items = [
     {
       key: "all",
@@ -39,10 +44,36 @@ export function CategoryChips({
     })),
   ];
 
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail || !autoScroll || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+    let last = performance.now();
+    const tick = (now: number) => {
+      if (now - last >= 32 && rail.scrollWidth > rail.clientWidth) {
+        rail.scrollLeft += 0.55;
+        if (rail.scrollLeft + rail.clientWidth >= rail.scrollWidth - 1) rail.scrollTo({ left: 0, behavior: "smooth" });
+        last = now;
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [autoScroll]);
+
   return (
     <nav
+      ref={railRef}
       className={`category-card-grid${className ? ` ${className}` : ""}`}
       aria-label="Marketplace categories"
+      onPointerDown={(event) => {
+        if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
+      }}
+      onMouseEnter={() => setAutoScroll(false)}
+      onFocusCapture={(event) => {
+        if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
+      }}
     >
       {items.map((item) => {
         const webpBase = item.image?.replace(/\.jpg$/, "");
@@ -78,6 +109,16 @@ export function CategoryChips({
           </Link>
         );
       })}
+      <button
+        type="button"
+        className="category-card-scroll-toggle"
+        aria-label={autoScroll ? "Pause automatic category scrolling" : "Resume automatic category scrolling"}
+        aria-pressed={!autoScroll}
+        onPointerDown={(event) => event.stopPropagation()}
+        onClick={() => setAutoScroll((current) => !current)}
+      >
+        {autoScroll ? "Ⅱ" : "▶"}
+      </button>
     </nav>
   );
 }

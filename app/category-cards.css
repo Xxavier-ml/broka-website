@@ -117,6 +117,7 @@
 }
 .category-card:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 3px; }
 .category-card:active { transform: translateY(0) scale(.985); transition-duration: .08s; }
+.category-card-scroll-toggle { display: none; }
 
 @keyframes category-card-skeleton {
   0%, 100% { background-position: 100% 0; }
@@ -139,6 +140,7 @@
 }
 @media (max-width: 620px) {
   .category-card-grid {
+    position: relative;
     display: flex;
     gap: 10px;
     overflow-x: auto;
@@ -154,12 +156,33 @@
   .category-card-grid::-webkit-scrollbar-track { background: transparent; }
   .category-card-grid::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(173, 155, 255, .45); }
   .category-card {
-    flex: 0 0 min(72vw, 190px);
-    min-height: 102px;
+    flex: 0 0 min(78vw, 220px);
+    min-height: 112px;
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  .category-card-copy { min-height: 102px; }
+  .category-card-copy { min-height: 112px; }
   .category-card-copy { padding: 12px; }
   .category-card-name { font-size: 13px; }
+  .category-card-scroll-toggle {
+    position: sticky;
+    right: 8px;
+    bottom: 8px;
+    z-index: 3;
+    display: grid;
+    flex: 0 0 30px;
+    place-items: center;
+    align-self: flex-end;
+    width: 30px;
+    height: 30px;
+    margin-left: -40px;
+    border: 1px solid rgba(255, 255, 255, .24);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(8, 10, 22, .78);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, .32);
+    font: 700 11px/1 var(--f-ui);
+    backdrop-filter: blur(9px);
+  }
+  .category-card-scroll-toggle:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 2px; }
 }
