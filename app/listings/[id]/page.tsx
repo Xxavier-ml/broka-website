@@ -158,7 +158,7 @@ export default async function ListingPage({ params }: Props) {
             <SellerCard
               name={l.seller_name}
               verified={l.seller_verified}
-              rating={l.seller_rating}
+              rating={l.seller_standing?.overall_rating ?? l.seller_rating}
               deals={l.seller_completed_deals}
               dcr={l.seller_dcr}
               dcrProvisional={l.seller_dcr_provisional}

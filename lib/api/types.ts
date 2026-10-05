@@ -47,6 +47,14 @@ export interface Listing {
   seller_rating: number | null;
   seller_completed_deals: number;
   /** Buyer-facing snapshot from the public listing-detail response. */
+  seller_standing?: {
+    overall_rating?: number | null;
+    dcr?: number | null;
+    dcr_provisional?: boolean;
+    median_response_minutes?: number | null;
+    completed_deals?: number;
+    as_of?: string | null;
+  } | null;
   seller_dcr?: number | null;
   seller_dcr_provisional?: boolean;
   seller_response_minutes?: number | null;
