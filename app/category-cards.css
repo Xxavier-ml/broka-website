@@ -20,7 +20,8 @@
   background: linear-gradient(135deg, var(--category-card-start), var(--category-card-end));
   box-shadow: 0 14px 30px -24px rgba(0, 0, 0, .92), inset 0 1px rgba(255, 255, 255, .09);
   text-decoration: none;
-  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+  will-change: transform;
+  transition: transform .34s cubic-bezier(.2, .8, .2, 1), border-color .28s ease, box-shadow .34s ease;
 }
 .category-card-art,
 .category-card-shade {
@@ -50,7 +51,8 @@
   object-fit: cover;
   opacity: .72;
   transform: scale(1.02);
-  transition: transform .35s ease, opacity .2s ease;
+  will-change: transform;
+  transition: transform .58s cubic-bezier(.2, .8, .2, 1), opacity .32s ease;
 }
 .category-card-shade {
   z-index: -1;
@@ -66,6 +68,7 @@
   width: 100%;
   min-height: 150px;
   padding: 17px;
+  transition: transform .34s cubic-bezier(.2, .8, .2, 1);
 }
 .category-card-icon {
   display: grid;
@@ -109,7 +112,10 @@
   transform: translateY(-2px) scale(1.015);
 }
 .category-card:hover .category-card-art,
-.category-card.active .category-card-art { opacity: .9; transform: scale(1.08); }
+.category-card.active .category-card-art { opacity: .9; }
+.category-card:hover .category-card-art img,
+.category-card.active .category-card-art img { transform: scale(1.1); }
+.category-card:hover .category-card-copy { transform: translateY(-1px); }
 .category-card.active .category-card-shade {
   background:
     linear-gradient(180deg, rgba(45, 27, 105, 0) 24%, rgba(31, 19, 80, .24) 46%, rgba(10, 7, 30, .9) 100%),
@@ -133,7 +139,8 @@
 @media (prefers-reduced-motion: reduce) {
   .category-card,
   .category-card-art,
-  .category-card-art img { transition: none; animation: none; }
+  .category-card-art img,
+  .category-card-copy { transition: none; animation: none; }
 }
 
 @media (max-width: 900px) {
