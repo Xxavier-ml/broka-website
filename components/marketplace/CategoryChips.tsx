@@ -21,6 +21,7 @@ export function CategoryChips({
 }) {
   const railRef = useRef<HTMLElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
+  const [activeIndex, setActiveIndex] = useState(0);
   const items = [
     {
       key: "all",
@@ -62,19 +63,39 @@ export function CategoryChips({
     return () => cancelAnimationFrame(frame);
   }, [autoScroll]);
 
+  const moveByCard = (direction: -1 | 1) => {
+    const rail = railRef.current;
+    const card = rail?.querySelector<HTMLElement>(".category-card");
+    if (!rail || !card) return;
+    const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
+    const nextIndex = Math.max(0, Math.min(items.length - 1, activeIndex + direction));
+    rail.scrollTo({ left: nextIndex * (card.offsetWidth + gap), behavior: "smooth" });
+    setActiveIndex(nextIndex);
+    setAutoScroll(false);
+  };
+
   return (
-    <nav
-      ref={railRef}
-      className={`category-card-grid${className ? ` ${className}` : ""}`}
-      aria-label="Marketplace categories"
-      onPointerDown={(event) => {
-        if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
-      }}
-      onMouseEnter={() => setAutoScroll(false)}
-      onFocusCapture={(event) => {
-        if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
-      }}
-    >
+    <div className="category-card-browser">
+      <button type="button" className="category-card-nav category-card-nav-prev" aria-label="Previous category" onClick={() => moveByCard(-1)}>‹</button>
+      <nav
+        ref={railRef}
+        className={`category-card-grid${className ? ` ${className}` : ""}`}
+        aria-label="Marketplace categories"
+        onScroll={(event) => {
+          const rail = event.currentTarget;
+          const card = rail.querySelector<HTMLElement>(".category-card");
+          if (!card) return;
+          const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
+          setActiveIndex(Math.round(rail.scrollLeft / (card.offsetWidth + gap)));
+        }}
+        onPointerDown={(event) => {
+          if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
+        }}
+        onMouseEnter={() => setAutoScroll(false)}
+        onFocusCapture={(event) => {
+          if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
+        }}
+      >
       {items.map((item) => {
         const webpBase = item.image?.replace(/\.jpg$/, "");
         const webpStem = webpBase?.split("/").pop();
@@ -119,6 +140,9 @@ export function CategoryChips({
       >
         {autoScroll ? "Ⅱ" : "▶"}
       </button>
-    </nav>
+      </nav>
+      <button type="button" className="category-card-nav category-card-nav-next" aria-label="Next category" onClick={() => moveByCard(1)}>›</button>
+      <span className="category-card-page" aria-live="polite">{activeIndex + 1} / {items.length}</span>
+    </div>
   );
 }
