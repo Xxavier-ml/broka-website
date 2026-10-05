@@ -8,7 +8,6 @@ import { withQuery } from "@/lib/params";
 import { ApiNotice, EmptyState } from "./StateMessage";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
-import { CategoryChips } from "./CategoryChips";
 import { CategoryZoneControls } from "./CategoryZoneControls";
 import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
 
@@ -90,7 +89,6 @@ export function CategoryLanding({
             </h1>
             <p className="category-intro">{content.intro}</p>
           </div>
-          <CategoryChips basePath="/browse" active={content.category} keep={preserved} className="category-listing-rail" />
           <SearchForm
             action={route}
             value={q}

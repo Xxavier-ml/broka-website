@@ -1399,3 +1399,19 @@ body { background-color: #05060d; }
 .category-filter-form { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 16px; }.category-filter-form label { display: grid; gap: 7px; min-width: 0; color: #9aa6c1; font: 600 10px var(--f-ui); letter-spacing: .08em; text-transform: uppercase; }.category-filter-form input, .category-filter-form select { width: 100%; min-height: 44px; padding: 0 11px; border: 1px solid rgba(195,202,226,.16); border-radius: 11px; outline: none; color: #e7eaf5; background: rgba(20,27,52,.85); font: 13px var(--f-ui); text-transform: none; letter-spacing: 0; }.category-filter-form input:focus, .category-filter-form select:focus { border-color: #8b75ff; box-shadow: 0 0 0 3px rgba(124,92,255,.14); }.category-filter-form button { align-self: end; min-height: 44px; border: 0; border-radius: 11px; color: #fff; background: linear-gradient(120deg, #7358e9, #22aeda); font: 700 12px var(--f-ui); cursor: pointer; }
 @media (max-width: 780px) { .category-zone-controls { padding: 16px; margin-top: 18px; }.category-filter-form { grid-template-columns: repeat(2, minmax(0, 1fr)); }.category-filter-form button { grid-column: 1 / -1; } }
 @media (max-width: 460px) { .category-zone-controls-head { align-items: start; flex-direction: column; gap: 8px; }.category-filter-form { grid-template-columns: 1fr; }.category-filter-form button { grid-column: auto; } }
+
+/* Dedicated category pages are focused zones: no global category shelf and no boxed subcategory widget. */
+.category-hero-listing .category-listing-hero { padding-bottom: 18px; }
+.category-zone-controls { display: grid; gap: 9px; margin: 0 0 20px; padding: 0; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+.category-zone-controls .subcategory-rail { margin: 0 -4px; padding: 3px 4px 7px; }
+.category-zone-controls .subcategory-chip { min-height: 44px; padding-inline: 19px; background: rgba(12, 21, 43, .78); }
+.category-zone-controls .subcategory-chip.active { background: linear-gradient(120deg, #22c9f0, #7c5cff); }
+.category-filter-details { margin-top: 0; padding-top: 4px; border-top: 0; }
+.category-filter-details summary { min-height: 38px; padding: 0 3px; color: #aeb9d4; font-size: 10px; }
+.category-zone-clear { justify-self: start; margin: -2px 0 3px 3px; color: #b6aaff; font: 600 11px var(--f-ui); }
+@media (max-width: 700px) {
+  .category-hero-listing .category-listing-hero { padding-bottom: 8px; }
+  .category-zone-controls { margin-bottom: 13px; }
+  .category-zone-controls .subcategory-rail { margin-inline: -12px; padding-inline: 12px; }
+  .category-zone-controls .subcategory-chip { min-height: 44px; padding-inline: 18px; }
+}

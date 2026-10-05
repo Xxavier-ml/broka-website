@@ -38,11 +38,7 @@ export function CategoryZoneControls({
   const activeCount = [subcategoryId, condition, minPrice != null || maxPrice != null ? "price" : undefined, county, ...Object.values(attributes)].filter(Boolean).length;
   const clearHref = withQuery(route, { q, sort: sort === "featured" ? undefined : sort });
   return (
-    <div className="category-zone-controls">
-      <div className="category-zone-controls-head">
-        <div><span className="detail-section-label">NARROW THE SIGNAL</span><h2>Explore {category?.name ?? "this category"}</h2></div>
-        {activeCount > 0 && <Link href={clearHref} className="category-zone-clear">Clear {activeCount} filter{activeCount === 1 ? "" : "s"}</Link>}
-      </div>
+    <div className="category-zone-controls" aria-label={`${category?.name ?? "Category"} browsing controls`}>
       {subcategories.length > 0 && (
         <nav className="subcategory-rail" aria-label={`${category?.name ?? "Category"} subcategories`}>
           <Link className={`subcategory-chip${!subcategoryId ? " active" : ""}`} href={withQuery(route, { ...keep })}>All</Link>
@@ -63,6 +59,7 @@ export function CategoryZoneControls({
           <button type="submit">Apply filters</button>
         </form>
       </details>
+      {activeCount > 0 && <Link href={clearHref} className="category-zone-clear">Clear filters</Link>}
     </div>
   );
 }
