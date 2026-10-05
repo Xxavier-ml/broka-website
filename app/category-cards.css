@@ -11,7 +11,7 @@
   --category-card-end: #10172b;
   position: relative;
   display: flex;
-  min-height: 150px;
+  min-height: 190px;
   overflow: hidden;
   isolation: isolate;
   border: 1px solid rgba(195, 202, 226, .16);
@@ -66,26 +66,26 @@
   flex-direction: column;
   justify-content: space-between;
   width: 100%;
-  min-height: 150px;
-  padding: 17px;
+  min-height: 190px;
+  padding: 20px;
   transition: transform .34s cubic-bezier(.2, .8, .2, 1);
 }
 .category-card-icon {
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border: 1px solid rgba(255, 255, 255, .2);
   border-radius: 10px;
   background: rgba(8, 10, 22, .38);
-  font-size: 16px;
+  font-size: 19px;
   backdrop-filter: blur(8px);
 }
 .category-card-name {
   max-width: 13ch;
   margin-top: auto;
   color: #fff;
-  font: 800 clamp(13px, 1.1vw, 15px)/1.12 var(--f-display);
+  font: 800 clamp(15px, 1.35vw, 18px)/1.12 var(--f-display);
   letter-spacing: -.018em;
   text-wrap: balance;
   text-shadow: 0 1px 2px rgba(0, 0, 0, .72), 0 4px 16px rgba(0, 0, 0, .58);
@@ -145,7 +145,7 @@
 
 @media (max-width: 900px) {
   .category-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-  .category-card, .category-card-copy { min-height: 132px; }
+  .category-card, .category-card-copy { min-height: 165px; }
 }
 @media (max-width: 620px) {
   .category-card-browser { position: relative; }
@@ -166,13 +166,13 @@
   .category-card-grid::-webkit-scrollbar-track { background: transparent; }
   .category-card-grid::-webkit-scrollbar-thumb { border-radius: 999px; background: rgba(173, 155, 255, .45); }
   .category-card {
-    flex: 0 0 min(84vw, 250px);
-    min-height: 132px;
+    flex: 0 0 min(90vw, 310px);
+    min-height: 156px;
     scroll-snap-align: start;
     scroll-snap-stop: always;
   }
-  .category-card-copy { min-height: 132px; padding: 15px; }
-  .category-card-name { font-size: 14px; }
+  .category-card-copy { min-height: 156px; padding: 18px; }
+  .category-card-name { font-size: 16px; }
   .category-card-scroll-toggle {
     position: sticky;
     right: 8px;
