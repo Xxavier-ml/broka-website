@@ -1415,3 +1415,14 @@ body { background-color: #05060d; }
   .category-zone-controls .subcategory-rail { margin-inline: -12px; padding-inline: 12px; }
   .category-zone-controls .subcategory-chip { min-height: 44px; padding-inline: 18px; }
 }
+
+/* Category artwork is decorative: keep the left text column clear and veil the image into BROKA's night field. */
+.category-hero-listing { position: relative; isolation: isolate; overflow: hidden; background-image: radial-gradient(circle at 78% 30%, color-mix(in srgb, var(--category-end) 24%, transparent), transparent 34%), linear-gradient(90deg, rgba(5, 6, 13, .98) 0%, rgba(5, 6, 13, .88) 42%, rgba(5, 6, 13, .52) 100%), var(--category-art), linear-gradient(120deg, var(--category-start), var(--category-end)); background-position: center, center, right center, center; background-size: auto, auto, cover, auto; }
+.category-hero-listing::after { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(5, 6, 13, .08), rgba(5, 6, 13, .72) 88%, #05060d 100%); pointer-events: none; }
+.category-hero-listing .category-listing-hero { position: relative; z-index: 1; }
+@media (max-width: 700px) {
+  .category-hero-listing { background-position: center, center, 68% center, center; background-size: auto, auto, auto 100%, auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .category-hero-listing { background-attachment: scroll; }
+}

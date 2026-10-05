@@ -7,6 +7,8 @@ export interface CategoryVisual {
   emoji: string;
   /** Two colours for the card's tint. */
   gradient: [string, string];
+  /** Optional decorative artwork used behind the dedicated category hero. */
+  backgroundArt?: string;
 }
 
 const C = {
@@ -21,11 +23,11 @@ const C = {
 } as const;
 
 export const CATEGORIES: CategoryVisual[] = [
-  { name: "Automobiles", emoji: "🚗", gradient: [C.orange, C.violet] },
-  { name: "Property", emoji: "🏠", gradient: [C.blue, C.green] },
+  { name: "Automobiles", emoji: "🚗", gradient: [C.orange, C.violet], backgroundArt: "/assets/category-backgrounds/automobiles.jpg" },
+  { name: "Property", emoji: "🏠", gradient: [C.blue, C.green], backgroundArt: "/assets/category-backgrounds/property.jpg" },
   { name: "Land", emoji: "🏞️", gradient: [C.amber, C.green] },
-  { name: "Electronics", emoji: "📱", gradient: [C.cyan, C.blue] },
-  { name: "Fashion", emoji: "👗", gradient: [C.pink, C.violet] },
+  { name: "Electronics", emoji: "📱", gradient: [C.cyan, C.blue], backgroundArt: "/assets/category-backgrounds/electronics.jpg" },
+  { name: "Fashion", emoji: "👗", gradient: [C.pink, C.violet], backgroundArt: "/assets/category-backgrounds/fashion.jpg" },
   { name: "Agriculture", emoji: "🌾", gradient: [C.green, C.amber] },
   { name: "Home & Furniture", emoji: "🛋️", gradient: [C.amber, C.violet] },
   { name: "Food & Beverages", emoji: "🍽️", gradient: [C.orange, C.amber] },
@@ -33,7 +35,7 @@ export const CATEGORIES: CategoryVisual[] = [
   { name: "Beauty & Personal Care", emoji: "💄", gradient: [C.pink, C.amber] },
   { name: "Health & Medical", emoji: "🏥", gradient: [C.cyan, C.green] },
   { name: "Baby & Kids", emoji: "🧸", gradient: [C.pink, C.cyan] },
-  { name: "Gaming", emoji: "🎮", gradient: [C.violet, C.pink] },
+  { name: "Gaming", emoji: "🎮", gradient: [C.violet, C.pink], backgroundArt: "/assets/category-backgrounds/gaming.jpg" },
   { name: "Sports & Fitness", emoji: "⚽", gradient: [C.green, C.blue] },
   { name: "Books & Education", emoji: "📚", gradient: [C.violet, C.blue] },
   { name: "Music & Instruments", emoji: "🎸", gradient: [C.pink, C.violet] },

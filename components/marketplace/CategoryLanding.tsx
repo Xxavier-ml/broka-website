@@ -58,6 +58,7 @@ export function CategoryLanding({
   const theme = {
     "--category-start": visual.gradient[0],
     "--category-end": visual.gradient[1],
+    "--category-art": visual.backgroundArt ? `url(${visual.backgroundArt})` : "none",
   } as CSSProperties;
   const preserved = {
     q,
