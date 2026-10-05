@@ -9,6 +9,8 @@ import { ApiNotice, EmptyState } from "./StateMessage";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { CategoryChips } from "./CategoryChips";
+import { CategoryZoneControls } from "./CategoryZoneControls";
+import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
 
  type CategorySort = "featured" | "recent" | "price_low" | "price_high";
 const sortOptions: { key: CategorySort; label: string }[] = [
@@ -28,6 +30,11 @@ export function CategoryLanding({
   county,
   result,
   failed,
+  categoryNode,
+  subcategories,
+  filters,
+  subcategoryId,
+  attributes,
 }: {
   category: string;
   q?: string;
@@ -38,6 +45,11 @@ export function CategoryLanding({
   county?: string;
   result: ListingPage;
   failed: boolean;
+  categoryNode?: CategoryNode | null;
+  subcategories?: CategoryNode[];
+  filters?: CategoryFilterField[];
+  subcategoryId?: string;
+  attributes?: Record<string, string>;
 }) {
   const content = categoryPageContent(category);
   if (!content) return null;
@@ -78,12 +90,7 @@ export function CategoryLanding({
             </h1>
             <p className="category-intro">{content.intro}</p>
           </div>
-          <CategoryChips
-            basePath="/browse"
-            active={content.category}
-            keep={preserved}
-            className="category-listing-rail"
-          />
+          <CategoryChips basePath="/browse" active={content.category} keep={preserved} className="category-listing-rail" />
           <SearchForm
             action={route}
             value={q}
@@ -99,6 +106,7 @@ export function CategoryLanding({
 
       <section className="category-results browse-section" aria-label={`${content.category} listings`}>
         <div className="wrap">
+          <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={subcategories ?? []} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />
           <div className="listing-v0-toolbar category-results-toolbar">
             <p className="browse-count" role="status">
               {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "listing" : "listings"}`}

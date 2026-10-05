@@ -10,6 +10,9 @@ export interface ListingStats {
 export interface ListingQuery {
   search?: string;
   category?: string;
+  categoryId?: string;
+  subcategoryId?: string;
+  attributes?: Record<string, string | number | boolean>;
   sort?: "recent" | "price_low" | "price_high" | "featured";
   condition?: "new" | "used" | "refurbished";
   minPrice?: number;
@@ -35,6 +38,9 @@ export async function listListings(query: ListingQuery = {}): Promise<ListingPag
   });
   if (query.search) params.set("search", query.search.slice(0, 100));
   if (query.category) params.set("category", query.category);
+  if (query.categoryId) params.set("category_id", query.categoryId);
+  if (query.subcategoryId) params.set("subcategory_id", query.subcategoryId);
+  if (query.attributes && Object.keys(query.attributes).length) params.set("attributes", JSON.stringify(query.attributes));
   if (query.county) params.set("county", query.county);
   if (query.condition) params.set("condition", query.condition);
   if (query.minPrice != null) params.set("min_price", String(query.minPrice));
