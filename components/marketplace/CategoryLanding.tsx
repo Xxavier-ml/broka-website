@@ -9,6 +9,7 @@ import { ApiNotice, EmptyState } from "./StateMessage";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { CategoryZoneControls } from "./CategoryZoneControls";
+import { ElectronicsSubcategoryGrid } from "./ElectronicsSubcategoryGrid";
 import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
 
  type CategorySort = "featured" | "recent" | "price_low" | "price_high";
@@ -34,6 +35,8 @@ export function CategoryLanding({
   filters,
   subcategoryId,
   attributes,
+  subcategoryName,
+  routeOverride,
 }: {
   category: string;
   q?: string;
@@ -49,12 +52,14 @@ export function CategoryLanding({
   filters?: CategoryFilterField[];
   subcategoryId?: string;
   attributes?: Record<string, string>;
+  subcategoryName?: string;
+  routeOverride?: string;
 }) {
   const content = categoryPageContent(category);
   if (!content) return null;
 
   const visual = categoryVisual(content.category);
-  const route = `/browse/${categorySlug(content.category)}`;
+  const route = routeOverride ?? `/browse/${categorySlug(content.category)}`;
   const theme = {
     "--category-start": visual.gradient[0],
     "--category-end": visual.gradient[1],
@@ -82,13 +87,13 @@ export function CategoryLanding({
       <section className="category-hero browse-hero category-hero-listing" style={theme} aria-labelledby="category-page-title">
         <div className="wrap category-listing-hero">
           <div className="category-hero-copy">
-            <Link href="/browse" className="category-back">
-              <ArrowLeft size={15} aria-hidden="true" /> All products
+            <Link href={subcategoryName ? "/browse/electronics" : "/browse"} className="category-back">
+              <ArrowLeft size={15} aria-hidden="true" /> {subcategoryName ? "Electronics" : "All products"}
             </Link>
             <h1 className="category-title" id="category-page-title">
-              {content.titleLead} <span>{content.titleAccent}</span>
+              {subcategoryName ? <>{subcategoryName} <span>in Electronics</span></> : <>{content.titleLead} <span>{content.titleAccent}</span></>}
             </h1>
-            <p className="category-intro">{content.intro}</p>
+            <p className="category-intro">{subcategoryName ? `Explore ${subcategoryName.toLowerCase()} from Kenyan sellers on BROKA.` : content.intro}</p>
           </div>
           <SearchForm
             action={route}
@@ -105,6 +110,7 @@ export function CategoryLanding({
 
       <section className="category-results browse-section" aria-label={`${content.category} listings`}>
         <div className="wrap">
+          {content.category === "Electronics" && !subcategoryName && <ElectronicsSubcategoryGrid subcategories={subcategories ?? []} />}
           <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={subcategories ?? []} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />
           <div className="listing-v0-toolbar category-results-toolbar">
             <p className="browse-count" role="status">
