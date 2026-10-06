@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CategoryNode } from "@/lib/api/categories";
 import { categoryArtworkSources } from "@/lib/category-assets";
-import { categorySlug, categoryVisual } from "@/lib/categories";
+import { categoryVisual } from "@/lib/categories";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -80,6 +80,14 @@ export function CategorySubcategoryGrid({
     return () => { if (timer) window.clearTimeout(timer); };
   }, [autoScroll, items.length]);
 
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    rail.querySelectorAll<HTMLImageElement>(".category-card-art img").forEach((image) => {
+      if (image.complete && image.naturalWidth > 0) image.classList.add("is-loaded");
+    });
+  }, [items.length]);
+
   if (items.length === 0) return null;
 
   const moveByCard = (direction: -1 | 1) => {
@@ -127,7 +135,7 @@ export function CategorySubcategoryGrid({
             if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
           }}
         >
-          {items.map((item) => {
+          {items.map((item, index) => {
             const artwork = categoryArtworkSources(item.image);
             return (
               <Link
@@ -137,11 +145,23 @@ export function CategorySubcategoryGrid({
                 aria-label={`Browse ${item.name}`}
                 style={{ "--category-card-start": item.gradient[0], "--category-card-end": item.gradient[1] } as CSSProperties}
               >
-                <span className="category-card-art" aria-hidden="true">
+                <span className={`category-card-art${artwork ? "" : " no-image"}`} aria-hidden="true">
                   {artwork && (
                     <picture>
                       {artwork.srcSet && <source type="image/webp" srcSet={artwork.srcSet} sizes="(max-width: 620px) 72vw, (max-width: 900px) 33vw, 25vw" />}
-                      <img src={artwork.fallback} alt="" loading="lazy" decoding="async" />
+                      <img
+                        src={artwork.fallback}
+                        alt=""
+                        loading={index < 2 ? "eager" : "lazy"}
+                        fetchPriority={index === 0 ? "high" : "low"}
+                        decoding="async"
+                        sizes="(max-width: 620px) 92vw, (max-width: 900px) 33vw, 25vw"
+                        onLoad={(event) => event.currentTarget.classList.add("is-loaded")}
+                        onError={(event) => {
+                          event.currentTarget.classList.add("is-error");
+                          event.currentTarget.closest(".category-card-art")?.classList.add("no-image");
+                        }}
+                      />
                     </picture>
                   )}
                 </span>
