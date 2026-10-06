@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CategoryNode } from "@/lib/api/categories";
 import { categoryArtworkSources } from "@/lib/category-assets";
 import { categoryVisual } from "@/lib/categories";
+import { automobileSubcategoryArtwork } from "@/lib/automobiles";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -31,25 +32,37 @@ export function CategorySubcategoryGrid({
 }) {
   const visual = categoryVisual(category);
   const isElectronics = category.toLowerCase() === "electronics";
+  const isAutomobiles = category.toLowerCase() === "automobiles";
   const electronicsItems = ELECTRONICS_SUBCATEGORIES.map((config) => {
-        const node = subcategories.find((candidate) => matchElectronicsSubcategory(candidate, config));
-        return node ? {
-          key: node.id,
-          name: config.name,
-          icon: node.icon || "✦",
-          href: `/browse/electronics/${config.slug}`,
-          image: config.image,
-          gradient: config.gradient,
-        } : null;
-      }).filter(Boolean) as CardItem[];
-  const items: CardItem[] = isElectronics ? electronicsItems : subcategories.map((node) => ({
-        key: node.id,
-        name: node.name,
-        icon: node.icon || visual.emoji,
-        href: withQuery(route, { ...keep, subcategory_id: node.id }),
-        image: visual.backgroundArt,
-        gradient: visual.gradient,
-      }));
+    const node = subcategories.find((candidate) => matchElectronicsSubcategory(candidate, config));
+    return node ? {
+      key: node.id,
+      name: config.name,
+      icon: node.icon || "✦",
+      href: `/browse/electronics/${config.slug}`,
+      image: config.image,
+      gradient: config.gradient,
+    } : null;
+  }).filter(Boolean) as CardItem[];
+  const automobileItems: CardItem[] = subcategories.map((node) => {
+    const artwork = automobileSubcategoryArtwork(node.name);
+    return {
+      key: node.id,
+      name: node.name,
+      icon: node.icon || visual.emoji,
+      href: withQuery(route, { ...keep, subcategory_id: node.id }),
+      image: artwork?.image ?? visual.backgroundArt,
+      gradient: artwork?.gradient ?? visual.gradient,
+    };
+  });
+  const items: CardItem[] = isElectronics ? electronicsItems : isAutomobiles ? automobileItems : subcategories.map((node) => ({
+    key: node.id,
+    name: node.name,
+    icon: node.icon || visual.emoji,
+    href: withQuery(route, { ...keep, subcategory_id: node.id }),
+    image: visual.backgroundArt,
+    gradient: visual.gradient,
+  }));
   const railRef = useRef<HTMLElement>(null);
   const activeIndexRef = useRef(0);
   const pointerStartXRef = useRef<number | null>(null);
