@@ -1,7 +1,7 @@
 /* Electronics department shelf using the shared category-card browser system. */
 .electronics-subcategory-zone {
-  margin: 0 0 28px;
-  padding: 22px;
+  margin: 0 0 11px;
+  padding: 22px 22px 0;
   border: 1px solid rgba(139, 117, 255, .18);
   border-radius: 22px;
   background: linear-gradient(145deg, rgba(13, 18, 39, .86), rgba(7, 10, 23, .74));
@@ -19,7 +19,7 @@
 .electronics-subcategory-heading p { max-width: 31ch; margin: 0 0 2px; color: var(--c-text-3); font: 500 12px/1.5 var(--f-ui); text-align: right; }
 .electronics-subcategory-browser { position: relative; }
 @media (max-width: 700px) {
-  .electronics-subcategory-zone { margin-bottom: 22px; padding: 16px; border-radius: 18px; }
+  .electronics-subcategory-zone { margin-bottom: 12px; padding: 16px 16px 0; border-radius: 18px; }
   .electronics-subcategory-heading { align-items: start; display: block; margin-bottom: 12px; }
   .electronics-subcategory-heading p { margin-top: 8px; text-align: left; }
 }
