@@ -4,6 +4,20 @@ import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
 import { withQuery } from "@/lib/params";
 
 function labelFor(value: string) {
+  const labels: Record<string, string> = {
+    ram: "RAM",
+    smart_tv: "Smart TV",
+    compatible_with: "Compatible with",
+    screen_size: "Screen size",
+    engine_size: "Engine size",
+    seating_capacity: "Seating capacity",
+    payload_capacity: "Payload capacity",
+    storage_capacity: "Storage capacity",
+    storage_type: "Storage type",
+    battery_health: "Battery health",
+    length_ft: "Length (ft)",
+  };
+  if (labels[value]) return labels[value];
   return value.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 

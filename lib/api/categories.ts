@@ -14,6 +14,10 @@ export interface CategoryFilterField {
   options: string[] | null;
 }
 
+export async function getCategoryFilters(categoryId: string): Promise<CategoryFilterField[]> {
+  return (await apiGet<CategoryFilterField[]>(`/categories/${encodeURIComponent(categoryId)}/filters`, { revalidate: 300 })) ?? [];
+}
+
 export async function getCategoryTree(): Promise<CategoryNode[]> {
   return (await apiGet<CategoryNode[]>("/categories/tree", { revalidate: 300 })) ?? [];
 }
@@ -22,6 +26,6 @@ export async function getCategoryZone(name: string): Promise<{ category: Categor
   const tree = await getCategoryTree();
   const category = tree.find((node) => node.name.toLowerCase() === name.toLowerCase()) ?? null;
   if (!category) return { category: null, subcategories: [], filters: [] };
-  const filters = (await apiGet<CategoryFilterField[]>(`/categories/${encodeURIComponent(category.id)}/filters`, { revalidate: 300 })) ?? [];
+  const filters = await getCategoryFilters(category.id);
   return { category, subcategories: category.subcategories, filters };
 }

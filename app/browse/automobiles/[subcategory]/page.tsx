@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CategoryLanding } from "@/components/marketplace/CategoryLanding";
 import { automobileSubcategoryArtwork, findAutomobileSubcategory } from "@/lib/automobiles";
-import { getCategoryZone } from "@/lib/api/categories";
+import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
+import { filtersForSubcategory } from "@/lib/category-filters";
+import { automobileSubcategorySlug } from "@/lib/automobiles";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
@@ -48,9 +50,11 @@ export default async function AutomobileSubcategoryPage({ params, searchParams }
       if (field && selected) attributes[field] = selected;
     }
   }
+  const childFilters = await orFallback(() => getCategoryFilters(subcategory.id), []);
+  const filters = filtersForSubcategory("Automobiles", automobileSubcategorySlug(subcategory.name), childFilters.data);
   const response = await orFallback(
     () => listListings({ search: q, category: "Automobiles", categoryId: zoneResponse.data.category?.id, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, county, limit: 24 }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={zoneResponse.data.filters} subcategoryId={subcategory.id} attributes={attributes} />;
+  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
 }

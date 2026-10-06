@@ -1,4 +1,4 @@
-import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
+import type { CategoryNode } from "@/lib/api/categories";
 
 export interface ElectronicsSubcategoryConfig {
   slug: string;
@@ -35,12 +35,4 @@ export function electronicsSubcategoryFromSlug(slug: string) {
 export function matchElectronicsSubcategory(node: CategoryNode, config: ElectronicsSubcategoryConfig) {
   const name = node.name.trim().toLowerCase();
   return config.aliases.some((alias) => alias.toLowerCase() === name);
-}
-
-export function electronicsBrandFilter(): CategoryFilterField {
-  return {
-    field_name: "brand",
-    field_type: "select",
-    options: ["Samsung", "iPhone", "Apple", "Tecno", "Xiaomi", "Infinix", "Oppo", "Nokia", "Huawei"],
-  };
 }

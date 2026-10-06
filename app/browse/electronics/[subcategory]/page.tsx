@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CategoryLanding } from "@/components/marketplace/CategoryLanding";
-import { electronicsBrandFilter, electronicsSubcategoryFromSlug, matchElectronicsSubcategory } from "@/lib/electronics";
-import { getCategoryZone } from "@/lib/api/categories";
+import { electronicsSubcategoryFromSlug, matchElectronicsSubcategory } from "@/lib/electronics";
+import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
+import { filtersForSubcategory } from "@/lib/category-filters";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
@@ -49,13 +50,11 @@ export default async function ElectronicsSubcategoryPage({ params, searchParams 
       if (field && selected) attributes[field] = selected;
     }
   }
-  const brandFilter = electronicsBrandFilter();
-  const filters = zoneResponse.data.filters.some((field) => field.field_name.toLowerCase() === "brand")
-    ? zoneResponse.data.filters.map((field) => field.field_name.toLowerCase() === "brand" && !field.options?.length ? brandFilter : field)
-    : [...zoneResponse.data.filters, brandFilter];
+  const childFilters = await orFallback(() => getCategoryFilters(subcategory.id), []);
+  const filters = filtersForSubcategory("Electronics", config.slug, childFilters.data);
   const response = await orFallback(
     () => listListings({ search: q, category: "Electronics", categoryId: zoneResponse.data.category?.id, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, county, limit: 24 }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category="Electronics" routeOverride={`/browse/electronics/${config.slug}`} heroArt={config.image} subcategoryName={config.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
+  return <CategoryLanding category="Electronics" routeOverride={`/browse/electronics/${config.slug}`} heroArt={config.image} subcategoryName={config.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
 }
