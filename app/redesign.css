@@ -915,9 +915,13 @@ body { background-color: #05060d; }
   outline-offset: 1px;
 }
 .search-control-row .sform-input {
+  flex: 1 1 auto;
   min-width: 0;
   padding: 10px 2px;
   font-size: 15px;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   appearance: none;
   -webkit-appearance: none;
   outline: none !important;
@@ -970,12 +974,12 @@ body { background-color: #05060d; }
 }
 
 @media (max-width: 700px) {
-  .search-control-row { gap: 8px; }
+  .search-control-row { gap: 8px; align-items: center; }
   .browse-search-filter-row { margin-top: 18px; }
   .category-search-filter-row { margin-top: 6px; }
-  .search-control-row .sform { min-height: 52px; padding: 4px 12px 4px 14px; }
-  .search-control-row .sform-input { padding-block: 8px; font-size: 15px; }
-  .search-control-row .sform-search-submit { height: 44px; }
+  .search-control-row .sform { min-height: 52px; padding: 4px 10px 4px 12px; }
+  .search-control-row .sform-input { padding-block: 8px; font-size: clamp(14px, 3.8vw, 15px); }
+  .search-control-row .sform-search-submit { flex-basis: 44px; width: 44px; height: 44px; }
   .search-control-row .mobile-filter-trigger--icon {
     flex-basis: 52px;
     width: 52px;
@@ -987,13 +991,14 @@ body { background-color: #05060d; }
 
 @media (max-width: 380px) {
   .search-control-row { gap: 7px; }
-  .search-control-row .sform { padding-inline: 11px; }
-  .search-control-row .sform-input { font-size: 13px; }
+  .search-control-row .sform { padding-inline: 9px; }
+  .search-control-row .sform-input { font-size: 14px; }
   .search-control-row .mobile-filter-trigger--icon {
     flex-basis: 48px;
     width: 48px;
-    height: 50px;
-    min-height: 50px;
+    height: 48px;
+    min-height: 48px;
+    border-radius: 14px;
   }
 }
 
