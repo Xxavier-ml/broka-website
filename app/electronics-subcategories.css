@@ -1,4 +1,4 @@
-/* Electronics department shelf: visual product-family navigation before listings. */
+/* Electronics department shelf using the shared category-card browser system. */
 .electronics-subcategory-zone {
   margin: 0 0 28px;
   padding: 22px;
@@ -17,55 +17,9 @@
 .electronics-subcategory-heading .category-kicker { margin-bottom: 8px; color: #b9acff; font-size: 9px; }
 .electronics-subcategory-title { margin: 0; color: #f0eef9; font: 800 clamp(23px, 3vw, 32px)/1 var(--f-display); letter-spacing: -.045em; }
 .electronics-subcategory-heading p { max-width: 31ch; margin: 0 0 2px; color: var(--c-text-3); font: 500 12px/1.5 var(--f-ui); text-align: right; }
-.electronics-subcategory-rail { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(220px, 27%); gap: 12px; overflow-x: auto; overscroll-behavior-inline: contain; padding: 2px 2px 7px; scroll-snap-type: x proximity; scrollbar-width: none; }
-.electronics-subcategory-rail::-webkit-scrollbar { display: none; }
-.electronics-subcategory-card {
-  --electronics-start: #7c5cff;
-  --electronics-end: #22c9f0;
-  position: relative;
-  display: flex;
-  min-height: 166px;
-  overflow: hidden;
-  isolation: isolate;
-  border: 1px solid color-mix(in srgb, var(--electronics-start) 38%, transparent);
-  border-radius: 16px;
-  color: #fff;
-  background: linear-gradient(135deg, var(--electronics-start), var(--electronics-end));
-  text-decoration: none;
-  box-shadow: inset 0 1px rgba(255, 255, 255, .1), 0 14px 30px -28px color-mix(in srgb, var(--electronics-start) 80%, transparent);
-  transition: transform .3s cubic-bezier(.2, .8, .2, 1), border-color .25s ease, box-shadow .3s ease;
-  scroll-snap-align: start;
-}
-.electronics-subcategory-art,
-.electronics-subcategory-shade { position: absolute; inset: 0; z-index: -2; }
-.electronics-subcategory-art { overflow: hidden; background: #10162d; }
-.electronics-subcategory-art picture { display: block; width: 100%; height: 100%; }
-.electronics-subcategory-art img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: .7; transform: scale(1.03); transition: transform .5s cubic-bezier(.2, .8, .2, 1), opacity .3s ease; }
-.electronics-subcategory-shade { z-index: -1; background: linear-gradient(180deg, rgba(4, 6, 16, .02) 12%, rgba(4, 6, 16, .2) 38%, rgba(4, 6, 16, .95) 100%), linear-gradient(110deg, rgba(4, 6, 16, .8), rgba(4, 6, 16, .14)); }
-.electronics-subcategory-copy { display: flex; flex-direction: column; justify-content: end; width: 100%; min-height: 166px; padding: 16px; }
-.electronics-subcategory-name { max-width: 14ch; color: #fff; font: 800 17px/1.05 var(--f-display); letter-spacing: -.03em; text-shadow: 0 2px 10px rgba(0, 0, 0, .72); }
-.electronics-subcategory-description { max-width: 25ch; margin-top: 7px; color: rgba(236, 239, 251, .76); font: 500 10px/1.4 var(--f-ui); }
-.electronics-subcategory-arrow { position: absolute; right: 12px; bottom: 12px; display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid rgba(255, 255, 255, .24); border-radius: 50%; background: rgba(8, 10, 22, .42); font-size: 15px; }
-.electronics-subcategory-card:hover { border-color: rgba(209, 200, 255, .9); box-shadow: 0 20px 34px -26px color-mix(in srgb, var(--electronics-start) 86%, transparent), inset 0 1px rgba(255, 255, 255, .18); transform: translateY(-3px); }
-.electronics-subcategory-card:hover .electronics-subcategory-art img { opacity: .9; transform: scale(1.1); }
-.electronics-subcategory-card:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 4px; }
-@media (max-width: 1024px) {
-  .electronics-subcategory-rail { grid-auto-columns: minmax(220px, 32%); }
-}
+.electronics-subcategory-browser { position: relative; }
 @media (max-width: 700px) {
   .electronics-subcategory-zone { margin-bottom: 22px; padding: 16px; border-radius: 18px; }
   .electronics-subcategory-heading { align-items: start; display: block; margin-bottom: 12px; }
   .electronics-subcategory-heading p { margin-top: 8px; text-align: left; }
-  .electronics-subcategory-rail { grid-auto-columns: minmax(235px, 78%); gap: 9px; scroll-snap-type: x mandatory; }
-  .electronics-subcategory-card, .electronics-subcategory-copy { min-height: 150px; }
-  .electronics-subcategory-copy { padding: 13px; }
-  .electronics-subcategory-name { font-size: 15px; }
-  .electronics-subcategory-description { font-size: 9px; }
-}
-@media (max-width: 390px) {
-  .electronics-subcategory-rail { grid-auto-columns: 88%; }
-  .electronics-subcategory-card, .electronics-subcategory-copy { min-height: 138px; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .electronics-subcategory-card, .electronics-subcategory-art img { transition: none; }
 }
