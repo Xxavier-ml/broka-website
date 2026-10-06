@@ -22,6 +22,8 @@
 }
 .browse-see-all-categories:hover { color: #fff; transform: translateX(2px); }
 .browse-see-all-categories:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 4px; border-radius: 4px; }
+.category-subcategory-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 0 0 10px; color: var(--c-text-2); font: 700 12px/1.2 var(--f-ui); letter-spacing: .08em; text-transform: uppercase; }
+.category-subcategory-heading .browse-see-all-categories { text-transform: none; }
 
 .categories-hero {
   position: relative;
@@ -109,6 +111,7 @@
 
 @media (max-width: 700px) {
   .browse-category-discovery-head { margin-bottom: 8px; font-size: 11px; }
+  .category-subcategory-heading { margin-bottom: 8px; font-size: 11px; }
   .categories-hero { padding: calc(68px + 30px) 0 28px; }
   .categories-back { margin-bottom: 16px; }
   .categories-hero h1 { font-size: clamp(34px, 10vw, 48px); }

@@ -5,7 +5,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import type { CategoryNode } from "@/lib/api/categories";
 import { categoryArtworkSources } from "@/lib/category-assets";
-import { categoryVisual } from "@/lib/categories";
+import { categorySlug, categoryVisual } from "@/lib/categories";
 import { automobileSubcategoryArtwork, automobileSubcategorySlug } from "@/lib/automobiles";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
@@ -117,6 +117,10 @@ export function CategorySubcategoryGrid({
 
   return (
     <section className="category-subcategory-zone" aria-label={`${category} subcategories`}>
+      <div className="category-subcategory-heading">
+        <span>{category} subcategories</span>
+        <Link href={`/browse/subcategories/${categorySlug(category)}`} className="browse-see-all-categories">See all <span aria-hidden="true">↗</span></Link>
+      </div>
       <div className="category-card-browser category-subcategory-browser">
         <button type="button" className="category-card-nav category-card-nav-prev" aria-label={`Previous ${category} subcategory`} onClick={() => moveByCard(-1)}>‹</button>
         <nav
