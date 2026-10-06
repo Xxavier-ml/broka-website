@@ -75,7 +75,7 @@ export function CategoryChips({
     const card = rail?.querySelector<HTMLElement>(".category-card");
     if (!rail || !card) return;
     const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
-    const nextIndex = Math.max(0, Math.min(items.length - 1, activeIndex + direction));
+    const nextIndex = (activeIndex + direction + items.length) % items.length;
     activeIndexRef.current = nextIndex;
     rail.scrollTo({ left: nextIndex * (card.offsetWidth + gap), behavior: "smooth" });
     setActiveIndex(nextIndex);
@@ -153,6 +153,27 @@ export function CategoryChips({
       </nav>
       <button type="button" className="category-card-nav category-card-nav-next" aria-label="Next category" onClick={() => moveByCard(1)}>›</button>
       <span className="category-card-page" aria-live="polite">{activeIndex + 1} / {items.length}</span>
+      <div className="category-card-dots" aria-label="Choose category slide">
+        {items.map((item, index) => (
+          <button
+            key={`dot-${item.key}`}
+            type="button"
+            className={`category-card-dot${activeIndex === index ? " active" : ""}`}
+            aria-label={`Go to ${item.label}`}
+            aria-current={activeIndex === index ? "true" : undefined}
+            onClick={() => {
+              const rail = railRef.current;
+              const card = rail?.querySelector<HTMLElement>(".category-card");
+              if (!rail || !card) return;
+              const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
+              activeIndexRef.current = index;
+              setActiveIndex(index);
+              setAutoScroll(false);
+              rail.scrollTo({ left: index * (card.offsetWidth + gap), behavior: "smooth" });
+            }}
+          />
+        ))}
+      </div>
     </div>
   );
 }

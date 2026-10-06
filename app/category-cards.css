@@ -125,7 +125,8 @@
 .category-card:active { transform: translateY(0) scale(.985); transition-duration: .08s; }
 .category-card-scroll-toggle { display: none; }
 .category-card-nav,
-.category-card-page { display: none; }
+.category-card-page,
+.category-card-dots { display: none; }
 
 @keyframes category-card-skeleton {
   0%, 100% { background-position: 100% 0; }
@@ -231,4 +232,33 @@
     transform: translateX(50%);
     backdrop-filter: blur(8px);
   }
+  .category-card-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    max-width: 100%;
+    margin: 2px auto 0;
+    padding: 3px 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .category-card-dots::-webkit-scrollbar { display: none; }
+  .category-card-dot {
+    flex: 0 0 6px;
+    width: 6px;
+    height: 6px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(207, 218, 242, .36);
+    transition: width .2s ease, border-radius .2s ease, background .2s ease, transform .2s ease;
+  }
+  .category-card-dot.active {
+    flex-basis: 18px;
+    width: 18px;
+    border-radius: 999px;
+    background: #b9acff;
+    box-shadow: 0 0 10px rgba(185, 172, 255, .45);
+  }
+  .category-card-dot:focus-visible { outline: 2px solid #c5b8ff; outline-offset: 3px; }
 }
