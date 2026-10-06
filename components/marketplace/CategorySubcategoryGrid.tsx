@@ -154,7 +154,7 @@ export function CategorySubcategoryGrid({
               <Link
                 key={item.key}
                 href={item.href}
-                className="category-card"
+                className={`category-card${isAutomobiles ? " automobile-subcategory-card" : ""}`}
                 aria-label={`Browse ${item.name}`}
                 style={{ "--category-card-start": item.gradient[0], "--category-card-end": item.gradient[1] } as CSSProperties}
               >
