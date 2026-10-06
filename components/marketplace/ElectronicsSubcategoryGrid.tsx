@@ -57,14 +57,7 @@ export function ElectronicsSubcategoryGrid({ subcategories }: { subcategories: C
   };
 
   return (
-    <section className="electronics-subcategory-zone" aria-labelledby="electronics-subcategory-title">
-      <div className="electronics-subcategory-heading">
-        <div>
-          <span className="category-kicker">ELECTRONICS / SHOP BY TYPE</span>
-          <h2 className="electronics-subcategory-title" id="electronics-subcategory-title">Find the right kind of tech.</h2>
-        </div>
-        <p>Start with a product family, then narrow down the listings with focused filters.</p>
-      </div>
+    <section className="electronics-subcategory-zone" aria-label="Electronics subcategories">
       <div className="category-card-browser electronics-subcategory-browser">
         <button type="button" className="category-card-nav category-card-nav-prev" aria-label="Previous Electronics subcategory" onClick={() => moveByCard(-1)}>‹</button>
         <nav

@@ -1,25 +1,9 @@
-/* Electronics department shelf using the shared category-card browser system. */
+/* Electronics uses the same unboxed category-card browser as the main Browse page. */
 .electronics-subcategory-zone {
-  margin: 0 0 11px;
-  padding: 22px 22px 0;
-  border: 1px solid rgba(139, 117, 255, .18);
-  border-radius: 22px;
-  background: linear-gradient(145deg, rgba(13, 18, 39, .86), rgba(7, 10, 23, .74));
-  box-shadow: inset 0 1px rgba(255, 255, 255, .05), 0 22px 50px -42px rgba(88, 70, 210, .8);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
 }
-.electronics-subcategory-heading {
-  display: flex;
-  align-items: end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 16px;
-}
-.electronics-subcategory-heading .category-kicker { margin-bottom: 8px; color: #b9acff; font-size: 9px; }
-.electronics-subcategory-title { margin: 0; color: #f0eef9; font: 800 clamp(23px, 3vw, 32px)/1 var(--f-display); letter-spacing: -.045em; }
-.electronics-subcategory-heading p { max-width: 31ch; margin: 0 0 2px; color: var(--c-text-3); font: 500 12px/1.5 var(--f-ui); text-align: right; }
 .electronics-subcategory-browser { position: relative; }
-@media (max-width: 700px) {
-  .electronics-subcategory-zone { margin-bottom: 12px; padding: 16px 16px 0; border-radius: 18px; }
-  .electronics-subcategory-heading { align-items: start; display: block; margin-bottom: 12px; }
-  .electronics-subcategory-heading p { margin-top: 8px; text-align: left; }
-}
