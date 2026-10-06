@@ -9,7 +9,7 @@ import { ApiNotice, EmptyState } from "./StateMessage";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { CategoryZoneControls } from "./CategoryZoneControls";
-import { ElectronicsSubcategoryGrid } from "./ElectronicsSubcategoryGrid";
+import { CategorySubcategoryGrid } from "./CategorySubcategoryGrid";
 import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
 
  type CategorySort = "featured" | "recent" | "price_low" | "price_high";
@@ -110,8 +110,8 @@ export function CategoryLanding({
 
       <section className="category-results browse-section" aria-label={`${content.category} listings`}>
         <div className="wrap">
-          {content.category === "Electronics" && !subcategoryName && <ElectronicsSubcategoryGrid subcategories={subcategories ?? []} />}
-          {(content.category !== "Electronics" || subcategoryName) && <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={subcategories ?? []} showSubcategories={content.category !== "Electronics"} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />}
+          {!subcategoryName && <CategorySubcategoryGrid category={content.category} route={route} subcategories={subcategories ?? []} keep={preserved} />}
+          {(subcategoryName || !(subcategories?.length)) && <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={subcategories ?? []} showSubcategories={false} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />}
           <div className="listing-v0-toolbar category-results-toolbar">
             <p className="browse-count" role="status">
               {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "listing" : "listings"}`}
