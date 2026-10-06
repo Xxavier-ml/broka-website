@@ -20,6 +20,7 @@ export function CategoryZoneControls({
   county,
   sort,
   attributes,
+  showSubcategories = true,
 }: {
   route: string;
   category: CategoryNode | null;
@@ -33,13 +34,14 @@ export function CategoryZoneControls({
   county?: string;
   sort: string;
   attributes: Record<string, string>;
+  showSubcategories?: boolean;
 }) {
   const keep = { q, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county, sort: sort === "featured" ? undefined : sort };
   const activeCount = [subcategoryId, condition, minPrice != null || maxPrice != null ? "price" : undefined, county, ...Object.values(attributes)].filter(Boolean).length;
   const clearHref = withQuery(route, { q, sort: sort === "featured" ? undefined : sort });
   return (
     <div className="category-zone-controls" aria-label={`${category?.name ?? "Category"} browsing controls`}>
-      {subcategories.length > 0 && (
+      {showSubcategories && subcategories.length > 0 && (
         <nav className="subcategory-rail" aria-label={`${category?.name ?? "Category"} subcategories`}>
           <Link className={`subcategory-chip${!subcategoryId ? " active" : ""}`} href={withQuery(route, { ...keep })}>All</Link>
           {subcategories.map((sub) => <Link key={sub.id} className={`subcategory-chip${subcategoryId === sub.id ? " active" : ""}`} href={withQuery(route, { ...keep, subcategory_id: sub.id })}>{sub.name}</Link>)}

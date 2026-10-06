@@ -21,7 +21,7 @@ export function ElectronicsSubcategoryGrid({ subcategories }: { subcategories: C
         </div>
         <p>Start with a product family, then narrow down the listings with focused filters.</p>
       </div>
-      <div className="electronics-subcategory-grid">
+      <div className="electronics-subcategory-rail">
         {available.map(({ config, node }) => {
           const artwork = categoryArtworkSources(config.image);
           return (
