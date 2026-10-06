@@ -2,11 +2,12 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CategoryLanding } from "@/components/marketplace/CategoryLanding";
 import { listListings } from "@/lib/api/listings";
-import { categoryFromSlug } from "@/lib/categories";
+import { categoryFromSlug, categorySlug } from "@/lib/categories";
 import { categoryPageContent } from "@/lib/category-pages";
-import { getCategoryZone } from "@/lib/api/categories";
+import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
+import { filtersForSubcategory } from "@/lib/category-filters";
 
 type Props = { params: Promise<{ category: string }>; searchParams: SearchParams };
 
@@ -33,6 +34,13 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
   const county = firstParam(sp.county);
   const subcategoryId = firstParam(sp.subcategory_id);
   const zoneResponse = await orFallback(() => getCategoryZone(category), { category: null, subcategories: [], filters: [] });
+  const selectedSubcategory = zoneResponse.data.subcategories.find((item) => item.id === subcategoryId);
+  const childFilters = selectedSubcategory
+    ? await orFallback(() => getCategoryFilters(selectedSubcategory.id), [])
+    : { data: zoneResponse.data.filters, failed: false };
+  const filters = selectedSubcategory
+    ? filtersForSubcategory(category, categorySlug(selectedSubcategory.name), childFilters.data)
+    : zoneResponse.data.filters;
   const attributes: Record<string, string> = {};
   for (const [key, value] of Object.entries(sp)) {
     if (key.startsWith("attribute_")) {
@@ -45,5 +53,5 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
     () => listListings({ search: q, category, categoryId: zoneResponse.data.category?.id, subcategoryId, attributes, sort, condition, minPrice, maxPrice, county, limit: 24 }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category={category} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={zoneResponse.data.filters} subcategoryId={subcategoryId} attributes={attributes} />;
+  return <CategoryLanding category={category} subcategoryName={selectedSubcategory?.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategoryId} attributes={attributes} />;
 }

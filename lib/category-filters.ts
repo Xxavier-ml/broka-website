@@ -27,6 +27,67 @@ const AUTOMOBILE_MAKES: Record<string, string[]> = {
   "agricultural-vehicles": ["Massey Ferguson", "New Holland", "John Deere", "Kubota", "Mahindra", "Case IH", "Deutz-Fahr"],
 };
 
+const CATEGORY_OPTIONS: Record<string, Record<string, string[]>> = {
+  gaming: {
+    consoles: ["Sony", "Microsoft", "Nintendo", "Valve"],
+    controllers: ["Sony", "Microsoft", "Nintendo", "Logitech", "Razer", "Thrustmaster"],
+    "pc-gaming": ["Asus", "MSI", "Lenovo", "HP", "Dell", "Acer", "Razer", "Logitech"],
+    accessories: ["Sony", "Microsoft", "Nintendo", "Razer", "Logitech", "Thrustmaster"],
+  },
+  "home & furniture": {
+    "living-room": ["Ashley", "IKEA", "Midas", "Rochester", "Kifaru"],
+    "beds & mattresses": ["Slumberland", "Dr. Mattress", "Silentnight", "Midas", "Sealy"],
+    appliances: ["Ramtons", "Von Hotpoint", "Bruhm", "LG", "Samsung", "Hisense", "Hotpoint", "Bosch", "Philips", "Kenwood", "Mika"],
+    "office-furniture": ["IKEA", "Rochester", "Duraco", "Kifaru"],
+    "outdoor & garden": ["IKEA", "Keter", "Midas"],
+  },
+  fashion: {
+    "men-s-clothing": ["Nike", "Adidas", "Puma", "Levi's", "H&M", "Tommy Hilfiger", "Louis Vuitton"],
+    "women-s-clothing": ["Nike", "Adidas", "Puma", "H&M", "Zara", "Levi's", "Louis Vuitton"],
+    "kids-clothing": ["Nike", "Adidas", "Puma", "H&M", "Carter's", "Mothercare"],
+    shoes: ["Nike", "Adidas", "Puma", "New Balance", "Skechers", "Timberland", "Clarks"],
+    "bags-accessories": ["Michael Kors", "Coach", "Nike", "Adidas", "Puma", "Louis Vuitton"],
+  },
+  agriculture: {
+    "farm-equipment": ["John Deere", "Massey Ferguson", "New Holland", "Kubota", "Mahindra", "Honda", "Stihl"],
+    "farm-tools": ["DeWalt", "Bosch", "Makita", "Stanley", "Black+Decker", "Total"],
+    "fertilizers-agrochemicals": ["Yara", "MEA Fertilizers", "Amiran", "Osho Chemical", "Syngenta", "Bayer"],
+  },
+  "beauty & personal care": {
+    skincare: ["Nivea", "Neutrogena", "CeraVe", "Vaseline", "Garnier", "The Ordinary", "Dove"],
+    haircare: ["Dove", "L'Oreal", "Pantene", "Tresemme", "Cantu", "Dark & Lovely", "Motions"],
+    makeup: ["Maybelline", "L'Oreal", "MAC", "Revlon", "NYX", "Fenty Beauty", "Huda Beauty"],
+    fragrances: ["Hugo Boss", "Calvin Klein", "Davidoff", "Lattafa", "Armaf", "Jovan", "Chanel"],
+    "men-s-grooming": ["Gillette", "Nivea Men", "Dove Men+Care", "Old Spice", "Beard Gang", "Philips"],
+  },
+  construction: {
+    "hand-power-tools": ["Bosch", "Makita", "DeWalt", "Stanley", "Black+Decker", "Total"],
+    "heavy-machinery": ["Caterpillar", "JCB", "Komatsu", "Volvo", "Hitachi"],
+    "plumbing-electrical": ["Schneider Electric", "ABB", "Legrand", "MK", "Davis & Shirtliff"],
+    "paint-hardware": ["Crown Paints", "Bralo", "Basco", "Sadolin", "Dulux", "Plascon"],
+  },
+  "sports & fitness": {
+    "fitness-equipment": ["Adidas", "Nike", "Reebok", "Decathlon", "York", "Everlast"],
+    cycling: ["Giant", "Trek", "Scott", "Specialized", "Cannondale", "Bianchi"],
+    sportswear: ["Nike", "Adidas", "Puma", "Under Armour", "Reebok", "New Balance"],
+    "outdoor-camping": ["Coleman", "Quechua", "The North Face", "Decathlon", "Kilimanjaro"],
+  },
+  "music & instruments": {
+    guitars: ["Yamaha", "Fender", "Gibson", "Ibanez", "Epiphone", "Cort"],
+    "keyboards-pianos": ["Yamaha", "Casio", "Roland", "Korg", "Kawai"],
+    "drums-percussion": ["Yamaha", "Pearl", "Tama", "Ludwig", "Mapex"],
+    "dj-studio-equipment": ["Pioneer DJ", "Behringer", "Numark", "Focusrite", "M-Audio", "Shure"],
+    accessories: ["Yamaha", "Fender", "Gibson", "Roland", "Shure", "Behringer"],
+  },
+  "pets & animals": {
+    "pet-food": ["Royal Canin", "Purina", "Pedigree", "Whiskas", "Hills", "Drools"],
+    "pet-supplies-accessories": ["Royal Canin", "Kong", "Trixie", "Whiskas", "Pedigree"],
+  },
+  "books & education": {
+    "stationery-supplies": ["Pilot", "Bic", "Staedtler", "Faber-Castell", "HP", "Paper Mate"],
+  },
+};
+
 function withCuratedOptions(filters: CategoryFilterField[], options: string[] | undefined, fieldNames: string[]) {
   if (!options?.length) return filters;
   return filters.map((field) => fieldNames.includes(field.field_name.toLowerCase())
@@ -42,5 +103,6 @@ export function filtersForSubcategory(category: string, slug: string, filters: C
   if (normalizedCategory === "automobiles") {
     return withCuratedOptions(filters, AUTOMOBILE_MAKES[slug], ["make"]);
   }
-  return filters;
+  const categoryOptions = CATEGORY_OPTIONS[normalizedCategory]?.[slug];
+  return withCuratedOptions(filters, categoryOptions, ["brand"]);
 }
