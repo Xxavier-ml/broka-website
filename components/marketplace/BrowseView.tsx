@@ -58,6 +58,10 @@ export function BrowseView({
             <span><b>LIVE CATALOGUE</b><small>Listings update as sellers post</small></span>
           </div>
           <div className="browse-v0-controls">
+            <div className="browse-category-discovery-head">
+              <span>Explore categories</span>
+              <Link href="/categories" className="browse-see-all-categories">See all categories <span aria-hidden="true">↗</span></Link>
+            </div>
             <CategoryChips
               basePath="/browse"
               active={category ?? null}

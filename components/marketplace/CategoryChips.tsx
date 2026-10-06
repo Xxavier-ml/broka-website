@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
 import { CATEGORIES, categorySlug } from "@/lib/categories";
+import { categoryArtworkSources } from "@/lib/category-assets";
 import { withQuery } from "@/lib/params";
 
 /** Shared marketplace category browser. "All" clears only the category selection. */
@@ -107,9 +108,7 @@ export function CategoryChips({
         }}
       >
       {items.map((item) => {
-        const webpBase = item.image?.replace(/\.jpg$/, "");
-        const webpStem = webpBase?.split("/").pop();
-        const webpDirectory = webpBase?.replace(/\/[^/]+$/, "/webp");
+        const artwork = categoryArtworkSources(item.image);
         return (
           <Link
             key={item.key}
@@ -120,14 +119,12 @@ export function CategoryChips({
             style={item.image ? { "--category-card-start": item.gradient?.[0], "--category-card-end": item.gradient?.[1] } as CSSProperties : undefined}
           >
             <span className="category-card-art" aria-hidden="true">
-              {item.image && webpStem && webpDirectory && (
+              {artwork && (
                 <picture>
-                  <source
-                    type="image/webp"
-                    srcSet={`${webpDirectory}/${webpStem}-320.webp 320w, ${webpDirectory}/${webpStem}-640.webp 640w, ${webpDirectory}/${webpStem}-1024.webp 1024w`}
-                    sizes="(max-width: 620px) 72vw, (max-width: 900px) 33vw, 25vw"
-                  />
-                  <img src={item.image} alt="" loading="lazy" decoding="async" />
+                  {artwork.srcSet && (
+                    <source type="image/webp" srcSet={artwork.srcSet} sizes="(max-width: 620px) 72vw, (max-width: 900px) 33vw, 25vw" />
+                  )}
+                  <img src={artwork.fallback} alt="" loading="lazy" decoding="async" />
                 </picture>
               )}
             </span>
