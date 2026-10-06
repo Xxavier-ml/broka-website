@@ -53,11 +53,12 @@
   background-size: cover;
   background-position: center;
   object-fit: cover;
-  opacity: 0;
+  opacity: .72;
   transform: scale(1.02);
   will-change: transform;
   transition: transform .58s cubic-bezier(.2, .8, .2, 1), opacity .32s ease;
 }
+.category-card-art:has(img.is-loaded) { animation: none; }
 .category-card-art img.is-loaded { opacity: .72; }
 .category-card-art img.is-error { display: none; }
 .category-card-shade {
