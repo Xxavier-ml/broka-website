@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CategoryLanding } from "@/components/marketplace/CategoryLanding";
-import { findAutomobileSubcategory } from "@/lib/automobiles";
+import { automobileSubcategoryArtwork, findAutomobileSubcategory } from "@/lib/automobiles";
 import { getCategoryZone } from "@/lib/api/categories";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
@@ -29,6 +29,7 @@ export default async function AutomobileSubcategoryPage({ params, searchParams }
   const resolved = await resolveAutomobilePage(raw);
   if (!resolved) notFound();
   const { zoneResponse, subcategory } = resolved;
+  const heroArt = automobileSubcategoryArtwork(subcategory.name)?.image;
   const sp = await searchParams;
   const q = firstParam(sp.q);
   const sortValue = firstParam(sp.sort);
@@ -51,5 +52,5 @@ export default async function AutomobileSubcategoryPage({ params, searchParams }
     () => listListings({ search: q, category: "Automobiles", categoryId: zoneResponse.data.category?.id, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, county, limit: 24 }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={zoneResponse.data.filters} subcategoryId={subcategory.id} attributes={attributes} />;
+  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={zoneResponse.data.filters} subcategoryId={subcategory.id} attributes={attributes} />;
 }

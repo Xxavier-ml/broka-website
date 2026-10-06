@@ -41,6 +41,6 @@ export function electronicsBrandFilter(): CategoryFilterField {
   return {
     field_name: "brand",
     field_type: "select",
-    options: ["Samsung", "Tecno", "Apple", "Xiaomi", "Infinix", "Oppo", "Nokia", "Huawei"],
+    options: ["Samsung", "iPhone", "Apple", "Tecno", "Xiaomi", "Infinix", "Oppo", "Nokia", "Huawei"],
   };
 }

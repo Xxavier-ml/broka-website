@@ -37,6 +37,7 @@ export function CategoryLanding({
   attributes,
   subcategoryName,
   routeOverride,
+  heroArt,
 }: {
   category: string;
   q?: string;
@@ -54,6 +55,7 @@ export function CategoryLanding({
   attributes?: Record<string, string>;
   subcategoryName?: string;
   routeOverride?: string;
+  heroArt?: string;
 }) {
   const content = categoryPageContent(category);
   if (!content) return null;
@@ -63,7 +65,7 @@ export function CategoryLanding({
   const theme = {
     "--category-start": visual.gradient[0],
     "--category-end": visual.gradient[1],
-    "--category-art": visual.backgroundArt ? `url(${visual.backgroundArt})` : "none",
+    "--category-art": heroArt || visual.backgroundArt ? `url(${heroArt ?? visual.backgroundArt})` : "none",
   } as CSSProperties;
   const preserved = {
     q,

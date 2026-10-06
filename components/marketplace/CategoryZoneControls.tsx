@@ -57,7 +57,14 @@ export function CategoryZoneControls({
           <label>Minimum price<input name="min_price" type="number" min="0" placeholder="Any" defaultValue={minPrice ?? ""} /></label>
           <label>Maximum price<input name="max_price" type="number" min="0" placeholder="Any" defaultValue={maxPrice ?? ""} /></label>
           <label>County<input name="county" placeholder="e.g. Nairobi" defaultValue={county ?? ""} /></label>
-          {filters.map((field) => <label key={field.field_name}>{labelFor(field.field_name)}{field.options?.length ? <select name={`attribute_${field.field_name}`} defaultValue={attributes[field.field_name] ?? ""}><option value="">Any</option>{field.options.map((option) => <option key={option} value={option}>{option}</option>)}</select> : <input name={`attribute_${field.field_name}`} defaultValue={attributes[field.field_name] ?? ""} placeholder={`Any ${labelFor(field.field_name).toLowerCase()}`} />}</label>)}
+          {filters.map((field) => {
+            const name = `attribute_${field.field_name}`;
+            const label = labelFor(field.field_name);
+            if (field.options?.length) {
+              return <label key={field.field_name}>{label}<select name={name} defaultValue={attributes[field.field_name] ?? ""}><option value="">Any</option>{field.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>;
+            }
+            return <label key={field.field_name}>{label}<input name={name} type={field.field_type === "number_range" ? "number" : "text"} inputMode={field.field_type === "number_range" ? "numeric" : undefined} min={field.field_type === "number_range" ? 0 : undefined} step={field.field_type === "number_range" ? "any" : undefined} defaultValue={attributes[field.field_name] ?? ""} placeholder={`Any ${label.toLowerCase()}`} /></label>;
+          })}
           <button type="submit">Apply filters</button>
         </form>
       </details>
