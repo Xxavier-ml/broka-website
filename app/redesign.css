@@ -477,6 +477,13 @@ body { background-color: #05060d; }
   padding: calc(76px + 20px) 0 8px;
   background: radial-gradient(ellipse 54% 90% at 78% 0%, rgba(120, 102, 242, .11), transparent 72%);
 }
+.browse-v0-search-slot {
+  position: relative;
+  z-index: 2;
+  width: min(100%, 824px);
+}
+.browse-v0-search-slot .browse-search { margin-top: 0; }
+.browse-v0-search-slot .browse-search-filter-row { max-width: none; margin-top: 0; }
 .browse-v0-intro h1 {
   max-width: 24ch;
   margin: 0;

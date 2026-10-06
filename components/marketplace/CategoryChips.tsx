@@ -22,6 +22,7 @@ export function CategoryChips({
 }) {
   const railRef = useRef<HTMLElement>(null);
   const activeIndexRef = useRef(0);
+  const pointerStartXRef = useRef<number | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
   const items = [
@@ -65,7 +66,7 @@ export function CategoryChips({
       timer = window.setTimeout(() => {
         advanceToNextCard();
         scheduleNext();
-      }, 2200);
+      }, 3500);
     };
     scheduleNext();
     return () => { if (timer) window.clearTimeout(timer); };
@@ -100,7 +101,19 @@ export function CategoryChips({
           setActiveIndex(nextIndex);
         }}
         onPointerDown={(event) => {
-          if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) setAutoScroll(false);
+          if (!(event.target as HTMLElement).closest(".category-card-scroll-toggle")) pointerStartXRef.current = event.clientX;
+        }}
+        onPointerMove={(event) => {
+          if (pointerStartXRef.current != null && Math.abs(event.clientX - pointerStartXRef.current) > 8) {
+            pointerStartXRef.current = null;
+            setAutoScroll(false);
+          }
+        }}
+        onPointerUp={() => {
+          pointerStartXRef.current = null;
+        }}
+        onPointerCancel={() => {
+          pointerStartXRef.current = null;
         }}
         onMouseEnter={() => setAutoScroll(false)}
         onFocusCapture={(event) => {

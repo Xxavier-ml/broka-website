@@ -41,17 +41,23 @@ export function BrowseView({
     return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={result} failed={failed} />;
   }
 
-  const heading = category ? `${category} for every kind of buyer` : q ? `Results for “${q}”` : "Browse products";
   const query = { q, category, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county };
 
   return (
     <>
-      <section className="browse-hero browse-hero-v0" aria-labelledby="browse-page-title">
+      <section className="browse-hero browse-hero-v0" aria-label="Browse marketplace">
         <div className="wrap">
-          <div className="browse-v0-intro">
-            <span className="browse-route-kicker">BROKA / LIVE MARKET</span>
-            <h1 className="t-h1" id="browse-page-title">{heading}</h1>
-            <p className="t-body-lg browse-v0-support">Explore products from Kenyan sellers.</p>
+          <div className="browse-v0-search-slot">
+            <SearchForm
+              action="/browse"
+              value={q}
+              placeholder="Search products or places…"
+              hidden={{ category }}
+              className="sform-lg browse-search browse-search-v0"
+              label="Search marketplace"
+              filters={{ action: "/browse", category, condition, minPrice, maxPrice, county, sort }}
+              filterRowClassName="browse-search-filter-row"
+            />
           </div>
           <div className="browse-route-signal" aria-label="Live marketplace status">
             <span className="browse-route-signal-dot" aria-hidden="true" />
@@ -67,16 +73,6 @@ export function BrowseView({
               active={category ?? null}
               className="browse-category-rail browse-v0-category-rail"
               keep={{ q, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county }}
-            />
-            <SearchForm
-              action="/browse"
-              value={q}
-              placeholder="Search products or places…"
-              hidden={{ category }}
-              className="sform-lg browse-search browse-search-v0"
-              label="Search marketplace"
-              filters={{ action: "/browse", category, condition, minPrice, maxPrice, county, sort }}
-              filterRowClassName="browse-search-filter-row"
             />
           </div>
         </div>
