@@ -6,7 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import type { CategoryNode } from "@/lib/api/categories";
 import { categoryArtworkSources } from "@/lib/category-assets";
 import { categoryVisual } from "@/lib/categories";
-import { automobileSubcategoryArtwork } from "@/lib/automobiles";
+import { automobileSubcategoryArtwork, automobileSubcategorySlug } from "@/lib/automobiles";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -50,7 +50,7 @@ export function CategorySubcategoryGrid({
       key: node.id,
       name: node.name,
       icon: node.icon || visual.emoji,
-      href: withQuery(route, { ...keep, subcategory_id: node.id }),
+      href: `/browse/automobiles/${automobileSubcategorySlug(node.name)}`,
       image: artwork?.image ?? visual.backgroundArt,
       gradient: artwork?.gradient ?? visual.gradient,
     };

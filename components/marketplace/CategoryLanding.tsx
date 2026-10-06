@@ -87,11 +87,11 @@ export function CategoryLanding({
       <section className="category-hero browse-hero category-hero-listing" style={theme} aria-labelledby="category-page-title">
         <div className="wrap category-listing-hero">
           <div className="category-hero-copy">
-            <Link href={subcategoryName ? "/browse/electronics" : "/browse"} className="category-back">
-              <ArrowLeft size={15} aria-hidden="true" /> {subcategoryName ? "Electronics" : "All products"}
+            <Link href={subcategoryName ? `/browse/${categorySlug(content.category)}` : "/browse"} className="category-back">
+              <ArrowLeft size={15} aria-hidden="true" /> {subcategoryName ? content.category : "All products"}
             </Link>
             <h1 className="category-title" id="category-page-title">
-              {subcategoryName ? <>{subcategoryName} <span>in Electronics</span></> : <>{content.titleLead} <span>{content.titleAccent}</span></>}
+              {subcategoryName ? <>{subcategoryName} <span>in {content.category}</span></> : <>{content.titleLead} <span>{content.titleAccent}</span></>}
             </h1>
             <p className="category-intro">{subcategoryName ? `Explore ${subcategoryName.toLowerCase()} from Kenyan sellers on BROKA.` : content.intro}</p>
           </div>
