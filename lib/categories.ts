@@ -39,11 +39,11 @@ export const CATEGORIES: CategoryVisual[] = [
   { name: "Sports & Fitness", emoji: "⚽", gradient: [C.green, C.blue], backgroundArt: "/assets/category-backgrounds/sports-fitness.jpg" },
   { name: "Books & Education", emoji: "📚", gradient: [C.violet, C.blue], backgroundArt: "/assets/category-backgrounds/books-education.jpg" },
   // These categories still use the closest available generated editorial assets:
-  // fashion for Arts & Crafts, agriculture for Pets, and services for the catch-all.
+  // fashion for Arts & Crafts and services for the catch-all.
   { name: "Music & Instruments", emoji: "🎸", gradient: [C.pink, C.violet], backgroundArt: "/assets/category-backgrounds/music-instruments.jpg" },
   { name: "Arts & Crafts", emoji: "🎨", gradient: [C.violet, C.amber], backgroundArt: "/assets/category-backgrounds/fashion.jpg" },
   { name: "Business & Industrial", emoji: "🏭", gradient: [C.blue, C.warning], backgroundArt: "/assets/category-backgrounds/business-industrial.jpg" },
-  { name: "Pets & Animals", emoji: "🐾", gradient: [C.green, C.pink], backgroundArt: "/assets/category-backgrounds/agriculture.jpg" },
+  { name: "Pets & Animals", emoji: "🐾", gradient: [C.green, C.pink], backgroundArt: "/assets/category-backgrounds/pets-animals.jpg" },
   { name: "Services", emoji: "🛠️", gradient: [C.cyan, C.violet], backgroundArt: "/assets/category-backgrounds/services.jpg" },
   { name: "Other", emoji: "🛍️", gradient: [C.violet, C.cyan], backgroundArt: "/assets/category-backgrounds/services.jpg" },
 ];
