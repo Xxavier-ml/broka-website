@@ -7,6 +7,7 @@ import { automobileSubcategoryArtwork, automobileSubcategorySlug } from "@/lib/a
 import { propertySubcategoryArtwork } from "@/lib/property";
 import { landSubcategoryArtwork } from "@/lib/land";
 import { fashionSubcategoryArtwork } from "@/lib/fashion";
+import { homeFurnitureSubcategoryArtwork } from "@/lib/home-furniture";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -17,14 +18,16 @@ export function SubcategoryDirectory({ category, subcategories }: { category: st
   const isProperty = category.toLowerCase() === "property";
   const isLand = category.toLowerCase() === "land";
   const isFashion = category.toLowerCase() === "fashion";
+  const isHomeFurniture = category.toLowerCase() === "home & furniture";
   const items = subcategories.map((node) => {
     const electronicsConfig = isElectronics ? ELECTRONICS_SUBCATEGORIES.find((config) => matchElectronicsSubcategory(node, config)) : null;
     const automobileArtwork = isAutomobiles ? automobileSubcategoryArtwork(node.name) : null;
     const propertyArtwork = isProperty ? propertySubcategoryArtwork(node.name) : null;
     const landArtwork = isLand ? landSubcategoryArtwork(node.name) : null;
     const fashionArtwork = isFashion ? fashionSubcategoryArtwork(node.name) : null;
-    const image = electronicsConfig?.image ?? automobileArtwork?.image ?? propertyArtwork?.image ?? landArtwork?.image ?? fashionArtwork?.image ?? visual.backgroundArt;
-    const gradient = electronicsConfig?.gradient ?? automobileArtwork?.gradient ?? propertyArtwork?.gradient ?? landArtwork?.gradient ?? fashionArtwork?.gradient ?? visual.gradient;
+    const homeFurnitureArtwork = isHomeFurniture ? homeFurnitureSubcategoryArtwork(node.name) : null;
+    const image = electronicsConfig?.image ?? automobileArtwork?.image ?? propertyArtwork?.image ?? landArtwork?.image ?? fashionArtwork?.image ?? homeFurnitureArtwork?.image ?? visual.backgroundArt;
+    const gradient = electronicsConfig?.gradient ?? automobileArtwork?.gradient ?? propertyArtwork?.gradient ?? landArtwork?.gradient ?? fashionArtwork?.gradient ?? homeFurnitureArtwork?.gradient ?? visual.gradient;
     const href = electronicsConfig
       ? `/browse/electronics/${electronicsConfig.slug}`
       : isAutomobiles
