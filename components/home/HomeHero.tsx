@@ -1,11 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, Boxes, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
-import { SearchForm } from "@/components/marketplace/SearchForm";
-import { CATEGORIES, FEATURED_CATEGORIES, categorySlug } from "@/lib/categories";
-import { coverImage } from "@/lib/api/images";
+import { ArrowUpRight, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
 import type { HomeData } from "@/lib/api/home";
-import { formatUnitPrice, placeLine } from "@/lib/format";
-import { Media } from "@/components/marketplace/Media";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
 
@@ -26,9 +21,8 @@ function KenyaFlag() {
 }
 
 /**
- * The welcome page's first screen, built to the BROKA mockup: pitch, search and
- * categories on the left; Zeno orbiting the marketplace on the right; a
- * glowing Kenya behind; the numbers along the bottom.
+ * The welcome page's first screen: a focused BROKA pitch on the left; Zeno
+ * orbiting the intelligence layer on the right; a glowing Kenya behind.
  *
  * The bar used to read "0 live auctions, 0 online stores, 5 listings" on a
  * quiet day, which made the first thing a visitor saw a marketplace that
@@ -37,11 +31,6 @@ function KenyaFlag() {
  * true about the product. Nothing is invented and nothing reads as empty.
  */
 export function HomeHero({ data }: { data: HomeData }) {
-  const spotlight = data.featuredListings.find((listing) => coverImage(listing));
-  const spotlightImage = spotlight ? coverImage(spotlight) : null;
-  const spotlightPlace = spotlight
-    ? placeLine(spotlight.location_name, spotlight.location_county)
-    : null;
   type Stat = { icon: React.ReactNode; tone: string; value: string; label: string };
   const live: Stat[] = [];
   if (data.liveAuctionCount)
@@ -54,12 +43,10 @@ export function HomeHero({ data }: { data: HomeData }) {
     });
   if (data.storeCount)
     live.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
-  if (data.activeListings)
-    live.push({ icon: <Boxes size={22} />, tone: "cyan", value: nf.format(data.activeListings), label: "Active listings" });
   const always: Stat[] = [
     { icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" },
     { icon: <Sparkles size={22} />, tone: "violet", value: "Zeno", label: "AI negotiation" },
-    { icon: <LayoutGrid size={22} />, tone: "cyan", value: String(CATEGORIES.length), label: "Categories" },
+    { icon: <LayoutGrid size={22} />, tone: "cyan", value: "Layer", label: "Connected commerce" },
   ];
   const stats: Stat[] = [...live, ...always].slice(0, 4);
 
@@ -80,40 +67,11 @@ export function HomeHero({ data }: { data: HomeData }) {
           <p className="hh-sub hh-in" style={{ ["--d" as string]: "0.16s" }}>
             AI-powered discovery. Fairer negotiation. Better deals, backed by trust.
           </p>
-          <div className="hh-in" style={{ ["--d" as string]: "0.24s" }}>
-            <SearchForm
-              action="/browse"
-              placeholder="Search listings - phones, cars, land, houses…"
-              label="Search BROKA"
-              className="sform-hero"
-              filters={{ action: "/browse", sort: "featured", deferApply: true }}
-              filterRowClassName="home-search-filter-row"
-            />
-          </div>
           <div className="hh-actions hh-in" style={{ ["--d" as string]: "0.28s" }}>
             <Link href="/download" className="btn btn-primary hh-action-primary">
               Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
-            <Link href="/browse" className="hh-action-link">
-              Explore the marketplace <ArrowUpRight size={15} aria-hidden="true" />
-            </Link>
           </div>
-          <nav className="hh-orbs hh-in" aria-label="Popular categories" style={{ ["--d" as string]: "0.32s" }}>
-            {FEATURED_CATEGORIES.slice(0, 5).map((c) => (
-              <Link key={c.name} href={`/browse/${categorySlug(c.name)}`} className="hh-orb">
-                <span className="hh-orb-ring" style={{ ["--a" as string]: c.gradient[0], ["--b" as string]: c.gradient[1] }}>
-                  <span aria-hidden="true">{c.emoji}</span>
-                </span>
-                <span className="hh-orb-label">{c.name}</span>
-              </Link>
-            ))}
-            <Link href="/browse" className="hh-orb">
-              <span className="hh-orb-ring hh-orb-more">
-                <span aria-hidden="true">›</span>
-              </span>
-              <span className="hh-orb-label">All 21</span>
-            </Link>
-          </nav>
         </div>
 
         <div className="hh-visual hh-v0-visual">
@@ -135,25 +93,6 @@ export function HomeHero({ data }: { data: HomeData }) {
               </div>
             </div>
           </div>
-          {spotlight && spotlightImage && (
-            <Link className="hh-spotlight" href={`/listings/${spotlight.id}`} prefetch={false}>
-              <span className="hh-spotlight-media">
-                <Media image={spotlightImage} category={spotlight.category} alt={spotlight.name} />
-              </span>
-              <span className="hh-spotlight-copy">
-                <span className="hh-spotlight-kicker">
-                  <span className="hh-spotlight-live" aria-hidden="true" />
-                  Featured on BROKA
-                </span>
-                <span className="hh-spotlight-name">{spotlight.name}</span>
-                <span className="hh-spotlight-meta">
-                  <strong>{formatUnitPrice(spotlight.price, spotlight.price_unit)}</strong>
-                  {spotlightPlace && <span>· {spotlightPlace}</span>}
-                </span>
-              </span>
-              <ArrowUpRight className="hh-spotlight-arrow" size={17} aria-hidden="true" />
-            </Link>
-          )}
         </div>
       </div>
 

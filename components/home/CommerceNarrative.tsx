@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Reveal } from "@/components/ui/Reveal";
-import type { HomeData } from "@/lib/api/home";
 
 type JourneyStep = {
   number: string;
@@ -22,8 +21,7 @@ const trustLayers = [
   { mark: "03", title: "Resolution", body: "A good transaction is one that can be understood after the sale." },
 ];
 
-export function CommerceNarrative({ data }: { data: HomeData }) {
-  const featured = data.featuredListings[0];
+export function CommerceNarrative() {
   return (
     <>
       <section className="sec cn-discovery" aria-labelledby="cn-discovery-title">
@@ -150,7 +148,6 @@ export function CommerceNarrative({ data }: { data: HomeData }) {
               <Link href="/technology" className="preview-link">See the architecture →</Link>
             </Reveal>
           </div>
-          {featured && <p className="cn-proof-footnote">The system is being built around the market that is already here — including live listings like <Link href={`/listings/${featured.id}`}>{featured.name}</Link>.</p>}
           <div className="sec-outro"><Link href="/vision" className="preview-link">See the long-term vision →</Link></div>
         </div>
       </section>
