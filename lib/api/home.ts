@@ -21,7 +21,9 @@ export interface HomeData {
 export async function getHomeData(): Promise<HomeData> {
   const [auctions, stores, stats, listings] = await Promise.all([
     orFallback(() => listAuctions("ending"), [] as AuctionCardData[]),
-    orFallback(() => listStores({ limit: 3 }), { items: [], total: 0 }),
+    // Fetch a wider sample so the homepage can omit empty storefronts without
+    // hiding stocked ones that fall just beyond the newest three.
+    orFallback(() => listStores({ limit: 6 }), { items: [], total: 0 }),
     orFallback(() => getListingStats(), null),
     orFallback(() => listListings({ sort: "featured", limit: 6 }), { items: [], total: 0 }),
   ]);

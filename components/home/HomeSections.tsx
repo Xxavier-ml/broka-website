@@ -245,7 +245,11 @@ export function TrustStrip() {
 }
 
 export function StoresToFollow({ stores }: { stores: HomeData["stores"] }) {
-  if (stores.length === 0) return null;
+  // An empty storefront is not useful buyer discovery. Do not dress up a
+  // zero-inventory store as a recommendation; show the section only when the
+  // API has real product inventory behind it.
+  const stockedStores = stores.filter((store) => store.listing_count > 0);
+  if (stockedStores.length === 0) return null;
   return (
     <section className="sec hstores" aria-labelledby="hstores-title">
       <div className="wrap">
@@ -258,7 +262,7 @@ export function StoresToFollow({ stores }: { stores: HomeData["stores"] }) {
           </h2>
         </Reveal>
         <div className="lgrid lgrid-auctions">
-          {stores.map((store) => (
+          {stockedStores.slice(0, 3).map((store) => (
             <StoreCard key={store.id} store={store} />
           ))}
         </div>
