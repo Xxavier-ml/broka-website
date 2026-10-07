@@ -9,6 +9,7 @@ import { categorySlug, categoryVisual } from "@/lib/categories";
 import { automobileSubcategoryArtwork, automobileSubcategorySlug } from "@/lib/automobiles";
 import { propertySubcategoryArtwork } from "@/lib/property";
 import { landSubcategoryArtwork } from "@/lib/land";
+import { fashionSubcategoryArtwork } from "@/lib/fashion";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -37,6 +38,7 @@ export function CategorySubcategoryGrid({
   const isAutomobiles = category.toLowerCase() === "automobiles";
   const isProperty = category.toLowerCase() === "property";
   const isLand = category.toLowerCase() === "land";
+  const isFashion = category.toLowerCase() === "fashion";
   const electronicsItems = ELECTRONICS_SUBCATEGORIES.map((config) => {
     const node = subcategories.find((candidate) => matchElectronicsSubcategory(candidate, config));
     return node ? {
@@ -81,7 +83,18 @@ export function CategorySubcategoryGrid({
       gradient: artwork?.gradient ?? visual.gradient,
     };
   });
-  const items: CardItem[] = isElectronics ? electronicsItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : subcategories.map((node) => ({
+  const fashionItems: CardItem[] = subcategories.map((node) => {
+    const artwork = fashionSubcategoryArtwork(node.name);
+    return {
+      key: node.id,
+      name: node.name,
+      icon: node.icon || visual.emoji,
+      href: withQuery(route, { ...keep, subcategory_id: node.id }),
+      image: artwork?.image ?? visual.backgroundArt,
+      gradient: artwork?.gradient ?? visual.gradient,
+    };
+  });
+  const items: CardItem[] = isElectronics ? electronicsItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : isFashion ? fashionItems : subcategories.map((node) => ({
     key: node.id,
     name: node.name,
     icon: node.icon || visual.emoji,

@@ -6,6 +6,7 @@ import { categorySlug, categoryVisual } from "@/lib/categories";
 import { automobileSubcategoryArtwork, automobileSubcategorySlug } from "@/lib/automobiles";
 import { propertySubcategoryArtwork } from "@/lib/property";
 import { landSubcategoryArtwork } from "@/lib/land";
+import { fashionSubcategoryArtwork } from "@/lib/fashion";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -15,13 +16,15 @@ export function SubcategoryDirectory({ category, subcategories }: { category: st
   const isAutomobiles = category.toLowerCase() === "automobiles";
   const isProperty = category.toLowerCase() === "property";
   const isLand = category.toLowerCase() === "land";
+  const isFashion = category.toLowerCase() === "fashion";
   const items = subcategories.map((node) => {
     const electronicsConfig = isElectronics ? ELECTRONICS_SUBCATEGORIES.find((config) => matchElectronicsSubcategory(node, config)) : null;
     const automobileArtwork = isAutomobiles ? automobileSubcategoryArtwork(node.name) : null;
     const propertyArtwork = isProperty ? propertySubcategoryArtwork(node.name) : null;
     const landArtwork = isLand ? landSubcategoryArtwork(node.name) : null;
-    const image = electronicsConfig?.image ?? automobileArtwork?.image ?? propertyArtwork?.image ?? landArtwork?.image ?? visual.backgroundArt;
-    const gradient = electronicsConfig?.gradient ?? automobileArtwork?.gradient ?? propertyArtwork?.gradient ?? landArtwork?.gradient ?? visual.gradient;
+    const fashionArtwork = isFashion ? fashionSubcategoryArtwork(node.name) : null;
+    const image = electronicsConfig?.image ?? automobileArtwork?.image ?? propertyArtwork?.image ?? landArtwork?.image ?? fashionArtwork?.image ?? visual.backgroundArt;
+    const gradient = electronicsConfig?.gradient ?? automobileArtwork?.gradient ?? propertyArtwork?.gradient ?? landArtwork?.gradient ?? fashionArtwork?.gradient ?? visual.gradient;
     const href = electronicsConfig
       ? `/browse/electronics/${electronicsConfig.slug}`
       : isAutomobiles
