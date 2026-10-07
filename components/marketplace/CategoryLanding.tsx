@@ -83,6 +83,11 @@ export function CategoryLanding({
     sort: sort === "featured" ? undefined : sort,
   };
   const retryHref = withQuery(route, { ...preserved, ...activeFilters });
+  const agricultureQuickNames = new Set(["Farm Equipment", "Farm Tools", "Fertilizers & Agrochemicals"]);
+  const quickSubcategories = content.category === "Agriculture"
+    ? (subcategories ?? []).filter((subcategory) => agricultureQuickNames.has(subcategory.name))
+    : (subcategories ?? []);
+  const showAgricultureQuickFilters = content.category === "Agriculture" && !subcategoryName;
 
   return (
     <>
@@ -110,10 +115,10 @@ export function CategoryLanding({
         </div>
       </section>
 
-      <section className="category-results browse-section" aria-label={`${content.category} listings`}>
+      <section className={`category-results browse-section category-results-${categorySlug(content.category)}`} aria-label={`${content.category} listings`}>
         <div className="wrap">
           {!subcategoryName && <CategorySubcategoryGrid category={content.category} route={route} subcategories={subcategories ?? []} keep={preserved} />}
-          {(subcategoryName || !(subcategories?.length)) && <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={subcategories ?? []} showSubcategories={false} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />}
+          {(subcategoryName || !(subcategories?.length) || showAgricultureQuickFilters) && <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={quickSubcategories} showSubcategories={showAgricultureQuickFilters} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />}
           <div className="listing-v0-toolbar category-results-toolbar">
             <p className="browse-count" role="status">
               {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "listing" : "listings"}`}

@@ -27,6 +27,8 @@ const AUTOMOBILE_MAKES: Record<string, string[]> = {
   "agricultural-vehicles": ["Massey Ferguson", "New Holland", "John Deere", "Kubota", "Mahindra", "Case IH", "Deutz-Fahr"],
 };
 
+const AGRICULTURE_BRANDS = ["John Deere", "Massey Ferguson", "New Holland", "Kubota", "Mahindra", "Yara", "Amiran", "Syngenta"];
+
 const CATEGORY_OPTIONS: Record<string, Record<string, string[]>> = {
   gaming: {
     consoles: ["Sony", "Microsoft", "Nintendo", "Valve"],
@@ -105,4 +107,11 @@ export function filtersForSubcategory(category: string, slug: string, filters: C
   }
   const categoryOptions = CATEGORY_OPTIONS[normalizedCategory]?.[slug];
   return withCuratedOptions(filters, categoryOptions, ["brand"]);
+}
+
+export function filtersForCategory(category: string, filters: CategoryFilterField[]) {
+  if (category.toLowerCase() === "agriculture") {
+    return withCuratedOptions(filters, AGRICULTURE_BRANDS, ["brand"]);
+  }
+  return filters;
 }

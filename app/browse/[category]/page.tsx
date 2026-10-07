@@ -7,7 +7,7 @@ import { categoryPageContent } from "@/lib/category-pages";
 import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
-import { filtersForSubcategory } from "@/lib/category-filters";
+import { filtersForCategory, filtersForSubcategory } from "@/lib/category-filters";
 
 type Props = { params: Promise<{ category: string }>; searchParams: SearchParams };
 
@@ -40,7 +40,7 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
     : { data: zoneResponse.data.filters, failed: false };
   const filters = selectedSubcategory
     ? filtersForSubcategory(category, categorySlug(selectedSubcategory.name), childFilters.data)
-    : zoneResponse.data.filters;
+    : filtersForCategory(category, zoneResponse.data.filters);
   const attributes: Record<string, string> = {};
   for (const [key, value] of Object.entries(sp)) {
     if (key.startsWith("attribute_")) {

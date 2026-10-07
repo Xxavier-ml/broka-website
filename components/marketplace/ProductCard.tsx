@@ -9,9 +9,19 @@ import { Media } from "./Media";
 export function ProductCard({ listing: l, headingLevel = 2 }: { listing: Listing; headingLevel?: 2 | 3 }) {
   const condition = conditionLabel(l.condition);
   const place = placeLine(l.location_name, l.location_county);
+  const isAgriculture = l.category.toLowerCase() === "agriculture";
+  const agricultureAttributes = l.attributes ?? {};
+  const agricultureCue = isAgriculture
+    ? ["crop", "variety", "product_type", "brand", "grade"]
+        .map((key) => agricultureAttributes[key])
+        .find((value): value is string => typeof value === "string" && value.trim().length > 0)
+    : null;
+  const available = isAgriculture && typeof l.quantity === "number" && l.quantity > 0
+    ? `${l.quantity.toLocaleString("en-KE")} available`
+    : null;
   const Title = headingLevel === 2 ? "h2" : "h3";
   return (
-    <Link href={`/listings/${l.id}`} className="lcard lcard-product" prefetch={false}>
+    <Link href={`/listings/${l.id}`} className={`lcard lcard-product${isAgriculture ? " lcard-agriculture" : ""}`} prefetch={false}>
       <div className="lcard-media">
         <Media image={coverImage(l)} category={l.category} alt={l.name} />
         {condition && <span className="lbadge lbadge-corner-left">{condition}</span>}
@@ -26,6 +36,12 @@ export function ProductCard({ listing: l, headingLevel = 2 }: { listing: Listing
           <span aria-hidden="true">{categoryVisual(l.category).emoji}</span> {l.category}
         </span>
         <Title className="lcard-title">{l.name}</Title>
+        {isAgriculture && (agricultureCue || available) && (
+          <div className="lcard-agri-meta" aria-label="Agriculture listing details">
+            {agricultureCue && <span className="lcard-agri-tag">{agricultureCue}</span>}
+            {available && <span>{available}</span>}
+          </div>
+        )}
         <div className="lcard-price-row">
           <div className="lcard-price">
             <span className="lcard-price-amount">{formatUnitPrice(l.price, l.price_unit)}</span>
