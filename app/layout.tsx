@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Montserrat, Noto_Serif, Inter } from "next/font/google";
+import "./tokens.css";
 import "./globals.css";
 import "./marketplace.css";
 import "./site.css";
@@ -8,6 +9,7 @@ import "./redesign.css";
 import "./category-cards.css";
 import "./category-directory.css";
 import "./electronics-subcategories.css";
+import "./home-redesign.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";

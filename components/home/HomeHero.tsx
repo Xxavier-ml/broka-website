@@ -1,12 +1,15 @@
 import Link from "next/link";
-import { ArrowUpRight, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
+import Image from "next/image";
+import { ArrowRight, ArrowUpRight, Gavel, Search, ShieldCheck, Sparkles, Store } from "lucide-react";
 import type { HomeData } from "@/lib/api/home";
-import { KenyaMap } from "./KenyaMap";
-import { ZenoOrbit } from "./ZenoOrbit";
+import { SearchForm } from "@/components/marketplace/SearchForm";
+import { Media } from "@/components/marketplace/Media";
+import { coverImage } from "@/lib/api/images";
+import { formatUnitPrice } from "@/lib/format";
 
 const nf = new Intl.NumberFormat("en-KE");
 
-/** Kenya's flag, drawn: the emoji shows as the letters "KE" on Windows. */
+/** Kenya's flag, drawn: emoji shows as the letters "KE" on Windows. */
 function KenyaFlag() {
   return (
     <svg viewBox="0 0 30 20" width="24" height="16" className="hh-flag" aria-hidden="true">
@@ -20,96 +23,127 @@ function KenyaFlag() {
   );
 }
 
-/**
- * The welcome page's first screen: a focused BROKA pitch on the left; Zeno
- * orbiting the intelligence layer on the right; a glowing Kenya behind.
- *
- * The bar used to read "0 live auctions, 0 online stores, 5 listings" on a
- * quiet day, which made the first thing a visitor saw a marketplace that
- * looked abandoned. Live counts now appear only when there is something to
- * count, and the bar is topped up to four cells with things that are always
- * true about the product. Nothing is invented and nothing reads as empty.
- */
+function ListingPreview({ data }: { data: HomeData }) {
+  const picks = data.featuredListings.slice(0, 2);
+  return (
+    <div className="hh-product-stage" aria-label="Featured products on BROKA">
+      <div className="hh-stage-orb" aria-hidden="true" />
+      <div className="hh-stage-topline">
+        <span><i aria-hidden="true" /> LIVE MARKETPLACE</span>
+        <span>KENYA / 01</span>
+      </div>
+      {picks.length > 0 ? (
+        <div className="hh-product-stack">
+          {picks.map((listing, index) => (
+            <Link
+              key={listing.id}
+              href={`/listings/${listing.id}`}
+              className={`hh-product-peek hh-product-peek-${index + 1}`}
+              prefetch={false}
+            >
+              <div className="hh-product-peek-image">
+                <Media image={coverImage(listing)} category={listing.category} alt="" />
+              </div>
+              <div className="hh-product-peek-copy">
+                <span className="hh-product-kicker">{index === 0 ? "FEATURED LISTING" : "JUST FOR YOU"}</span>
+                <strong>{listing.name}</strong>
+                <span className="hh-product-price">{formatUnitPrice(listing.price, listing.price_unit)}</span>
+              </div>
+              <span className="hh-product-peek-arrow" aria-hidden="true"><ArrowUpRight size={16} /></span>
+            </Link>
+          ))}
+        </div>
+      ) : (
+        <div className="hh-zeno-spotlight">
+          <Image src="/assets/zeno-full.webp" alt="Zeno, BROKA's AI broker" width={420} height={420} priority />
+          <div className="hh-zeno-label"><Sparkles size={14} aria-hidden="true" /> Zeno helps you find a fair deal</div>
+        </div>
+      )}
+      <div className="hh-stage-footer">
+        <span><ShieldCheck size={14} aria-hidden="true" /> Escrow protected</span>
+        <span>Prices in KSh</span>
+      </div>
+    </div>
+  );
+}
+
 export function HomeHero({ data }: { data: HomeData }) {
-  type Stat = { icon: React.ReactNode; tone: string; value: string; label: string };
-  const live: Stat[] = [];
-  if (data.liveAuctionCount)
+  const live: { icon: React.ReactNode; value: string; label: string }[] = [];
+  if (data.liveAuctionCount) {
     live.push({
-      icon: <Gavel size={22} />,
-      tone: "violet",
-      // The API lists up to 20 at a time, so 20 means "20 or more".
+      icon: <Gavel size={15} aria-hidden="true" />,
       value: data.liveAuctionCount >= 20 ? "20+" : nf.format(data.liveAuctionCount),
-      label: "Live auctions",
+      label: "live auctions",
     });
-  if (data.storeCount)
-    live.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
-  const always: Stat[] = [
-    { icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" },
-    { icon: <Sparkles size={22} />, tone: "violet", value: "Zeno", label: "AI negotiation" },
-    { icon: <LayoutGrid size={22} />, tone: "cyan", value: "Layer", label: "Connected commerce" },
-  ];
-  const stats: Stat[] = [...live, ...always].slice(0, 4);
+  }
+  if (data.storeCount) {
+    live.push({ icon: <Store size={15} aria-hidden="true" />, value: nf.format(data.storeCount), label: "online stores" });
+  }
 
   return (
-    <section className="hh" aria-labelledby="hh-title">
-      <KenyaMap className="hh-kenya" />
+    <section className="hh hh-conversion" aria-labelledby="hh-title">
       <div className="wrap hh-grid">
         <div className="hh-copy">
           <p className="hh-pill hh-in" style={{ ["--d" as string]: "0s" }}>
             <KenyaFlag />
-            Welcome to BROKA
+            Built in Kenya. Ready for your next deal.
             <span className="hh-pill-dot" aria-hidden="true" />
           </p>
           <h1 className="hh-title hh-title-welcome hh-in" id="hh-title" style={{ ["--d" as string]: "0.08s" }}>
-            <span className="hh-title-a">The future of</span>
-            <span className="hh-title-b">intelligent commerce.</span>
+            <span className="hh-title-a">Find it.</span>
+            <span className="hh-title-b">Negotiate it.</span>
+            <span className="hh-title-a">Win it.</span>
           </h1>
           <p className="hh-sub hh-in" style={{ ["--d" as string]: "0.16s" }}>
-            AI-powered discovery. Fairer negotiation. Better deals, backed by trust.
+            Discover real products from Kenyan sellers. Compare with confidence,
+            negotiate with Zeno, and close the deal in the BROKA app.
           </p>
-          <div className="hh-actions hh-in" style={{ ["--d" as string]: "0.28s" }}>
-            <Link href="/download" className="btn btn-primary hh-action-primary">
-              Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
+
+          <div className="hh-search-wrap hh-in" style={{ ["--d" as string]: "0.24s" }}>
+            <SearchForm
+              action="/browse"
+              placeholder="What are you looking for today?"
+              label="Search BROKA marketplace"
+              className="sform-hero sform-lg"
+              iconSubmit
+            />
+            <p className="hh-search-hint"><Search size={12} aria-hidden="true" /> Try &ldquo;Samsung phone&rdquo;, &ldquo;sofa&rdquo; or &ldquo;land in Kiambu&rdquo;</p>
+          </div>
+
+          <div className="hh-actions hh-in" style={{ ["--d" as string]: "0.32s" }}>
+            <Link href="/browse" className="btn btn-primary hh-action-primary">
+              Explore deals <ArrowRight size={16} aria-hidden="true" />
             </Link>
-            <Link href="/browse" className="hh-action-link">
-              Explore the marketplace <ArrowUpRight size={15} aria-hidden="true" />
+            <Link href="/download" className="hh-app-link">
+              Get the app <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
+          </div>
+
+          <div className="hh-proof-line hh-in" style={{ ["--d" as string]: "0.4s" }}>
+            {live.map((item) => (
+              <span className="hh-proof-chip" key={item.label}>
+                {item.icon}<strong>{item.value}</strong> {item.label}
+              </span>
+            ))}
+            <span className="hh-proof-chip"><ShieldCheck size={15} aria-hidden="true" /><strong>Escrow</strong> protected</span>
+            <span className="hh-proof-chip"><Sparkles size={15} aria-hidden="true" /><strong>Zeno</strong> AI negotiation</span>
           </div>
         </div>
 
-        <div className="hh-visual hh-v0-visual">
-          <div className="hh-v0-visual-head">
-            <span className="hh-v0-overline">ZENO / INTELLIGENCE CORE</span>
-            <span className="hh-v0-status"><span aria-hidden="true" /> processing commerce signals</span>
-          </div>
-          <div className="hh-v0-coreframe">
-            <ZenoOrbit />
-            <span className="hh-v0-signal hh-v0-signal-buyer">BUYER <b>intent</b></span>
-            <span className="hh-v0-signal hh-v0-signal-offer">OFFER <b>context</b></span>
-            <span className="hh-v0-signal hh-v0-signal-trust">TRUST <b>signal</b></span>
-            <div className="hh-v0-query" aria-label="Simulated Zeno product moment">
-              <div className="hh-v0-query-kicker"><span aria-hidden="true">↗</span> SIMULATED PRODUCT MOMENT</div>
-              <div className="hh-v0-query-copy">Find a 55-inch TV under <strong>KSh 50,000</strong></div>
-              <div className="hh-v0-query-footer">
-                <span><b>Intent understood</b><small>size · category · budget</small></span>
-                <span className="hh-v0-query-arrow" aria-hidden="true">→</span>
-              </div>
-            </div>
-          </div>
+        <div className="hh-visual hh-in" style={{ ["--d" as string]: "0.14s" }}>
+          <ListingPreview data={data} />
         </div>
       </div>
 
-      <div className="wrap">
-        <ul className="hh-stats hh-in" style={{ ["--d" as string]: "0.45s" }}>
-          {stats.map((s) => (
-            <li key={s.label} className={`hh-stat hh-stat-${s.tone}`}>
-              <span className="hh-stat-icon" aria-hidden="true">
-                {s.icon}
-              </span>
-              <span>
-                <span className="hh-stat-value">{s.value}</span>
-                <span className="hh-stat-label">{s.label}</span>
-              </span>
+      <div className="wrap hh-category-wrap">
+        <div className="hh-category-lead"><span>Popular searches</span><Link href="/categories">All categories <ArrowUpRight size={13} aria-hidden="true" /></Link></div>
+        <ul className="hh-orbs" aria-label="Popular searches">
+          {["Phones", "Cars", "Laptops", "Apartments", "Land", "Furniture"].map((term) => (
+            <li key={term}>
+              <Link href={`/browse?q=${encodeURIComponent(term)}`} className="hh-orb">
+                <span className="hh-orb-ring" aria-hidden="true"><Search size={14} /></span>
+                <span className="hh-orb-label">{term}</span>
+              </Link>
             </li>
           ))}
         </ul>

@@ -1,0 +1,73 @@
+/* ================================================================
+   BROKA TOKENS — homepage redesign palette
+   Generated from the brand hex #8B75FF per the colour-palette skill:
+   hue 250 held constant across the scale, lightness stepped 97%→16%,
+   saturation tapered on dark shades so violet stays violet (not navy).
+   Namespaced --bk-* so the site's existing --c-* tokens are untouched;
+   other pages keep their current look until they opt in.
+
+   Contrast (WCAG, computed):
+   - text on canvas #05060D: #F2F1F7 18.0:1 (AAA) · #A8A4C0 8.4:1 (AAA)
+   - muted on surface: 8.0:1 (AAA)
+   - brand violet #8C75FF on canvas: 5.9:1 (AA text, AAA UI)
+   - button: canvas text on #8C75FF = 5.9:1 (AA) · on hover #6F52FF = 4.2:1 (AA UI)
+   - white on #4E2BFD = 6.8:1 (AAA)
+   - focus ring #8C75FF ≥ 3:1 UI; decorative hairlines stay subtle by design
+     (interactive indicators never rely on them).
+   ================================================================ */
+:root {
+  /* 11-shade violet scale (brand = 400) */
+  --bk-v-50:  #f5f3fc;
+  --bk-v-100: #eae7f9;
+  --bk-v-200: #cec7f5;
+  --bk-v-300: #ad9efa;
+  --bk-v-400: #8c75ff; /* brand: BROKA violet #8B75FF */
+  --bk-v-500: #6f52ff;
+  --bk-v-600: #4e2bfd;
+  --bk-v-700: #330fe6;
+  --bk-v-800: #321ba7;
+  --bk-v-900: #2c1e71;
+  --bk-v-950: #1b143d;
+
+  /* Electric blue partner (brand #608CFF family) */
+  --bk-b-300: #83a5fc;
+  --bk-b-400: #5283ff;
+  --bk-b-500: #2462ff;
+  --bk-b-600: #0648ef;
+
+  /* Canvas + surfaces (brand invariants) */
+  --bk-bg:       #05060d;
+  --bk-surface:  rgba(12, 15, 31, 0.82);
+  --bk-surface-2: rgba(20, 23, 45, 0.88);
+  --bk-surface-solid: #0b0d1a;
+
+  /* Text */
+  --bk-text:       #f2f1f7;
+  --bk-text-muted: #a8a4c0;
+  --bk-text-faint: #8a86a6; /* large/decorative only */
+
+  /* Semantic */
+  --bk-primary: var(--bk-v-400);
+  --bk-primary-strong: var(--bk-v-500);
+  --bk-on-primary: #05060d;
+  --bk-accent-blue: var(--bk-b-400);
+  --bk-accent-amber: #fbbf24;  /* 12.1:1 on canvas */
+  --bk-accent-green: #34d399;
+  --bk-danger: #f87171;
+
+  /* Gradient: the brand's violet → blue */
+  --bk-grad: linear-gradient(115deg, var(--bk-v-400) 0%, #7b66ff 45%, var(--bk-b-400) 100%);
+  --bk-grad-strong: linear-gradient(115deg, var(--bk-v-500) 0%, #6a4bff 45%, var(--bk-b-500) 100%);
+  --bk-grad-text: linear-gradient(100deg, #c3b2ff 0%, #a18cff 45%, #8fb0ff 100%);
+
+  /* Borders: decorative hairlines subtle; interactive indicators use violet */
+  --bk-border:      rgba(173, 158, 250, 0.14);
+  --bk-border-2:    rgba(173, 158, 250, 0.26);
+  --bk-border-violet: rgba(140, 117, 255, 0.55);
+  --bk-ring: var(--bk-v-400);
+
+  /* Glass glow */
+  --bk-glow-violet: rgba(140, 117, 255, 0.35);
+  --bk-glow-blue: rgba(82, 131, 255, 0.28);
+  --bk-dim: rgba(140, 117, 255, 0.14);
+}
