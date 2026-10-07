@@ -71,6 +71,9 @@ export function HomeHero({ data }: { data: HomeData }) {
             <Link href="/download" className="btn btn-primary hh-action-primary">
               Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
+            <Link href="/browse" className="hh-action-link">
+              Explore the marketplace <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
           </div>
         </div>
 
