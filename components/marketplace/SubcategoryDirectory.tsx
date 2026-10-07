@@ -4,6 +4,7 @@ import type { CategoryNode } from "@/lib/api/categories";
 import { categoryArtworkSources } from "@/lib/category-assets";
 import { categorySlug, categoryVisual } from "@/lib/categories";
 import { automobileSubcategoryArtwork, automobileSubcategorySlug } from "@/lib/automobiles";
+import { propertySubcategoryArtwork } from "@/lib/property";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -11,11 +12,13 @@ export function SubcategoryDirectory({ category, subcategories }: { category: st
   const visual = categoryVisual(category);
   const isElectronics = category.toLowerCase() === "electronics";
   const isAutomobiles = category.toLowerCase() === "automobiles";
+  const isProperty = category.toLowerCase() === "property";
   const items = subcategories.map((node) => {
     const electronicsConfig = isElectronics ? ELECTRONICS_SUBCATEGORIES.find((config) => matchElectronicsSubcategory(node, config)) : null;
     const automobileArtwork = isAutomobiles ? automobileSubcategoryArtwork(node.name) : null;
-    const image = electronicsConfig?.image ?? automobileArtwork?.image ?? visual.backgroundArt;
-    const gradient = electronicsConfig?.gradient ?? automobileArtwork?.gradient ?? visual.gradient;
+    const propertyArtwork = isProperty ? propertySubcategoryArtwork(node.name) : null;
+    const image = electronicsConfig?.image ?? automobileArtwork?.image ?? propertyArtwork?.image ?? visual.backgroundArt;
+    const gradient = electronicsConfig?.gradient ?? automobileArtwork?.gradient ?? propertyArtwork?.gradient ?? visual.gradient;
     const href = electronicsConfig
       ? `/browse/electronics/${electronicsConfig.slug}`
       : isAutomobiles
