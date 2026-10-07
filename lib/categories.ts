@@ -38,10 +38,9 @@ export const CATEGORIES: CategoryVisual[] = [
   { name: "Gaming", emoji: "🎮", gradient: [C.violet, C.pink], backgroundArt: "/assets/category-backgrounds/gaming.jpg" },
   { name: "Sports & Fitness", emoji: "⚽", gradient: [C.green, C.blue], backgroundArt: "/assets/category-backgrounds/sports-fitness.jpg" },
   { name: "Books & Education", emoji: "📚", gradient: [C.violet, C.blue], backgroundArt: "/assets/category-backgrounds/books-education.jpg" },
-  // These three use the closest available generated editorial assets until their
-  // dedicated variants can be generated: fashion for creative/music, agriculture
-  // for pets, and services for the catch-all category.
-  { name: "Music & Instruments", emoji: "🎸", gradient: [C.pink, C.violet], backgroundArt: "/assets/category-backgrounds/fashion.jpg" },
+  // These categories still use the closest available generated editorial assets:
+  // fashion for Arts & Crafts, agriculture for Pets, and services for the catch-all.
+  { name: "Music & Instruments", emoji: "🎸", gradient: [C.pink, C.violet], backgroundArt: "/assets/category-backgrounds/music-instruments.jpg" },
   { name: "Arts & Crafts", emoji: "🎨", gradient: [C.violet, C.amber], backgroundArt: "/assets/category-backgrounds/fashion.jpg" },
   { name: "Business & Industrial", emoji: "🏭", gradient: [C.blue, C.warning], backgroundArt: "/assets/category-backgrounds/business-industrial.jpg" },
   { name: "Pets & Animals", emoji: "🐾", gradient: [C.green, C.pink], backgroundArt: "/assets/category-backgrounds/agriculture.jpg" },
