@@ -158,8 +158,43 @@ body { background-color: #05060d; }
 @media (hover: hover) and (pointer: fine) {
   .hh-action-primary:hover svg, .hh-action-link:hover svg { transform: translate(2px, -2px); }
 }
-.hh-action-link { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; color: #d5d7e6; font-size: 13px; font-weight: 600; transition: color .18s ease; }
-.hh-action-link:hover { color: #fff; }
+.hh-action-link {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 0 13px;
+  overflow: hidden;
+  border: 1px solid rgba(195,202,226,.16);
+  border-radius: 13px;
+  background: rgba(10,13,28,.68);
+  color: #d5d7e6;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: inset 0 1px rgba(255,255,255,.04), 0 10px 28px -24px rgba(139,117,255,.9);
+  transition: color .18s ease, border-color .18s ease, background .18s ease, transform .18s cubic-bezier(.2,.8,.2,1), box-shadow .18s ease;
+}
+.hh-action-link::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(110deg, transparent 25%, rgba(177,164,255,.22) 48%, transparent 70%);
+  transform: translateX(-120%);
+  transition: transform .55s cubic-bezier(.2,.8,.2,1);
+}
+.hh-action-link:hover {
+  border-color: rgba(177,164,255,.52);
+  background: rgba(139,117,255,.13);
+  color: #fff;
+  box-shadow: 0 12px 28px -20px rgba(139,117,255,.9), inset 0 1px rgba(255,255,255,.08);
+  transform: translateY(-2px);
+}
+.hh-action-link:hover::before { transform: translateX(120%); }
+.hh-action-link:active { transform: translateY(0) scale(.96); box-shadow: none; }
+.hh-action-link:focus-visible { border-color: #b1a4ff; box-shadow: 0 0 0 3px rgba(139,117,255,.2); }
 .hh-orbs { flex-wrap: wrap; gap: 6px; margin-top: 22px; padding: 2px 0; overflow: visible; }
 .hh-orb {
   width: auto; min-height: 38px; display: inline-flex; align-items: center; justify-items: initial; gap: 6px;
@@ -1451,5 +1486,9 @@ body { background-color: #05060d; }
   .category-hero-listing { background-position: center, center, 68% center, center; background-size: auto, auto, auto 100%, auto; }
 }
 @media (prefers-reduced-motion: reduce) {
+  .hh-action-link,
+  .hh-action-link::before { transition: none; }
+  .hh-action-link:hover,
+  .hh-action-link:active { transform: none; }
   .category-hero-listing { background-attachment: scroll; }
 }
