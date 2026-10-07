@@ -13,6 +13,7 @@ import { fashionSubcategoryArtwork } from "@/lib/fashion";
 import { homeFurnitureSubcategoryArtwork } from "@/lib/home-furniture";
 import { foodBeveragesSubcategoryArtwork } from "@/lib/food-beverages";
 import { agricultureSubcategoryArtwork } from "@/lib/agriculture";
+import { constructionSubcategoryArtwork } from "@/lib/construction";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -45,6 +46,7 @@ export function CategorySubcategoryGrid({
   const isHomeFurniture = category.toLowerCase() === "home & furniture";
   const isFoodBeverages = category.toLowerCase() === "food & beverages";
   const isAgriculture = category.toLowerCase() === "agriculture";
+  const isConstruction = category.toLowerCase() === "construction";
   const electronicsItems = ELECTRONICS_SUBCATEGORIES.map((config) => {
     const node = subcategories.find((candidate) => matchElectronicsSubcategory(candidate, config));
     return node ? {
@@ -123,7 +125,7 @@ export function CategorySubcategoryGrid({
     };
   });
   const items: CardItem[] = isElectronics ? electronicsItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : isFashion ? fashionItems : isHomeFurniture ? homeFurnitureItems : isFoodBeverages ? foodBeveragesItems : subcategories.map((node) => {
-    const artwork = isAgriculture ? agricultureSubcategoryArtwork(node.name) : null;
+    const artwork = isAgriculture ? agricultureSubcategoryArtwork(node.name) : isConstruction ? constructionSubcategoryArtwork(node.name) : null;
     return {
       key: node.id,
       name: node.name,
