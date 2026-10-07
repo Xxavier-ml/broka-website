@@ -15,6 +15,7 @@ import { foodBeveragesSubcategoryArtwork } from "@/lib/food-beverages";
 import { agricultureSubcategoryArtwork } from "@/lib/agriculture";
 import { constructionSubcategoryArtwork } from "@/lib/construction";
 import { beautySubcategoryArtwork } from "@/lib/beauty";
+import { healthMedicalSubcategoryArtwork } from "@/lib/health-medical";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -41,6 +42,7 @@ export function CategorySubcategoryGrid({
   const visual = categoryVisual(category);
   const isElectronics = category.toLowerCase() === "electronics";
   const isBeauty = category.toLowerCase() === "beauty & personal care";
+  const isHealthMedical = category.toLowerCase() === "health & medical";
   const isAutomobiles = category.toLowerCase() === "automobiles";
   const isProperty = category.toLowerCase() === "property";
   const isLand = category.toLowerCase() === "land";
@@ -62,6 +64,17 @@ export function CategorySubcategoryGrid({
   }).filter(Boolean) as CardItem[];
   const beautyItems: CardItem[] = subcategories.map((node) => {
     const artwork = beautySubcategoryArtwork(node.name);
+    return {
+      key: node.id,
+      name: node.name,
+      icon: node.icon || visual.emoji,
+      href: withQuery(route, { ...keep, subcategory_id: node.id }),
+      image: artwork?.image ?? visual.backgroundArt,
+      gradient: artwork?.gradient ?? visual.gradient,
+    };
+  });
+  const healthMedicalItems: CardItem[] = subcategories.map((node) => {
+    const artwork = healthMedicalSubcategoryArtwork(node.name);
     return {
       key: node.id,
       name: node.name,
@@ -137,7 +150,7 @@ export function CategorySubcategoryGrid({
       gradient: artwork?.gradient ?? visual.gradient,
     };
   });
-  const items: CardItem[] = isElectronics ? electronicsItems : isBeauty ? beautyItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : isFashion ? fashionItems : isHomeFurniture ? homeFurnitureItems : isFoodBeverages ? foodBeveragesItems : subcategories.map((node) => {
+  const items: CardItem[] = isElectronics ? electronicsItems : isBeauty ? beautyItems : isHealthMedical ? healthMedicalItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : isFashion ? fashionItems : isHomeFurniture ? homeFurnitureItems : isFoodBeverages ? foodBeveragesItems : subcategories.map((node) => {
     const artwork = isAgriculture ? agricultureSubcategoryArtwork(node.name) : isConstruction ? constructionSubcategoryArtwork(node.name) : null;
     return {
       key: node.id,
