@@ -24,6 +24,7 @@ import { musicInstrumentsSubcategoryArtwork } from "@/lib/music-instruments";
 import { businessIndustrialSubcategoryArtwork } from "@/lib/business-industrial";
 import { petsAnimalsSubcategoryArtwork } from "@/lib/pets-animals";
 import { artsCraftsSubcategoryArtwork } from "@/lib/arts-crafts";
+import { servicesSubcategoryArtwork } from "@/lib/services";
 import { ELECTRONICS_SUBCATEGORIES, matchElectronicsSubcategory } from "@/lib/electronics";
 import { withQuery } from "@/lib/params";
 
@@ -59,6 +60,7 @@ export function CategorySubcategoryGrid({
   const isBusinessIndustrial = category.toLowerCase() === "business & industrial";
   const isPetsAnimals = category.toLowerCase() === "pets & animals";
   const isArtsCrafts = category.toLowerCase() === "arts & crafts";
+  const isServices = category.toLowerCase() === "services";
   const isAutomobiles = category.toLowerCase() === "automobiles";
   const isProperty = category.toLowerCase() === "property";
   const isLand = category.toLowerCase() === "land";
@@ -188,6 +190,17 @@ export function CategorySubcategoryGrid({
       gradient: artwork?.gradient ?? visual.gradient,
     };
   });
+  const servicesItems: CardItem[] = subcategories.map((node) => {
+    const artwork = servicesSubcategoryArtwork(node.name);
+    return {
+      key: node.id,
+      name: node.name,
+      icon: node.icon || visual.emoji,
+      href: withQuery(route, { ...keep, subcategory_id: node.id }),
+      image: artwork?.image ?? visual.backgroundArt,
+      gradient: artwork?.gradient ?? visual.gradient,
+    };
+  });
   const automobileItems: CardItem[] = subcategories.map((node) => {
     const artwork = automobileSubcategoryArtwork(node.name);
     return {
@@ -254,7 +267,7 @@ export function CategorySubcategoryGrid({
       gradient: artwork?.gradient ?? visual.gradient,
     };
   });
-  const items: CardItem[] = isElectronics ? electronicsItems : isBeauty ? beautyItems : isHealthMedical ? healthMedicalItems : isBabyKids ? babyKidsItems : isGaming ? gamingItems : isSportsFitness ? sportsFitnessItems : isBooksEducation ? booksEducationItems : isMusicInstruments ? musicInstrumentsItems : isBusinessIndustrial ? businessIndustrialItems : isPetsAnimals ? petsAnimalsItems : isArtsCrafts ? artsCraftsItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : isFashion ? fashionItems : isHomeFurniture ? homeFurnitureItems : isFoodBeverages ? foodBeveragesItems : subcategories.map((node) => {
+  const items: CardItem[] = isElectronics ? electronicsItems : isBeauty ? beautyItems : isHealthMedical ? healthMedicalItems : isBabyKids ? babyKidsItems : isGaming ? gamingItems : isSportsFitness ? sportsFitnessItems : isBooksEducation ? booksEducationItems : isMusicInstruments ? musicInstrumentsItems : isBusinessIndustrial ? businessIndustrialItems : isPetsAnimals ? petsAnimalsItems : isArtsCrafts ? artsCraftsItems : isServices ? servicesItems : isAutomobiles ? automobileItems : isProperty ? propertyItems : isLand ? landItems : isFashion ? fashionItems : isHomeFurniture ? homeFurnitureItems : isFoodBeverages ? foodBeveragesItems : subcategories.map((node) => {
     const artwork = isAgriculture ? agricultureSubcategoryArtwork(node.name) : isConstruction ? constructionSubcategoryArtwork(node.name) : null;
     return {
       key: node.id,
