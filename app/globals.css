@@ -95,7 +95,21 @@
    BASE RESET
    ================================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; -webkit-tap-highlight-color: transparent; }
+
+/* ─── Press & touch feedback ───
+   Taps fire without the double-tap-zoom wait. Explicit active states below
+   provide feedback on controls; normal text selection remains available. */
+:root {
+  --ease-press: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --dur-press: 120ms;
+}
+button, a, [role="button"] { touch-action: manipulation; }
+
+.preview-link:active, .hdr-cta:active, .hdr-search:active, .hdr-burger:active {
+  transform: translateY(0) scale(0.98);
+  transition-duration: var(--dur-press);
+}
 body {
   font-family: var(--f-ui);
   background: var(--c-bg);
@@ -524,7 +538,7 @@ ul,ol { list-style: none; }
   background: rgba(9, 13, 38, 0.5);
   color: var(--c-text-2);
   font-size: 14px;
-  transition: border-color 0.15s, color 0.15s;
+  transition: border-color 0.15s, color 0.15s, transform var(--dur-press) var(--ease-press);
 }
 .hdr-search:hover { border-color: var(--c-v-light); color: #fff; }
 .hdr-cta {
@@ -555,7 +569,7 @@ ul,ol { list-style: none; }
   border-radius: 12px;
   background: rgba(9, 13, 38, 0.5);
   color: var(--c-text-1);
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, transform var(--dur-press) var(--ease-press);
 }
 .hdr-burger:hover { border-color: var(--c-v-light); }
 
@@ -810,7 +824,7 @@ ul,ol { list-style: none; }
 .pillar {
   padding: 40px 36px;
   border-right: 1px solid var(--c-rule);
-  transition: background 0.2s;
+  transition: background 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .pillar:last-child { border-right: none; }
 .pillar:hover { background: linear-gradient(145deg, rgba(124, 92, 255, 0.1), rgba(8, 10, 23, 0.2)); }
@@ -1215,7 +1229,7 @@ ul,ol { list-style: none; }
   border: 1px solid var(--c-rule);
   border-radius: 16px;
   background: var(--c-surface);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .zeno-cap:hover { border-color: var(--c-rule-v); }
 .zeno-cap-icon {
@@ -1244,7 +1258,7 @@ ul,ol { list-style: none; }
   border: 1px solid var(--c-rule);
   border-radius: 16px;
   background: var(--c-surface);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .tech-pillar:hover { border-color: var(--c-rule-v); }
 .tech-pillar-label {
@@ -1293,7 +1307,7 @@ ul,ol { list-style: none; }
   grid-template-columns: 200px 1fr;
   gap: 48px;
   align-items: start;
-  transition: background 0.2s;
+  transition: background 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .vision-tier:hover { background: var(--c-surface-2); }
 .vision-tier-label {
@@ -1331,7 +1345,7 @@ ul,ol { list-style: none; }
   border: 1px solid var(--c-rule);
   border-radius: 20px;
   background: var(--c-surface);
-  transition: border-color 0.25s, background 0.25s;
+  transition: border-color 0.25s, background 0.25s, transform var(--dur-press) var(--ease-press);
 }
 .founder-card:hover { border-color: var(--c-rule-v); background: var(--c-surface-2); }
 .founder-avatar {
@@ -1410,7 +1424,7 @@ ul,ol { list-style: none; }
   grid-template-columns: 180px 1fr;
   gap: 48px;
   margin-bottom: 2px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .rm-phase:hover { border-color: var(--c-rule-2); }
 .rm-phase-left { border-right: 1px solid var(--c-rule); padding-right: 48px; }
@@ -1445,7 +1459,7 @@ ul,ol { list-style: none; }
   border-radius: 14px;
   overflow: hidden;
   background: var(--c-surface);
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .faq-item:hover { border-color: var(--c-rule-2); }
 .faq-btn {
@@ -1542,6 +1556,11 @@ button.contact-cat:focus-visible {
   transition: border-color 0.2s;
 }
 .contact-input:focus { outline: none; border-color: var(--c-v); }
+/* iOS Safari zooms the page into any focused input under 16px and never zooms
+   back out, so on touch screens the contact and Zeno fields type at 16px. */
+@media (pointer: coarse) {
+  .contact-input, .zeno-chat-input-field { font-size: 16px; }
+}
 .contact-input::placeholder { color: var(--c-text-3); }
 textarea.contact-input { resize: vertical; min-height: 72px; }
 
@@ -1970,5 +1989,5 @@ textarea.contact-input { resize: vertical; min-height: 72px; }
   }
   .zmsg { opacity: 1 !important; transform: none !important; }
   .constellation-node { animation: none !important; opacity: 0.7; }
-  .btn:hover, .btn:active, .card:hover, .hdr-cta:hover, .feature-item:hover, .preview-link:hover { transform: none !important; }
+  .btn:hover, .btn:active, .card:hover, .hdr-cta:hover, .hdr-cta:active, .hdr-search:active, .hdr-burger:active, .feature-item:hover, .preview-link:hover, .preview-link:active { transform: none !important; }
 }

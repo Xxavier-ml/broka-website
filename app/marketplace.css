@@ -53,8 +53,9 @@
 .browse-count { color: var(--c-text-2); font-size: 13px; }
 .browse-clear { display: inline-flex; margin-top: 5px; color: var(--c-v-light); font: 12px var(--f-ui); }
 .browse-sort { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
-.browse-sort a { padding: 8px 11px; border: 1px solid var(--c-rule); border-radius: 999px; color: var(--c-text-3); font: 12px var(--f-ui); transition: color .2s, border-color .2s, background .2s; }
+.browse-sort a { padding: 8px 11px; border: 1px solid var(--c-rule); border-radius: 999px; color: var(--c-text-3); font: 12px var(--f-ui); transition: color .2s, border-color .2s, background .2s, transform var(--dur-press) var(--ease-press); }
 .browse-sort a:hover, .browse-sort a.active { color: #fff; border-color: var(--c-rule-v); background: var(--c-v-dim); }
+.browse-sort a:active { transform: scale(0.97); }
 .browse-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
 .mobile-filter-trigger { display: none; align-items: center; justify-content: center; gap: 8px; width: 100%; min-height: 46px; padding: 0 16px; border: 1px solid var(--c-rule-v); border-radius: 14px; color: var(--c-text-1); background: rgba(124, 92, 255, 0.12); font: 600 13px var(--f-ui); }
 .mobile-filter-count { display: grid; place-items: center; min-width: 21px; height: 21px; padding: 0 6px; border-radius: 999px; color: #fff; background: var(--c-v); font-size: 11px; }
@@ -67,6 +68,11 @@
 .mobile-filter-body { display: grid; gap: 16px; padding: 20px; }
 .mobile-filter-field { display: grid; gap: 8px; color: var(--c-text-2); font: 600 12px var(--f-ui); }
 .mobile-filter-field select, .mobile-filter-field input { width: 100%; min-height: 48px; padding: 0 13px; border: 1px solid var(--c-rule-2); border-radius: 12px; outline: none; color: var(--c-text-1); background: rgba(17, 21, 48, 0.88); font: 14px var(--f-ui); }
+/* iOS Safari zooms into focused inputs under 16px, so on touch screens these
+   fields type at 16px (desktop keeps the smaller design sizes). */
+@media (pointer: coarse) {
+  .sform-input, .mobile-filter-field select, .mobile-filter-field input { font-size: 16px; }
+}
 .mobile-filter-field select:focus, .mobile-filter-field input:focus { border-color: var(--c-v-light); box-shadow: 0 0 0 3px var(--c-v-dim); }
 .mobile-filter-field input::placeholder { color: var(--c-text-3); }
 .mobile-filter-optional { color: var(--c-text-3); font-weight: 400; }
@@ -118,9 +124,10 @@
   color: #fff;
   font-size: 13px;
   font-weight: 600;
-  transition: background 0.2s;
+  transition: background 0.2s, transform var(--dur-press) var(--ease-press);
 }
 .sform-btn:hover { background: #7C6AFF; }
+.sform-btn:active { transform: scale(0.97); }
 .sform-shell { position: relative; width: 100%; }
 .sform-shell-lg { max-width: 760px; }
 .sform-suggestions { position: absolute; top: calc(100% + 9px); left: 0; right: 0; z-index: 80; overflow: hidden; padding: 8px; border: 1px solid var(--c-rule-v); border-radius: 16px; background: rgba(9, 12, 31, .97); box-shadow: 0 24px 60px rgba(0, 0, 0, .44), 0 0 32px rgba(107, 86, 255, .12); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
@@ -168,6 +175,7 @@
 @media (hover: hover) and (pointer: fine) {
   .orb:hover .orb-ring { transform: translateY(-4px) scale(1.04); }
 }
+.orb:active .orb-ring { transform: translateY(0) scale(0.97); transition-duration: 120ms; }
 .orb-emoji { font-size: 28px; line-height: 1; }
 .orb-more { --orb-a: #4b4b63; --orb-b: #4b4b63; box-shadow: none; }
 .orb-more .orb-emoji { font-size: 26px; color: var(--c-text-2); }
@@ -240,8 +248,9 @@
   scrollbar-width: none;
 }
 .ftabs::-webkit-scrollbar { display: none; }
-.ftab { padding: 8px 14px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--c-text-3); white-space: nowrap; transition: color 0.15s, background 0.15s; }
+.ftab { padding: 8px 14px; border-radius: 9px; font-size: 13px; font-weight: 500; color: var(--c-text-3); white-space: nowrap; transition: color 0.15s, background 0.15s, transform var(--dur-press) var(--ease-press); }
 .ftab:hover { color: var(--c-text-1); background: var(--c-surface); }
+.ftab:active { transform: scale(0.97); }
 .ftab.active { color: #fff; background: var(--c-v-strong); }
 
 /* Category filters. On a desktop the rail ran off the right edge of the
@@ -269,9 +278,10 @@
   color: var(--c-text-2);
   background: rgba(7, 10, 30, 0.55);
   white-space: nowrap;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: border-color 0.15s, color 0.15s, background 0.15s, transform var(--dur-press) var(--ease-press);
 }
 .chip:hover { border-color: var(--c-rule-v); color: var(--c-text-1); }
+.chip:active { transform: scale(0.97); }
 .chip.active { border-color: var(--c-v); background: var(--c-v-dim); color: var(--c-text-1); }
 .chip-count { font-size: 11px; color: var(--c-text-3); }
 
@@ -301,6 +311,7 @@
 @media (hover: hover) and (pointer: fine) {
   .lcard:hover { transform: translateY(-3px); }
 }
+.lcard:active { transform: translateY(0) scale(0.985); transition-duration: 120ms; }
 .lcard:focus-visible { outline-offset: 4px; }
 .lcard-media { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--c-bg-3); }
 .lmedia-img { width: 100%; height: 100%; object-fit: cover; transition: transform 240ms cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -445,7 +456,8 @@
 .gallery-fullscreen .gallery-main img { object-fit: contain; }
 .gallery-fullscreen .gallery-thumbs { position: fixed; bottom: 18px; left: 50%; transform: translateX(-50%); max-width: 92vw; }
 .gallery-empty { display: grid; place-items: center; }
-.gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(3, 5, 18, 0.65); border: 1px solid var(--c-rule-2); color: #fff; backdrop-filter: blur(8px); transition: background 0.15s; }
+.gallery-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: rgba(3, 5, 18, 0.65); border: 1px solid var(--c-rule-2); color: #fff; backdrop-filter: blur(8px); transition: background 0.15s, transform var(--dur-press) var(--ease-press); }
+.gallery-nav:active { transform: translateY(-50%) scale(0.95); }
 .gallery-nav:hover { background: var(--c-v); }
 .gallery-prev { left: 12px; }
 .gallery-next { right: 12px; }
@@ -456,7 +468,8 @@
 .gallery-thumb:hover { opacity: 1; }
 .gallery-thumb.active { border-color: var(--c-v); opacity: 1; }
 .gallery-controls { position: absolute; right: 12px; bottom: 12px; display: inline-flex; align-items: center; gap: 3px; padding: 4px; border: 1px solid var(--c-rule-2); border-radius: 12px; background: rgba(3, 5, 18, .76); backdrop-filter: blur(8px); z-index: 2; }
-.gallery-controls button { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: #fff; transition: background .15s, opacity .15s; }
+.gallery-controls button { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: #fff; transition: background .15s, opacity .15s, transform var(--dur-press) var(--ease-press); }
+.gallery-controls button:active:not(:disabled) { transform: scale(0.95); }
 .gallery-controls button:hover:not(:disabled) { background: var(--c-v); }
 .gallery-controls button:disabled { opacity: .32; cursor: not-allowed; }
 .gallery-controls span { min-width: 38px; text-align: center; color: var(--c-text-2); font: 11px var(--f-ui); }
@@ -576,7 +589,9 @@
 }
 @media (prefers-reduced-motion: reduce) {
   .lcard, .lmedia-img, .orb-ring, .browse-search .sform-btn { transition: none; }
-  .lcard:hover, .orb:hover .orb-ring, .browse-search .sform-btn:hover { transform: none; }
+  .gallery-nav, .gallery-controls button { transition: none; }
+  .lcard:hover, .lcard:active, .orb:hover .orb-ring, .orb:active .orb-ring, .browse-search .sform-btn:hover, .sform-btn:active, .chip:active, .ftab:active, .browse-sort a:active, .gallery-controls button:active { transform: none; }
+  .gallery-nav:active { transform: translateY(-50%); }
   .lcard:hover .lmedia-img { transform: none; }
   .lbadge-dot::after { animation: none; }
   .mobile-filter-drawer { animation: filter-sheet-fade 120ms ease-out; }
