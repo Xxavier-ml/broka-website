@@ -67,3 +67,13 @@ The primary conversion action is to move a visitor into the app or live marketpl
 - Start the local Next server and inspect desktop/mobile rendering at the homepage and key marketplace routes.
 - Commit the finished source and push it to `main` on `Xxavier-ml/broka-website`.
 - Produce a source bundle zip as a backup deliverable, excluding `.git` and dependency caches.
+
+## V2 art-direction revision
+
+The first pass was technically strong but visually too close to a neon dashboard template. The second pass intentionally changes the composition rather than adding more chrome:
+
+- Replace the ring/label/stat-heavy hero with a large editorial promise: **Commerce, with context.**
+- Put real API-backed marketplace imagery and KES price/location context at the center of desire and conversion.
+- Use Zeno as a precise intelligence overlay beside the product, not as the dominant glowing centerpiece.
+- Remove excess pill/stat-bar density from the first screen; keep only concise trust and app-boundary cues.
+- Retain the existing connected-network background and all route/API/accessibility contracts.
