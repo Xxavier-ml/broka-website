@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Gavel, LayoutGrid, ShieldCheck, Sparkles, Store } from "lucide-react";
+import { ArrowUpRight, Check, CircleDollarSign, Search, ShieldCheck, Sparkles, Store, UserRound } from "lucide-react";
 import type { HomeData } from "@/lib/api/home";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
@@ -9,110 +9,115 @@ const nf = new Intl.NumberFormat("en-KE");
 /** Kenya's flag, drawn: the emoji shows as the letters "KE" on Windows. */
 function KenyaFlag() {
   return (
-    <svg viewBox="0 0 30 20" width="24" height="16" className="hh-flag" aria-hidden="true">
+    <svg viewBox="0 0 30 20" width="24" height="16" className="cx-flag" aria-hidden="true">
       <rect width="30" height="20" rx="2" fill="#fff" />
       <rect width="30" height="5.6" fill="#1a1a1a" />
-      <rect y="7.2" width="30" height="5.6" fill="#BB0000" />
+      <rect y="7.2" width="30" height="5.6" fill="#bb0000" />
       <rect y="14.4" width="30" height="5.6" fill="#006600" />
-      <ellipse cx="15" cy="10" rx="3" ry="6.2" fill="#BB0000" stroke="#1a1a1a" strokeWidth="0.8" />
+      <ellipse cx="15" cy="10" rx="3" ry="6.2" fill="#bb0000" stroke="#1a1a1a" strokeWidth="0.8" />
       <ellipse cx="15" cy="10" rx="1" ry="3.4" fill="#1a1a1a" />
     </svg>
   );
 }
 
+function SignalLine() {
+  return <span className="cx-signal-line" aria-hidden="true"><i /><i /><i /></span>;
+}
+
 /**
- * The welcome page's first screen: a focused BROKA pitch on the left; Zeno
- * orbiting the intelligence layer on the right; a glowing Kenya behind.
- *
- * The bar used to read "0 live auctions, 0 online stores, 5 listings" on a
- * quiet day, which made the first thing a visitor saw a marketplace that
- * looked abandoned. Live counts now appear only when there is something to
- * count, and the bar is topped up to four cells with things that are always
- * true about the product. Nothing is invented and nothing reads as empty.
+ * The homepage's first decision: find a deal, sell with context, or meet Zeno.
+ * The network background and Zeno core stay recognizable, while the copy and
+ * route cards make the value proposition legible before the visitor scrolls.
  */
 export function HomeHero({ data }: { data: HomeData }) {
-  type Stat = { icon: React.ReactNode; tone: string; value: string; label: string };
-  const live: Stat[] = [];
-  if (data.liveAuctionCount)
-    live.push({
-      icon: <Gavel size={22} />,
-      tone: "violet",
-      // The API lists up to 20 at a time, so 20 means "20 or more".
-      value: data.liveAuctionCount >= 20 ? "20+" : nf.format(data.liveAuctionCount),
-      label: "Live auctions",
-    });
-  if (data.storeCount)
-    live.push({ icon: <Store size={22} />, tone: "amber", value: nf.format(data.storeCount), label: "Online stores" });
-  const always: Stat[] = [
-    { icon: <ShieldCheck size={22} />, tone: "green", value: "Escrow", label: "Protected payments" },
-    { icon: <Sparkles size={22} />, tone: "violet", value: "Zeno", label: "AI negotiation" },
-    { icon: <LayoutGrid size={22} />, tone: "cyan", value: "Layer", label: "Connected commerce" },
-  ];
-  const stats: Stat[] = [...live, ...always].slice(0, 4);
+  const liveListings = data.activeListings != null ? nf.format(data.activeListings) : null;
+  const liveStores = data.storeCount != null ? nf.format(data.storeCount) : null;
 
   return (
-    <section className="hh" aria-labelledby="hh-title">
-      <KenyaMap className="hh-kenya" />
-      <div className="wrap hh-grid">
-        <div className="hh-copy">
-          <p className="hh-pill hh-in" style={{ ["--d" as string]: "0s" }}>
+    <section className="cx-hero" aria-labelledby="cx-hero-title">
+      <KenyaMap className="cx-kenya" />
+      <div className="wrap cx-hero-grid">
+        <div className="cx-hero-copy">
+          <p className="cx-kicker cx-reveal" style={{ ["--d" as string]: "0s" }}>
             <KenyaFlag />
-            Welcome to BROKA
-            <span className="hh-pill-dot" aria-hidden="true" />
+            <span>Built in Kenya</span>
+            <i aria-hidden="true" />
+            <span>Designed for the next deal</span>
           </p>
-          <h1 className="hh-title hh-title-welcome hh-in" id="hh-title" style={{ ["--d" as string]: "0.08s" }}>
-            <span className="hh-title-a">The future of</span>
-            <span className="hh-title-b">intelligent commerce.</span>
+          <h1 className="cx-hero-title cx-reveal" id="cx-hero-title" style={{ ["--d" as string]: "0.08s" }}>
+            <span>Find the signal</span>
+            <em>in the market.</em>
           </h1>
-          <p className="hh-sub hh-in" style={{ ["--d" as string]: "0.16s" }}>
-            AI-powered discovery. Fairer negotiation. Better deals, backed by trust.
+          <p className="cx-hero-sub cx-reveal" style={{ ["--d" as string]: "0.16s" }}>
+            BROKA connects real listings, seller context, Zeno intelligence and protected payment rails — so the next deal is easier to see and easier to trust.
           </p>
-          <div className="hh-actions hh-in" style={{ ["--d" as string]: "0.28s" }}>
-            <Link href="/download" className="btn btn-primary hh-action-primary">
-              Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
+          <div className="cx-hero-actions cx-reveal" style={{ ["--d" as string]: "0.24s" }}>
+            <Link href="/browse" className="btn btn-primary cx-primary-action">
+              Find a deal <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
-            <Link href="/browse" className="hh-action-link">
-              Explore the marketplace <ArrowUpRight size={15} aria-hidden="true" />
+            <Link href="/sell" className="btn btn-ghost cx-secondary-action">
+              Sell with context <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+          </div>
+          <p className="cx-hero-note cx-reveal" style={{ ["--d" as string]: "0.32s" }}>
+            <ShieldCheck size={14} aria-hidden="true" /> View the marketplace first. Move to the app when you are ready to negotiate, chat or pay.
+          </p>
+
+          <div className="cx-intent-grid cx-reveal" style={{ ["--d" as string]: "0.4s" }} aria-label="Choose your starting point">
+            <Link href="/browse" className="cx-intent-card">
+              <span className="cx-intent-icon cx-intent-violet"><Search size={17} aria-hidden="true" /></span>
+              <span><strong>Find a deal</strong><small>Search real listings</small></span>
+              <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+            <Link href="/sell" className="cx-intent-card">
+              <span className="cx-intent-icon cx-intent-cyan"><Store size={17} aria-hidden="true" /></span>
+              <span><strong>Sell with context</strong><small>Reach the right buyer</small></span>
+              <ArrowUpRight size={15} aria-hidden="true" />
+            </Link>
+            <Link href="/zeno" className="cx-intent-card">
+              <span className="cx-intent-icon cx-intent-amber"><Sparkles size={17} aria-hidden="true" /></span>
+              <span><strong>Meet Zeno</strong><small>Make the next step clearer</small></span>
+              <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
           </div>
         </div>
 
-        <div className="hh-visual hh-v0-visual">
-          <div className="hh-v0-visual-head">
-            <span className="hh-v0-overline">ZENO / INTELLIGENCE CORE</span>
-            <span className="hh-v0-status"><span aria-hidden="true" /> processing commerce signals</span>
+        <div className="cx-hero-visual cx-reveal" style={{ ["--d" as string]: "0.12s" }}>
+          <div className="cx-visual-topline">
+            <span><i aria-hidden="true" /> ZENO / INTELLIGENCE CORE</span>
+            <span>LIVE SIGNAL</span>
           </div>
-          <div className="hh-v0-coreframe">
+          <div className="cx-core-frame">
+            <div className="cx-core-grid" aria-hidden="true" />
+            <div className="cx-core-ring cx-core-ring-one" aria-hidden="true" />
+            <div className="cx-core-ring cx-core-ring-two" aria-hidden="true" />
             <ZenoOrbit />
-            <span className="hh-v0-signal hh-v0-signal-buyer">BUYER <b>intent</b></span>
-            <span className="hh-v0-signal hh-v0-signal-offer">OFFER <b>context</b></span>
-            <span className="hh-v0-signal hh-v0-signal-trust">TRUST <b>signal</b></span>
-            <div className="hh-v0-query" aria-label="Simulated Zeno product moment">
-              <div className="hh-v0-query-kicker"><span aria-hidden="true">↗</span> SIMULATED PRODUCT MOMENT</div>
-              <div className="hh-v0-query-copy">Find a 55-inch TV under <strong>KSh 50,000</strong></div>
-              <div className="hh-v0-query-footer">
-                <span><b>Intent understood</b><small>size · category · budget</small></span>
-                <span className="hh-v0-query-arrow" aria-hidden="true">→</span>
+            <span className="cx-signal-label cx-signal-buyer"><b>01</b> BUYER INTENT</span>
+            <span className="cx-signal-label cx-signal-context"><b>02</b> MARKET CONTEXT</span>
+            <span className="cx-signal-label cx-signal-trust"><b>03</b> TRUST LAYER</span>
+            <div className="cx-query-card">
+              <div className="cx-query-heading"><span className="cx-live-dot" /> SIMULATED PRODUCT MOMENT <span>ZEN/01</span></div>
+              <p>I need a 55-inch TV under <strong>KSh 50,000</strong></p>
+              <div className="cx-query-result">
+                <span className="cx-query-check"><Check size={13} aria-hidden="true" /></span>
+                <span><strong>Intent understood</strong><small>size · category · budget</small></span>
+                <ArrowUpRight size={16} aria-hidden="true" />
               </div>
             </div>
+          </div>
+          <div className="cx-visual-footer">
+            <span><CircleDollarSign size={14} aria-hidden="true" /> context before commitment</span>
+            <span>BUYER <b>↔</b> SELLER</span>
           </div>
         </div>
       </div>
 
-      <div className="wrap">
-        <ul className="hh-stats hh-in" style={{ ["--d" as string]: "0.45s" }}>
-          {stats.map((s) => (
-            <li key={s.label} className={`hh-stat hh-stat-${s.tone}`}>
-              <span className="hh-stat-icon" aria-hidden="true">
-                {s.icon}
-              </span>
-              <span>
-                <span className="hh-stat-value">{s.value}</span>
-                <span className="hh-stat-label">{s.label}</span>
-              </span>
-            </li>
-          ))}
-        </ul>
+      <div className="wrap cx-proof-strip cx-reveal" style={{ ["--d" as string]: "0.48s" }} aria-label="BROKA product signals">
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-violet"><Search size={16} aria-hidden="true" /></span><span><strong>{liveListings ?? "Real"}</strong><small>{liveListings ? "active listings" : "marketplace listings"}</small></span></div>
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-cyan"><Store size={16} aria-hidden="true" /></span><span><strong>{liveStores ?? "Online"}</strong><small>{liveStores ? "online stores" : "seller storefronts"}</small></span></div>
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-amber"><ShieldCheck size={16} aria-hidden="true" /></span><span><strong>Protected</strong><small>payment layer</small></span></div>
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-green"><UserRound size={16} aria-hidden="true" /></span><span><strong>Human-led</strong><small>AI-assisted decisions</small></span></div>
+        <SignalLine />
       </div>
     </section>
   );

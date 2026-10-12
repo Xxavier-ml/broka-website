@@ -84,12 +84,15 @@ export function CategoryChips({
     setAutoScroll(false);
   };
 
+  const browseChipHook = className.includes("browse-category-rail") ? " chip" : "";
+  const browseTickerHook = className.includes("browse-category-rail") ? " category-ticker-group" : "";
+
   return (
     <div className="category-card-browser">
       <button type="button" className="category-card-nav category-card-nav-prev" aria-label="Previous category" onClick={() => moveByCard(-1)}>‹</button>
       <nav
         ref={railRef}
-        className={`category-card-grid${className ? ` ${className}` : ""}`}
+        className={`category-card-grid${className ? ` ${className}` : ""}${browseTickerHook}`}
         aria-label="Marketplace categories"
         onScroll={(event) => {
           const rail = event.currentTarget;
@@ -126,7 +129,7 @@ export function CategoryChips({
           <Link
             key={item.key}
             href={item.href}
-            className={`category-card${item.active ? " active" : ""}`}
+            className={`category-card${browseChipHook}${item.active ? " active" : ""}`}
             aria-label={item.active ? `${item.label}, selected` : `Browse ${item.label}`}
             aria-current={item.active ? "page" : undefined}
             style={item.image ? { "--category-card-start": item.gradient?.[0], "--category-card-end": item.gradient?.[1] } as CSSProperties : undefined}

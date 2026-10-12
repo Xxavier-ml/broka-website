@@ -4,6 +4,7 @@ import { FlowMesh } from "@/components/visuals/FlowMesh";
 import { HomeHero } from "@/components/home/HomeHero";
 import { BrandMotion } from "@/components/home/BrandMotion";
 import { CommerceNarrative } from "@/components/home/CommerceNarrative";
+import { LiveMarketplace } from "@/components/marketplace/LiveMarketplace";
 import { getHomeData } from "@/lib/api/home";
 
 // The auctions, stores and featured listings come from the BROKA API; rebuild
@@ -20,6 +21,7 @@ export default async function Home() {
   return (
     <>
       <HomeHero data={market} />
+      <LiveMarketplace data={market} />
       <CommerceNarrative />
 
       <section className="sec atm-violet-center has-field" aria-labelledby="cta-h">

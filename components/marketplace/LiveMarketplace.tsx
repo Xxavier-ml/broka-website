@@ -15,13 +15,15 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
       <div className="wrap">
         {/* This block is the catalogue window, so it says what is on the
             platform rather than restating the pitch the hero already made. */}
-        <Reveal className="sec-header">
-          <span className="t-eyebrow">On BROKA today</span>
-          <h2 className="t-h2" id="live-h">
-            What&apos;s live right now.
-          </h2>
-          <p className="t-body-lg" style={{ maxWidth: 620, marginTop: 16 }}>
-            Real listings from sellers across Kenya, updated as they are posted. Compare your options here, then negotiate or buy in the BROKA app.
+        <Reveal className="sec-header cx-market-header">
+          <div>
+            <span className="t-eyebrow">A live window into BROKA</span>
+            <h2 className="t-h2" id="live-h">
+              See what the market is saying.
+            </h2>
+          </div>
+          <p className="t-body-lg" style={{ maxWidth: 520, marginTop: 0 }}>
+            Real listings from sellers across Kenya, updated as they are posted. Compare the signal here, then move to the app when you are ready to negotiate or buy.
           </p>
         </Reveal>
 
@@ -81,6 +83,7 @@ export function LiveMarketplace({ data }: { data: HomeData }) {
           </>
         )}
 
+        <div className="cx-market-footnote"><span><span className="cx-live-dot" /> LIVE MARKETPLACE WINDOW</span><span>Read-only on web · deal actions continue in the app</span></div>
         <AppCta kind="general" variant="banner" className="listing-cta" />
       </div>
     </section>

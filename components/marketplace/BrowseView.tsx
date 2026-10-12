@@ -47,6 +47,11 @@ export function BrowseView({
     <>
       <section className="browse-hero browse-hero-v0" aria-label="Browse marketplace">
         <div className="wrap">
+          <div className="browse-v0-intro">
+            <span className="t-eyebrow">BROKA marketplace</span>
+            <h1 className="t-h1" id="browse-page-title">Find your next deal.</h1>
+            <p className="browse-v0-support">Search real listings, compare seller context, then move to the app when you are ready to negotiate or buy.</p>
+          </div>
           <div className="browse-v0-search-slot">
             <SearchForm
               action="/browse"
