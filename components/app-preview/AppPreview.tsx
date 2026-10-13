@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Bell, ChevronRight, Grid2X2, Heart, Inbox, MapPin, Menu, Mic, Plus, Search, Smartphone, Sparkles, Store } from "lucide-react";
+import { ListingDetailPreview } from "./ListingDetailPreview";
 
 const categories = [
   { name: "Automobiles", emoji: "🚘", image: "/assets/category-backgrounds/automobiles.jpg", tone: "rose" },
@@ -23,8 +24,27 @@ export function AppPreview() {
   const [query, setQuery] = useState("");
   const [categoryOffset, setCategoryOffset] = useState(0);
   const [activeTab, setActiveTab] = useState("Home");
+  const [activeScreen, setActiveScreen] = useState<"home" | "listing">("home");
   const [zenoOpen, setZenoOpen] = useState(false);
   const [saved, setSaved] = useState<number[]>([]);
+  useEffect(() => {
+    const syncScreen = () => setActiveScreen(new URLSearchParams(window.location.search).get("screen") === "listing" ? "listing" : "home");
+    syncScreen();
+    window.addEventListener("popstate", syncScreen);
+    return () => window.removeEventListener("popstate", syncScreen);
+  }, []);
+  const updatePreviewScreen = (screen: "home" | "listing") => {
+    setActiveScreen(screen);
+    const url = new URL(window.location.href);
+    if (screen === "listing") url.searchParams.set("screen", "listing");
+    else url.searchParams.delete("screen");
+    window.history.pushState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  };
+  const openListing = (scrollToDevice = false) => {
+    updatePreviewScreen("listing");
+    if (scrollToDevice) document.getElementById("ap-device")?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+  const backToHome = () => updatePreviewScreen("home");
   const visibleListings = useMemo(() => listings.filter((item) => `${item.title} ${item.place}`.toLowerCase().includes(query.toLowerCase())), [query]);
   const nav = [
     { label: "Home", icon: Grid2X2 },
@@ -60,20 +80,21 @@ export function AppPreview() {
         <div className="wrap ap-stage-grid">
           <div className="ap-stage-copy">
             <span className="ap-kicker">A closer look</span>
-            <h2 id="ap-phone-heading">The home screen,<br /><em>in your hands.</em></h2>
-            <p>Scroll the screen, search the sample feed, browse the category rail and tap through the bottom navigation. The layout follows BROKA’s Flutter app; the listings shown here are illustrative preview content.</p>
+            <h2 id="ap-phone-heading">{activeScreen === "listing" ? <>The full listing,<br /><em>in your hands.</em></> : <>The home screen,<br /><em>in your hands.</em></>}</h2>
+            <p>{activeScreen === "listing" ? "The same phone now shows the complete Flutter listing flow: terms, seller standing, the seller's description and Zeno Insight. Scroll inside the phone to explore it." : "Scroll the screen, search the sample feed, browse the category rail and tap a listing to open its details in this same phone. The preview uses illustrative product and seller content."}</p>
             <div className="ap-feature-list">
               <div><span className="ap-feature-icon violet"><Search size={18} /></span><span><b>Find your next thing</b><small>Search across products, cars, property and more.</small></span></div>
               <div><span className="ap-feature-icon cyan"><Sparkles size={18} /></span><span><b>Let Zeno help you look</b><small>Ask for a search that fits what you need.</small></span></div>
               <div><span className="ap-feature-icon gold"><Store size={18} /></span><span><b>Connect directly</b><small>See seller and location context on each listing.</small></span></div>
             </div>
-            <Link href="/app-preview/listing-detail" className="ap-detail-entry"><span><Smartphone size={18} /></span><span><strong>Open a listing detail preview</strong><small>See the router’s photos, availability and deal terms.</small></span><ArrowRight size={18} /></Link>
-            <p className="ap-disclaimer"><span>ⓘ</span> This interactive preview uses sample listings. It is not connected to live inventory or account features.</p>
+            <button type="button" onClick={() => activeScreen === "home" ? openListing(true) : backToHome()} className="ap-detail-entry"><span><Smartphone size={18} /></span><span><strong>{activeScreen === "listing" ? "Back to the homescreen preview" : "Open a listing detail preview"}</strong><small>{activeScreen === "listing" ? "Return to the sample marketplace feed." : "See the full flow, through seller standing and Zeno Insight."}</small></span><ArrowRight size={18} /></button>
+            <p className="ap-disclaimer"><span>ⓘ</span> Product and seller details are illustrative. Search, gallery, like/save, Zeno and negotiation actions are simulated; no account or seller is contacted.</p>
           </div>
 
           <div className="ap-device-wrap">
             <div className="ap-device-halo" />
-            <div className="ap-device" role="application" aria-label="Interactive BROKA homescreen preview">
+            <div id="ap-device" className="ap-device" role="application" aria-label={activeScreen === "listing" ? "Interactive BROKA listing detail preview" : "Interactive BROKA homescreen preview"}>
+              {activeScreen === "listing" ? <ListingDetailPreview onBack={backToHome} /> : <>
               <div className="ap-status"><span>00:51 <span className="ap-status-symbol">◉ ◉</span></span><span>▮▮ ▰ ᯤ <b>66</b></span></div>
               <div className="ap-screen-scroll">
                 <header className="ap-app-header">
@@ -97,16 +118,18 @@ export function AppPreview() {
                   const isSaved = saved.includes(originalIndex);
                   return <article className="ap-listing" key={`${item.title}-${originalIndex}`}>
                     <div className="ap-listing-photo" style={{ backgroundImage: `url(${item.image})` }}>
+                      <button type="button" className="ap-listing-photo-open" onClick={() => openListing()} aria-label={`Open ${item.title} details`} />
                       <span className="ap-new"><i /> New</span>
                       <button className={`ap-save ${isSaved ? "saved" : ""}`} aria-label={isSaved ? "Remove from saved" : "Save listing"} onClick={() => setSaved(isSaved ? saved.filter((n) => n !== originalIndex) : [...saved, originalIndex])}><Heart size={15} fill={isSaved ? "currentColor" : "none"} /></button>
                       {item.tag && <span className="ap-showcase">✦ {item.tag}</span>}
                     </div>
-                    <div className="ap-listing-info"><Link href="/app-preview/listing-detail" className="ap-listing-detail-link"><b className="ap-listing-name">{item.title}</b></Link><div className="ap-listing-price"><strong>{item.price}</strong><Link href="/app-preview/listing-detail" className="ap-detail-arrow" aria-label={`View ${item.title} details`}><ArrowRight size={17} /></Link></div><div className="ap-listing-meta"><span><MapPin size={13} />{item.place}</span><span>{item.age}</span></div><div className="ap-seller"><span className="ap-seller-avatar">{item.seller.charAt(0)}</span><b>▣ {item.seller} <span>›</span></b></div></div>
+                    <div className="ap-listing-info"><button type="button" onClick={() => openListing()} className="ap-listing-name ap-listing-detail-link">{item.title}</button><div className="ap-listing-price"><strong>{item.price}</strong><button type="button" className="ap-detail-arrow" onClick={() => openListing()} aria-label={`View ${item.title} details`}><ArrowRight size={17} /></button></div><div className="ap-listing-meta"><span><MapPin size={13} />{item.place}</span><span>{item.age}</span></div><div className="ap-seller"><span className="ap-seller-avatar">{item.seller.charAt(0)}</span><b>▣ {item.seller} <span>›</span></b></div></div>
                   </article>;
                 })}</div> : <div className="ap-empty">No sample listings match “{query}”. Try “router”.</div>}
               </div>
               <nav className="ap-bottom-nav" aria-label="App preview navigation">{nav.map(({ label, icon: Icon }) => <button className={activeTab === label ? "active" : ""} key={label} onClick={() => { setActiveTab(label); if (label === "Zeno") setZenoOpen(true); }}><span>{label === "Zeno" ? <img src="/assets/zeno-icon.png" alt="" /> : <Icon size={22} strokeWidth={2.3} />}</span><small>{label}</small></button>)}</nav>
               <div className="ap-gesture"><i /></div>
+              </>}
             </div>
             <div className="ap-device-caption"><span><i /> INTERACTIVE APP PREVIEW</span><span>SCROLL TO EXPLORE</span></div>
           </div>
