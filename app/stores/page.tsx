@@ -15,7 +15,7 @@ import { firstParam, withQuery, type SearchParams } from "@/lib/params";
 export const metadata: Metadata = {
   title: "Online stores in Kenya",
   description:
-    "Discover BROKA online stores: verified Kenyan sellers with their own storefronts. Browse what each store sells here, then make an offer or buy in the BROKA app.",
+    "Discover online stores from Kenyan sellers. Browse their listings, contact sellers directly, and arrange any purchase and payment with them.",
   alternates: { canonical: "https://www.broka.co.ke/stores" },
 };
 

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MessageCircle, Search } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
 
 type JourneyStep = {
@@ -9,16 +10,16 @@ type JourneyStep = {
 };
 
 const journey: JourneyStep[] = [
-  { number: "01", label: "Discover", title: "Start with intent, not a form.", body: "Say what you need in your own words. Zeno keeps the useful context in view." },
-  { number: "02", label: "Understand", title: "See the shape of the deal.", body: "Compare products, sellers, price, condition and location before you commit." },
-  { number: "03", label: "Negotiate", title: "Bring both sides closer.", body: "Zeno can frame an offer and make the next step clearer for buyer and seller." },
-  { number: "04", label: "Complete", title: "Move forward with trust.", body: "Payment, messaging, delivery and resolution belong to the same transaction." },
+  { number: "01", label: "Discover", title: "Start with what you need.", body: "Describe what you are looking for; Zeno can help surface relevant listings." },
+  { number: "02", label: "Compare", title: "See the useful details.", body: "Review price, condition, location and seller context before choosing a next step." },
+  { number: "03", label: "Connect", title: "Talk directly with the seller.", body: "Use the available contact options to ask questions and clarify a listing." },
+  { number: "04", label: "Decide", title: "Make arrangements together.", body: "Buyers and sellers agree any purchase, payment and delivery directly. BROKA does not process or hold payments." },
 ];
 
-const trustLayers = [
-  { mark: "01", title: "Context", body: "The product, seller and conversation stay connected." },
-  { mark: "02", title: "Protection", body: "Escrow and familiar payment rails support the moment of commitment." },
-  { mark: "03", title: "Resolution", body: "A good transaction is one that can be understood after the sale." },
+const marketplaceLayers = [
+  { mark: "01", title: "Discover", body: "Browse products and stores across the marketplace." },
+  { mark: "02", title: "Compare", body: "Keep product details and seller context in view." },
+  { mark: "03", title: "Connect", body: "Reach out to sellers and decide what works for you." },
 ];
 
 export function CommerceNarrative() {
@@ -32,11 +33,11 @@ export function CommerceNarrative() {
             <p className="t-body-lg">In informal markets across East Africa, buyers and sellers often meet through layers of friction. Context gets lost. Prices become opaque. Better outcomes become harder to reach.</p>
             <div className="cn-discovery-answer">
               <span className="cn-answer-mark" aria-hidden="true">↗</span>
-              <p><strong>BROKA turns the gap into a signal.</strong> Discovery, context, negotiation and trust — connected in one commerce layer.</p>
+              <p><strong>BROKA turns the gap into a signal.</strong> Browse listings, compare useful context and connect directly with sellers.</p>
             </div>
             <Link href="/what-is-broka" className="preview-link">See how BROKA approaches this →</Link>
           </Reveal>
-          <Reveal className="cn-signal-map" delay={0.1} aria-label="BROKA connects buyer intent, market context and seller response">
+          <Reveal className="cn-signal-map" delay={0.1} aria-label="BROKA connects buyer intent, marketplace context and seller listings">
             <div className="cn-map-grid" aria-hidden="true" />
             <div className="cn-map-line cn-map-line-a" aria-hidden="true" />
             <div className="cn-map-line cn-map-line-b" aria-hidden="true" />
@@ -44,8 +45,8 @@ export function CommerceNarrative() {
             <div className="cn-map-node cn-map-buyer"><span>BUYER</span><b>intent</b></div>
             <div className="cn-map-node cn-map-zeno"><span>ZENO</span><b>context layer</b></div>
             <div className="cn-map-node cn-map-market"><span>MARKET</span><b>real signals</b></div>
-            <div className="cn-map-node cn-map-seller"><span>SELLER</span><b>response</b></div>
-            <div className="cn-map-caption">The intelligence between both sides</div>
+            <div className="cn-map-node cn-map-seller"><span>SELLER</span><b>listings</b></div>
+            <div className="cn-map-caption">A clearer view of the marketplace</div>
           </Reveal>
         </div>
       </section>
@@ -54,10 +55,10 @@ export function CommerceNarrative() {
         <div className="wrap">
           <Reveal className="cn-section-intro">
             <div>
-              <span className="t-eyebrow">The transaction, reconnected</span>
-              <h2 className="t-h2" id="cn-journey-title">From a vague need to a confident deal.</h2>
+              <span className="t-eyebrow">The marketplace journey</span>
+              <h2 className="t-h2" id="cn-journey-title">From search to direct connection.</h2>
             </div>
-            <p className="t-body-lg">Not a new set of steps to learn. A clearer way for the steps you already take to work together.</p>
+            <p className="t-body-lg">BROKA brings useful context into view. Buyers and sellers arrange any sale, payment and delivery directly with each other.</p>
           </Reveal>
           <div className="cn-journey-shell">
             <div className="cn-journey-rail">
@@ -69,29 +70,29 @@ export function CommerceNarrative() {
               ))}
             </div>
             <Reveal className="cn-deal-card" delay={0.12}>
-              <div className="cn-deal-top"><span className="cn-deal-kicker"><i /> SIMULATED PRODUCT FLOW</span><span className="cn-deal-time">ZENO / 02</span></div>
+              <div className="cn-deal-top"><span className="cn-deal-kicker"><i /> SIMULATED SEARCH</span><span className="cn-deal-time">ZENO / 02</span></div>
               <div className="cn-deal-query"><span>YOU ASKED</span><strong>I need a 55-inch TV under KSh 50,000</strong></div>
               <div className="cn-deal-context"><span className="cn-context-dot" /> Intent understood <b>size · category · budget</b></div>
               <div className="cn-deal-match">
                 <div className="cn-match-image" aria-hidden="true">TV</div>
-                <div><span>RELEVANT MATCH</span><strong>Compare before you commit</strong><small>Price · condition · seller context</small></div>
+                <div><span>LISTING CONTEXT</span><strong>Compare before you contact</strong><small>Price · condition · seller details</small></div>
                 <span className="cn-match-arrow" aria-hidden="true">↗</span>
               </div>
-              <div className="cn-deal-footer"><span>Discovery</span><span>Understand</span><span className="is-current">Negotiate</span><span>Complete</span></div>
+              <div className="cn-deal-footer"><span>Discover</span><span>Compare</span><span className="is-current">Contact</span></div>
             </Reveal>
           </div>
-          <div className="sec-outro"><Link href="/how-it-works" className="preview-link">See the full transaction journey →</Link></div>
+          <div className="sec-outro"><Link href="/how-it-works" className="preview-link">See how marketplace discovery works →</Link></div>
         </div>
       </section>
 
       <section className="sec cn-trust" aria-labelledby="cn-trust-title">
         <div className="wrap cn-trust-grid">
           <Reveal className="cn-trust-panel">
-            <span className="t-eyebrow t-eyebrow-amber">The moment that matters</span>
-            <h2 className="t-h2" id="cn-trust-title">A better deal is one you can stand behind.</h2>
-            <p className="t-body-lg">Trust is not a badge added at the end. It is the layer that makes discovery, negotiation and payment feel like one continuous decision.</p>
+            <span className="t-eyebrow t-eyebrow-amber">A clearer way to find your next step</span>
+            <h2 className="t-h2" id="cn-trust-title">See the context. <em>Choose what comes next.</em></h2>
+            <p className="t-body-lg">Explore product details and seller information, then decide whether to reach out. BROKA is a discovery layer—not a payment handler.</p>
             <div className="cn-trust-stack">
-              {trustLayers.map((layer, i) => (
+              {marketplaceLayers.map((layer, i) => (
                 <Reveal className="cn-trust-row" key={layer.mark} delay={i * 0.08}>
                   <span>{layer.mark}</span><div><strong>{layer.title}</strong><p>{layer.body}</p></div>
                 </Reveal>
@@ -101,47 +102,41 @@ export function CommerceNarrative() {
           <Reveal
             className="cn-trust-visual"
             delay={0.1}
-            aria-label="The BROKA trust layer connects seller context, protected payment and resolution."
+            aria-label="BROKA marketplace discovery: explore categories, compare listing context and contact sellers directly. BROKA does not process or hold payments."
           >
-            <div className="cn-trust-visual-header">
-              <span className="cn-trust-visual-brand"><i aria-hidden="true">B</i> BROKA <b>/ TRUST LAYER</b></span>
-              <span className="cn-trust-visual-status"><i aria-hidden="true" /> IN THE APP</span>
+            <div className="cn-market-header">
+              <span className="cn-market-brand"><i aria-hidden="true">B</i> BROKA <b>/ MARKET RADAR</b></span>
+              <span className="cn-market-status"><i aria-hidden="true" /> KENYA / MARKETPLACE</span>
             </div>
 
-            <div className="cn-trust-visual-main">
-              <div className="cn-trust-emblem" aria-hidden="true">
-                <span className="cn-trust-emblem-orbit" />
-                <span className="cn-trust-emblem-halo" />
-                <svg viewBox="0 0 48 48" fill="none">
-                  <path d="M24 5.5 39 11v11c0 9.7-6.1 16.7-15 20.5C15.1 38.7 9 31.7 9 22V11l15-5.5Z" />
-                  <path d="m17.5 23.5 4.3 4.3 9-9" />
-                </svg>
+            <div className="cn-market-stage">
+              <div className="cn-market-art" aria-hidden="true">
+                <span className="cn-market-orbit cn-market-orbit-a" />
+                <span className="cn-market-orbit cn-market-orbit-b" />
+                <div className="cn-market-image cn-market-image-electronics"><span>Electronics</span></div>
+                <div className="cn-market-image cn-market-image-fashion"><span>Fashion</span></div>
+                <div className="cn-market-image cn-market-image-home"><span>Home &amp; living</span></div>
+                <div className="cn-market-lens"><Search size={19} strokeWidth={1.8} /><span>DISCOVER</span></div>
+                <i className="cn-market-spark cn-market-spark-one" />
+                <i className="cn-market-spark cn-market-spark-two" />
               </div>
-              <div className="cn-trust-visual-copy">
-                <span>PAYMENT PROTECTION</span>
-                <h3>Escrow</h3>
-                <p>A familiar, protected layer within the transaction.</p>
+              <div className="cn-market-copy">
+                <span>01 / MARKETPLACE SIGNAL</span>
+                <h3>Find your next move.</h3>
+                <p>Useful listing and seller context, before the conversation starts.</p>
+                <div className="cn-market-tags"><span>PRICE</span><span>CONDITION</span><span>LOCATION</span></div>
               </div>
             </div>
 
-            <ol className="cn-trust-flow" aria-label="Connected transaction steps">
-              <li className="cn-trust-flow-step">
-                <span className="cn-trust-flow-number">01</span>
-                <span className="cn-trust-flow-copy"><strong>Context</strong><small>Chat with the seller</small></span>
-              </li>
-              <li className="cn-trust-flow-step is-active">
-                <span className="cn-trust-flow-number">02</span>
-                <span className="cn-trust-flow-copy"><strong>Protection</strong><small>M-Pesa + escrow</small></span>
-              </li>
-              <li className="cn-trust-flow-step">
-                <span className="cn-trust-flow-number">03</span>
-                <span className="cn-trust-flow-copy"><strong>Resolution</strong><small>After the sale</small></span>
-              </li>
+            <ol className="cn-market-flow" aria-label="Marketplace steps">
+              <li><span>01</span><strong>Discover</strong><small>Explore listings</small></li>
+              <li><span>02</span><strong>Compare</strong><small>Review context</small></li>
+              <li><span>03</span><strong>Connect</strong><small>Contact seller</small></li>
             </ol>
 
-            <div className="cn-trust-visual-footer">
-              <span><i aria-hidden="true" /> ONE CONNECTED TRANSACTION</span>
-              <span>01 <b>—</b> 03</span>
+            <div className="cn-market-footer">
+              <span><MessageCircle size={13} aria-hidden="true" /> DIRECT SELLER CONTACT</span>
+              <span>SALE &amp; PAYMENT ARRANGED DIRECTLY</span>
             </div>
           </Reveal>
         </div>
@@ -169,7 +164,7 @@ export function CommerceNarrative() {
         <div className="wrap">
           <Reveal className="cn-section-intro cn-proof-intro">
             <div><span className="t-eyebrow">Built in Kenya. Designed to travel.</span><h2 className="t-h2" id="cn-proof-title">Start local. Carry the infrastructure forward.</h2></div>
-            <p className="t-body-lg">Kenya is where BROKA understands the patterns, languages and payment systems first. The problem — and the ambition — reaches further.</p>
+            <p className="t-body-lg">Kenya is where BROKA learns the patterns, languages and ways people buy and sell first. The problem — and the ambition — reaches further.</p>
           </Reveal>
           <div className="cn-proof-grid">
             <Reveal className="cn-proof-route">
@@ -181,8 +176,8 @@ export function CommerceNarrative() {
             <Reveal className="cn-stack-card" delay={0.1}>
               <span className="cn-stack-caption">UNDER THE HOOD</span>
               <h3>Engineered for real commerce.</h3>
-              <p>AI systems, marketplace infrastructure, payments, trust mechanisms and real-time communication — one platform layer at a time.</p>
-              <div className="cn-tech-stack"><span>AI INTELLIGENCE</span><span>COMMERCE LAYER</span><span className="is-core">BROKA API</span><span>TRUST &amp; SAFETY</span><span>PAYMENTS + MESSAGING</span></div>
+              <p>AI systems, marketplace infrastructure, seller context and real-time communication — one platform layer at a time.</p>
+              <div className="cn-tech-stack"><span>AI INTELLIGENCE</span><span>MARKETPLACE LAYER</span><span className="is-core">BROKA API</span><span>SELLER CONTEXT</span><span>MESSAGING</span></div>
               <Link href="/technology" className="preview-link">See the architecture →</Link>
             </Reveal>
           </div>

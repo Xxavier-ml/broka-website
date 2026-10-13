@@ -248,8 +248,9 @@ export function ZenoDemo() {
                       animate={{ opacity: 1 }}
                       transition={{ delay: 0.55 }}
                     >
-                      Next, Zeno would open a negotiation with the seller on your
-                      behalf — framing your offer with comparable prices as context.
+                      Review the listing details, then decide whether you want to
+                      contact the seller yourself. Any sale and payment are arranged
+                      directly; BROKA does not process them.
                     </motion.div>
                   </>
                 ) : (
@@ -266,7 +267,7 @@ export function ZenoDemo() {
       </div>
 
       <div className="zdemo-foot">
-        Demo only — sample listings, not connected to the live BROKA platform.
+        Demo only — sample listings, not connected to live listings. BROKA does not process buyer-seller payments.
       </div>
     </div>
   );

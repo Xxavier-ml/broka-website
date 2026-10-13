@@ -4,33 +4,21 @@ import { PageHero } from "@/components/sections/PageHero";
 
 export const metadata: Metadata = {
   title: "How it Works",
-  description: "Walk through a complete BROKA transaction — from intent and discovery to negotiation, agreement, payment and trust.",
+  description: "See how BROKA helps people discover listings, compare seller context and contact sellers directly. Buyers and sellers arrange purchases and payments themselves.",
 };
 
 const steps = [
-  { num: "01", title: "Intent", status: "current", badge: "Live",
-    body: "A user describes what they need in plain language. No rigid forms, no complex filters — just what they want, at what price, in what condition.",
-    example: '"I need a used MacBook in good condition under KES 80,000 — prefer Nairobi."' },
-  { num: "02", title: "Discovery", status: "current", badge: "Live",
-    body: "BROKA surfaces relevant sellers and listings that match the request, with useful context about each — seller history, product condition, location, verified status.",
+  { num: "01", title: "Discover", status: "current", badge: "Live",
+    body: "Browse marketplace categories or describe what you are looking for to find relevant listings.",
+    example: '"I need a used MacBook in good condition under KES 80,000 — preferably in Nairobi."' },
+  { num: "02", title: "Compare", status: "current", badge: "Live",
+    body: "Review the listing, price, condition, location and available seller context before deciding what to do next.",
     example: null },
-  { num: "03", title: "Context", status: "current", badge: "Live",
-    body: "Both buyer and seller get the information they need to make a good decision. Seller reputation, comparable prices, product details — all available before committing.",
+  { num: "03", title: "Connect", status: "current", badge: "Live",
+    body: "Use the available contact options to ask the seller questions or get more information about the listing.",
     example: null },
-  { num: "04", title: "Negotiation", status: "building", badge: "Building",
-    body: "Zeno can assist the negotiation process — helping the buyer frame their offer, providing the seller with relevant context, and helping both parties move toward a fair agreement.",
-    example: '"Ask the seller if they can do KES 72,000. We found two comparable listings at that price."' },
-  { num: "05", title: "Agreement", status: "building", badge: "Building",
-    body: "Both sides reach agreement on price, condition, delivery and timing. The platform creates a record of what was agreed and holds both parties accountable to it.",
-    example: null },
-  { num: "06", title: "Payment", status: "building", badge: "Building",
-    body: "Integrated payment flow — including M-Pesa and local payment rails — with escrow to protect both sides. Funds are released when both parties confirm the transaction.",
-    example: null },
-  { num: "07", title: "Delivery", status: "exploring", badge: "Later",
-    body: "Delivery coordination, handover confirmation and post-transaction review. Both parties confirm completion before the transaction is closed.",
-    example: null },
-  { num: "08", title: "Trust & resolution", status: "building", badge: "Building",
-    body: "If something goes wrong, BROKA provides a dispute resolution path. Seller ratings and buyer feedback accumulate into a reputation system that makes future transactions easier.",
+  { num: "04", title: "Arrange directly", status: "current", badge: "Direct",
+    body: "If you choose to proceed, you and the seller agree any sale, payment and delivery directly. BROKA does not process or hold payments.",
     example: null },
 ];
 
@@ -39,8 +27,8 @@ export default function HowItWorks() {
     <>
       <PageHero
         eyebrow="How it works"
-        headline="From intent to outcome."
-        sub="A complete transaction journey — the way BROKA is designed to work when all pieces are in place. We label what is live today, what we are building toward, and what is on the longer-term roadmap."
+        headline="From search to seller contact."
+        sub="BROKA helps you discover listings, compare seller context and make contact. Buyers and sellers arrange any purchase, payment and delivery directly with each other."
         atmosphere="atm-violet"
       />
 
@@ -49,12 +37,11 @@ export default function HowItWorks() {
           <div className="grid-2" style={{ gap: 80, alignItems: "start" }}>
             {/* Legend */}
             <div className="journey-legend">
-              <h2 className="t-h3" id="journey-h" style={{ marginBottom: 32 }}>The transaction journey</h2>
+              <h2 className="t-h3" id="journey-h" style={{ marginBottom: 32 }}>The marketplace journey</h2>
               <div style={{ display: "grid", gap: 12 }}>
                 {[
-                  { status: "current", badge: "Live", desc: "Available on BROKA today" },
-                  { status: "building", badge: "Building", desc: "In active development" },
-                  { status: "exploring", badge: "Later", desc: "On the longer-term roadmap" },
+                  { status: "current", badge: "BROKA", desc: "Discovery and context features" },
+                  { status: "direct", badge: "Direct", desc: "Sale and payment arranged by the parties" },
                 ].map((l) => (
                   <div key={l.status} style={{ display: "flex", gap: 12, alignItems: "center" }}>
                     <span className={`badge badge-dot badge-${l.status === "current" ? "live" : l.status === "building" ? "building" : "later"}`}>{l.badge}</span>
@@ -91,16 +78,16 @@ export default function HowItWorks() {
         </div>
       </section>
 
-      {/* Negotiation flow visual */}
+          {/* Zeno context visual */}
       <section className="sec atm-violet" aria-labelledby="nego-h">
         <div className="wrap">
           <div className="sec-header-center">
-            <span className="t-eyebrow">Negotiation layer</span>
-            <h2 className="t-h2" id="nego-h">Zeno assists both sides.</h2>
-            <p className="t-body">Zeno participates in the negotiation — not as a decision-maker, but as an intelligent assistant with context that neither party had before.</p>
+            <span className="t-eyebrow">Zeno / Market context</span>
+            <h2 className="t-h2" id="nego-h">Think it through before you reach out.</h2>
+            <p className="t-body">Use Zeno to clarify what you need, understand listing context and prepare questions. Buyers and sellers discuss any sale and payment directly with each other.</p>
           </div>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 20, marginTop: 48, flexWrap: "wrap" }}>
-            {["Buyer", "⇄", "Zeno (BROKA)", "⇄", "Seller"].map((n, i) => (
+            {["Buyer", "→", "Zeno (BROKA)", "→", "Market context"].map((n, i) => (
               i % 2 === 0 ? (
                 <div key={i} className={`card card-sm ${n === "Zeno (BROKA)" ? "" : ""}`} style={{ padding: "14px 28px", background: n === "Zeno (BROKA)" ? "var(--c-v-dim)" : "var(--c-surface)", border: n === "Zeno (BROKA)" ? "1px solid var(--c-rule-v)" : "1px solid var(--c-rule)", color: n === "Zeno (BROKA)" ? "var(--c-v-light)" : "var(--c-text-1)", fontWeight: 600, fontSize: 14 }}>
                   {n}
@@ -120,7 +107,7 @@ export default function HowItWorks() {
         <div className="wrap">
           <div className="final-cta">
             <h2 className="t-h2" style={{ marginBottom: 16 }}>See the intelligence behind it.</h2>
-            <p>Zeno is what makes BROKA different from a listing site with a search bar.</p>
+            <p>Zeno adds marketplace context to discovery; it does not process or mediate a buyer-seller sale.</p>
             <div className="final-cta-actions" style={{ marginTop: 32 }}>
               <Link href="/zeno" className="btn btn-primary">Meet Zeno</Link>
               <Link href="/technology" className="btn btn-ghost">Technology →</Link>

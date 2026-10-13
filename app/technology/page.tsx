@@ -5,7 +5,7 @@ import { ArchitectureViz } from "@/components/visuals/ArchitectureViz";
 
 export const metadata: Metadata = {
   title: "Technology",
-  description: "BROKA is built on a serious technical foundation — FastAPI, PostgreSQL, Redis Streams, AI provider fallbacks, WebRTC, escrow, fraud detection and more.",
+  description: "BROKA's platform combines AI-assisted discovery, marketplace infrastructure, seller context and real-time communication.",
 };
 
 const pillars = [
@@ -20,7 +20,7 @@ const pillars = [
     label: "Commerce layer",
     title: "Marketplace infrastructure",
     body: "Real-time marketplace operations — listing management, search and discovery, seller stores, and the buyer-seller interaction layer.",
-    items: ["Listing management", "Seller stores", "Search & discovery", "Real-time negotiation"],
+    items: ["Listing management", "Seller stores", "Search & discovery", "Seller communication"],
     status: "live",
   },
   {
@@ -31,17 +31,10 @@ const pillars = [
     status: "live",
   },
   {
-    label: "Payments",
-    title: "Transaction infrastructure",
-    body: "M-Pesa integration and local payment rails, with an escrow layer to protect both sides of a transaction.",
-    items: ["M-Pesa integration", "Escrow layer", "Payment status tracking", "Local payment rails"],
-    status: "building",
-  },
-  {
     label: "Trust & safety",
-    title: "Fraud & dispute systems",
-    body: "Fraud detection, user verification, dispute resolution workflows and reputation systems that make transactions safer over time.",
-    items: ["Fraud detection", "Seller verification", "Dispute resolution", "Reputation scoring"],
+    title: "Marketplace safety signals",
+    body: "Seller and listing signals help people assess marketplace information. BROKA does not adjudicate or guarantee private sales.",
+    items: ["Seller verification", "Listing signals", "Reputation scoring", "Safety reporting"],
     status: "building",
   },
   {
@@ -58,8 +51,8 @@ export default function Technology() {
     <>
       <PageHero
         eyebrow="Under the hood"
-        headline="Built to handle real commerce."
-        sub="BROKA is being engineered around the practical needs of commerce at scale — AI systems, marketplace infrastructure, payments, trust mechanisms and real-time communication assembled into a coherent platform."
+        headline="Built for clearer discovery."
+        sub="BROKA is being engineered around AI-assisted discovery, marketplace infrastructure, seller context and real-time communication. Buyers and sellers arrange purchases and payments directly; BROKA does not process or hold funds."
         atmosphere="atm-violet"
       />
 
@@ -86,7 +79,7 @@ export default function Technology() {
         <div className="wrap">
           <div className="sec-header-center">
             <span className="t-eyebrow">System breakdown</span>
-            <h2 className="t-h2" id="tech-pillars-h">Six technical domains.</h2>
+            <h2 className="t-h2" id="tech-pillars-h">Five technical domains.</h2>
             <p className="t-body">Each domain of the BROKA platform is independently capable, but designed to work together.</p>
           </div>
           <div className="tech-pillars">

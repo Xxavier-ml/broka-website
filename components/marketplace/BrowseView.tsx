@@ -60,7 +60,7 @@ export function BrowseView({
           <div className="browse-v0-intro">
             <span className="t-eyebrow">BROKA marketplace</span>
             <h1 className="t-h1" id="browse-page-title">Find your next deal.</h1>
-            <p className="browse-v0-support">Search real listings, compare seller context, then move to the app when you are ready to negotiate or buy.</p>
+            <p className="browse-v0-support">Search real listings, compare seller context, then contact the seller directly. Any purchase and payment are arranged between buyer and seller.</p>
           </div>
           <div className="browse-v0-search-slot">
             <SearchForm

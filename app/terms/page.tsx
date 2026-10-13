@@ -16,7 +16,7 @@ export default function Terms() {
       <section className="sec-sm bg-1">
         <div className="wrap">
           <div className="legal">
-            <p className="legal-updated">Last updated 29 September 2026</p>
+            <p className="legal-updated">Last updated 14 October 2026</p>
 
             <p>
               By using www.broka.co.ke (&quot;the website&quot;) you agree to these terms. If you do not agree, please do not use
@@ -26,8 +26,9 @@ export default function Terms() {
             <h2>What the website is</h2>
             <p>
               The website introduces BROKA and lets you browse marketplace products and online stores. It is for viewing only.
-              You cannot make an offer, message a seller or pay on the website; those actions are in the{" "}
-              <Link href="/download">BROKA app</Link>.
+              Seller conversations and account features are available in the <Link href="/download">BROKA app</Link>.
+              BROKA does not process or hold buyer-seller payments. Buyers and sellers arrange any purchase, payment and
+              delivery directly with each other.
             </p>
 
             <h2>Listings come from sellers</h2>
@@ -36,7 +37,8 @@ export default function Terms() {
               <li>
                 A listing shown on the website is not an offer to sell by BROKA, and a price shown here may already have changed.
               </li>
-              <li>Take care before you deal with anyone. Inspect items, and use the app&apos;s escrow for payment.</li>
+              <li>Check listing details with the seller and inspect an item before agreeing to buy.</li>
+              <li>BROKA is not a party to buyer-seller sales and does not process, hold, release or guarantee their payments.</li>
             </ul>
 
             <h2>Using the site properly</h2>

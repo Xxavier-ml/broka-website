@@ -14,7 +14,7 @@ export async function generateMetadata({ searchParams }: { searchParams: SearchP
   }
   return {
     title: "Browse the marketplace",
-    description: "Discover products, stores, and smarter deals on BROKA.",
+    description: "Discover marketplace listings and stores, and compare useful seller context on BROKA.",
   };
 }
 

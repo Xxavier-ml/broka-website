@@ -9,7 +9,7 @@ export function ArchitectureViz() {
   return (
     <div className="tech-arch-wrap">
       <svg viewBox="0 0 680 400" xmlns="http://www.w3.org/2000/svg" role="img"
-        aria-label="BROKA platform architecture: Zeno, Commerce, and Trust above the API layer, connected to AI, Payments, and Messaging">
+        aria-label="BROKA platform architecture: Zeno, Commerce, and Trust above the API layer, connected to AI, Listings, Messaging, and Safety">
         <defs>
           <filter id="arch-glow">
             <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
@@ -67,9 +67,9 @@ export function ArchitectureViz() {
         {/* Tier 3 services */}
         {[
           { cx: 130, label: "AI", sub: "Provider fallbacks" },
-          { cx: 255, label: "PAYMENTS", sub: "M-Pesa · Escrow" },
+          { cx: 255, label: "LISTINGS", sub: "Search · context" },
           { cx: 380, label: "MESSAGING", sub: "Real-time · WebRTC" },
-          { cx: 505, label: "TRUST", sub: "Fraud · Disputes" },
+          { cx: 505, label: "SAFETY", sub: "Profiles · reports" },
         ].map((s) => (
           <g key={s.label}>
             <line x1={s.cx} y1="268" x2={s.cx} y2="284" stroke="rgba(107,86,255,0.14)" strokeWidth="1.5"/>
