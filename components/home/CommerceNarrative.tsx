@@ -98,13 +98,51 @@ export function CommerceNarrative() {
               ))}
             </div>
           </Reveal>
-          <Reveal className="cn-trust-visual" delay={0.1}>
-            <div className="cn-trust-orbit" aria-hidden="true"><span /><span /><span /></div>
-            <div className="cn-trust-core"><span className="cn-core-pulse" /><strong>ESCROW</strong><small>protected payment layer</small></div>
-            <div className="cn-trust-chip cn-chip-mpesa">M-PESA <b>familiar rail</b></div>
-            <div className="cn-trust-chip cn-chip-chat">CHAT <b>seller context</b></div>
-            <div className="cn-trust-chip cn-chip-resolve">RESOLVE <b>after the sale</b></div>
-            <div className="cn-trust-note">Designed around the real decision, not the ideal one.</div>
+          <Reveal
+            className="cn-trust-visual"
+            delay={0.1}
+            aria-label="The BROKA trust layer connects seller context, protected payment and resolution."
+          >
+            <div className="cn-trust-visual-header">
+              <span className="cn-trust-visual-brand"><i aria-hidden="true">B</i> BROKA <b>/ TRUST LAYER</b></span>
+              <span className="cn-trust-visual-status"><i aria-hidden="true" /> IN THE APP</span>
+            </div>
+
+            <div className="cn-trust-visual-main">
+              <div className="cn-trust-emblem" aria-hidden="true">
+                <span className="cn-trust-emblem-orbit" />
+                <span className="cn-trust-emblem-halo" />
+                <svg viewBox="0 0 48 48" fill="none">
+                  <path d="M24 5.5 39 11v11c0 9.7-6.1 16.7-15 20.5C15.1 38.7 9 31.7 9 22V11l15-5.5Z" />
+                  <path d="m17.5 23.5 4.3 4.3 9-9" />
+                </svg>
+              </div>
+              <div className="cn-trust-visual-copy">
+                <span>PAYMENT PROTECTION</span>
+                <h3>Escrow</h3>
+                <p>A familiar, protected layer within the transaction.</p>
+              </div>
+            </div>
+
+            <ol className="cn-trust-flow" aria-label="Connected transaction steps">
+              <li className="cn-trust-flow-step">
+                <span className="cn-trust-flow-number">01</span>
+                <span className="cn-trust-flow-copy"><strong>Context</strong><small>Chat with the seller</small></span>
+              </li>
+              <li className="cn-trust-flow-step is-active">
+                <span className="cn-trust-flow-number">02</span>
+                <span className="cn-trust-flow-copy"><strong>Protection</strong><small>M-Pesa + escrow</small></span>
+              </li>
+              <li className="cn-trust-flow-step">
+                <span className="cn-trust-flow-number">03</span>
+                <span className="cn-trust-flow-copy"><strong>Resolution</strong><small>After the sale</small></span>
+              </li>
+            </ol>
+
+            <div className="cn-trust-visual-footer">
+              <span><i aria-hidden="true" /> ONE CONNECTED TRANSACTION</span>
+              <span>01 <b>—</b> 03</span>
+            </div>
           </Reveal>
         </div>
       </section>
