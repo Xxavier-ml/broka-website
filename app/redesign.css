@@ -1531,7 +1531,7 @@ body { background-color: #05060d; }
 /* Browse keeps the image-led category cards while retaining the legacy .chip hook used by QA and integrations. */
 .browse-v0-category-rail .category-card.chip {
   display: flex;
-  min-height: 230px;
+  min-height: 252px;
   padding: 0;
   border: 1px solid rgba(195, 202, 226, .16);
   border-radius: 17px;
@@ -1546,10 +1546,10 @@ body { background-color: #05060d; }
   color: #fff;
 }
 @media (max-width: 900px) {
-  .browse-v0-category-rail .category-card.chip { min-height: 195px; }
+  .browse-v0-category-rail .category-card.chip { min-height: 220px; }
 }
 @media (max-width: 620px) {
-  .browse-v0-category-rail .category-card.chip { min-height: 180px; }
+  .browse-v0-category-rail .category-card.chip { flex: 0 0 min(94vw, 390px); min-height: 240px; }
 }
 /* ================================================================
    BROKA CONVERSION SYSTEM — signal-led homepage and marketplace proof
