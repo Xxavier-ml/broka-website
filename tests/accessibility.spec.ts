@@ -117,6 +117,28 @@ test("homepage marketplace visual presents a direct Discover–Compare–Connect
   expect(pageWidth.content, "trust card should not cause horizontal page scrolling").toBeLessThanOrEqual(pageWidth.viewport);
 });
 
+test("homepage seller showcase presents a sample listing and direct-contact path", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  const section = page.locator(".cn-seller");
+  await section.scrollIntoViewIfNeeded();
+  await page.waitForTimeout(900);
+  await expect(section.getByRole("heading", { name: "Make your listings easy to understand." })).toBeVisible();
+  const preview = section.locator(".cn-seller-poster");
+  await expect(preview).toContainText("SAMPLE PREVIEW");
+  await expect(preview).toContainText("Contact seller");
+  await expect(preview).toContainText("Clear photos");
+  await expect(preview).not.toContainText(/escrow|m-pesa|checkout|buy now/i);
+  await expect(section.getByRole("link", { name: /Create a listing/ })).toHaveAttribute("href", "/sell");
+
+  const artwork = await preview.locator(".cn-seller-feature").evaluate((el) => getComputedStyle(el).backgroundImage);
+  expect(artwork).toContain("arts-crafts-1024.webp");
+  const pageWidth = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));
+  expect(pageWidth.content, "seller showcase should not cause horizontal page scrolling").toBeLessThanOrEqual(pageWidth.viewport);
+});
+
 test("search combobox exposes an operable listbox and closes with Escape", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/browse", { waitUntil: "domcontentloaded" });

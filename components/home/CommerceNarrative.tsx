@@ -143,20 +143,36 @@ export function CommerceNarrative() {
       </section>
 
       <section className="sec cn-seller" aria-labelledby="cn-seller-title">
-        <div className="wrap cn-seller-grid">
-          <Reveal className="cn-seller-poster">
-            <span className="cn-seller-index">BROKA / SELL</span>
-            <div className="cn-seller-signal">SELLER <i /> READY</div>
-            <div className="cn-seller-poster-copy"><span>PUT YOUR<br /><em>CONTEXT</em><br />TO WORK.</span><small>Reach the right buyer with less back-and-forth.</small></div>
-            <div className="cn-seller-bars" aria-hidden="true"><i /><i /><i /><i /></div>
-          </Reveal>
-          <Reveal className="cn-seller-copy" delay={0.1}>
-            <span className="t-eyebrow">For sellers</span>
-            <h2 className="t-h2" id="cn-seller-title">The better buyer is not always the closest one.</h2>
-            <p className="t-body-lg">BROKA gives sellers a clearer way to present what they have, respond with context and move toward a fairer outcome — without shouting into a crowded feed.</p>
-            <div className="cn-seller-points"><span>List once</span><span>Be understood</span><span>Negotiate clearly</span></div>
-            <Link href="/sell" className="btn btn-primary btn-sm">Sell on BROKA <span aria-hidden="true">↗</span></Link>
-          </Reveal>
+          <div className="wrap cn-seller-grid">
+            <Reveal className="cn-seller-poster">
+              <div className="cn-seller-preview-head">
+                <span className="cn-seller-preview-brand"><i aria-hidden="true">B</i> BROKA <b>/ SELLER STUDIO</b></span>
+                <span className="cn-seller-preview-status"><i aria-hidden="true" /> SAMPLE PREVIEW</span>
+              </div>
+              <div className="cn-seller-feature">
+                <span className="cn-seller-feature-tag">ARTS &amp; CRAFTS</span>
+                <div className="cn-seller-feature-copy">
+                  <span>LISTING PREVIEW / 01</span>
+                  <strong>Give the details room to shine.</strong>
+                  <div className="cn-seller-feature-points"><i>Clear photos</i><i>Honest details</i></div>
+                </div>
+              </div>
+              <div className="cn-seller-preview-foot">
+                <span className="cn-seller-avatar" aria-hidden="true">S</span>
+                <div className="cn-seller-profile-copy">
+                  <span>SELLER PROFILE</span>
+                  <strong>Details · location · contact</strong>
+                </div>
+                <span className="cn-seller-contact-pill"><MessageCircle size={12} aria-hidden="true" /> Contact seller</span>
+              </div>
+            </Reveal>
+            <Reveal className="cn-seller-copy" delay={0.1}>
+              <span className="t-eyebrow">For sellers</span>
+              <h2 className="t-h2" id="cn-seller-title">Make your listings easy to understand.</h2>
+              <p className="t-body-lg">Show clear photos, accurate details and seller context so interested buyers know what to expect and how to contact you. Any purchase, payment and delivery are arranged directly between you and the buyer.</p>
+              <div className="cn-seller-points"><span>Clear product context</span><span>Seller presence</span><span>Direct contact</span></div>
+              <Link href="/sell" className="btn btn-primary btn-sm">Create a listing <span aria-hidden="true">↗</span></Link>
+            </Reveal>
         </div>
       </section>
 

@@ -1740,3 +1740,62 @@ body { background-color: #05060d; }
 @media (prefers-reduced-motion: reduce) { .cn-market-orbit { transform: translate(-50%,-50%) rotate(0) scaleY(.72); } }
 
 .cn-market-image-electronics span { align-self: flex-start; margin: 9px; padding: 4px 6px; border: 1px solid rgba(230,231,255,.2); border-radius: 5px; background: rgba(6,9,20,.72); }
+
+
+/* HOMEPAGE SELLER STORY · LISTING PREVIEW */
+.cn-seller-poster {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  gap: 16px;
+  min-height: 486px;
+  padding: 22px;
+  border-color: rgba(139,117,255,.28);
+  border-radius: 24px;
+  background: radial-gradient(ellipse 70% 80% at 90% 6%, rgba(124,92,255,.2), transparent 72%), linear-gradient(145deg, rgba(17,20,42,.98), rgba(6,9,20,.98));
+  box-shadow: 0 34px 80px -52px rgba(124,92,255,.55), inset 0 1px rgba(255,255,255,.06);
+}
+.cn-seller-poster::before {
+  opacity: .22;
+  background-size: 38px 38px;
+  mask-image: radial-gradient(ellipse at 20% 10%, black, transparent 78%);
+}
+.cn-seller-preview-head,
+.cn-seller-preview-brand,
+.cn-seller-preview-status,
+.cn-seller-preview-foot {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+.cn-seller-preview-head { justify-content: space-between; gap: 12px; }
+.cn-seller-preview-brand { gap: 8px; color: #f0effb; font: 750 9px/1 var(--f-ui); letter-spacing: .12em; white-space: nowrap; }
+.cn-seller-preview-brand i { display: grid; place-items: center; width: 24px; height: 24px; border: 1px solid rgba(168,149,255,.45); border-radius: 7px; background: linear-gradient(145deg, rgba(124,92,255,.48), rgba(84,215,233,.17)); color: #e2dcff; font: 800 13px/1 var(--f-display); font-style: normal; }
+.cn-seller-preview-brand b { color: #8995b1; font-size: 8px; font-weight: 600; letter-spacing: .08em; }
+.cn-seller-preview-status { gap: 6px; padding: 7px 9px; border: 1px solid rgba(113,226,194,.2); border-radius: 999px; background: rgba(113,226,194,.06); color: #a6f0dc; font: 700 8px/1 var(--f-ui); letter-spacing: .08em; white-space: nowrap; }
+.cn-seller-preview-status i { width: 6px; height: 6px; border-radius: 50%; background: #71e2c2; box-shadow: 0 0 10px rgba(113,226,194,.8); }
+.cn-seller-feature { position: relative; z-index: 1; display: flex; flex-direction: column; justify-content: space-between; min-height: 320px; overflow: hidden; padding: 16px; border: 1px solid rgba(195,202,226,.2); border-radius: 17px; background-color: #11152a; background-image: linear-gradient(90deg, rgba(4,7,18,.26), transparent 82%), linear-gradient(0deg, rgba(4,7,18,.96), rgba(4,7,18,.47) 47%, rgba(4,7,18,.06) 100%), url('/assets/category-backgrounds/webp/arts-crafts-1024.webp'); background-position: center, center, 70% center; background-size: cover; box-shadow: inset 0 1px rgba(255,255,255,.08); }
+.cn-seller-feature-tag { align-self: flex-start; position: relative; z-index: 1; padding: 7px 9px; border: 1px solid rgba(221,213,255,.22); border-radius: 999px; background: rgba(6,9,20,.62); color: #e4ddff; backdrop-filter: blur(10px); font: 700 8px/1 var(--f-ui); letter-spacing: .11em; }
+.cn-seller-feature-copy { position: relative; z-index: 1; display: grid; gap: 9px; max-width: 330px; }
+.cn-seller-feature-copy > span { color: #88e6ed; font: 700 8px/1.2 var(--f-ui); letter-spacing: .16em; }
+.cn-seller-feature-copy > strong { color: #fbf9ff; font: 750 clamp(22px, 2.5vw, 30px)/1.05 var(--f-display); letter-spacing: -.045em; text-wrap: balance; }
+.cn-seller-feature-points { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+.cn-seller-feature-points i { padding: 6px 8px; border: 1px solid rgba(195,202,226,.17); border-radius: 6px; background: rgba(7,10,22,.58); color: #c2cada; font: 600 8px/1 var(--f-ui); font-style: normal; }
+.cn-seller-preview-foot { gap: 11px; min-width: 0; }
+.cn-seller-avatar { display: grid; place-items: center; width: 34px; height: 34px; flex: 0 0 34px; border: 1px solid rgba(168,149,255,.36); border-radius: 10px; background: linear-gradient(145deg, rgba(124,92,255,.3), rgba(84,215,233,.1)); color: #e7e1ff; font: 750 13px/1 var(--f-display); }
+.cn-seller-profile-copy { display: grid; flex: 1; gap: 5px; min-width: 0; }
+.cn-seller-profile-copy > span { color: #8390aa; font: 700 8px/1 var(--f-ui); letter-spacing: .13em; }
+.cn-seller-profile-copy > strong { overflow: hidden; color: #c7cede; font: 550 10px/1.2 var(--f-ui); text-overflow: ellipsis; white-space: nowrap; }
+.cn-seller-contact-pill { display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 9px 10px; border: 1px solid rgba(84,215,233,.24); border-radius: 8px; background: rgba(84,215,233,.07); color: #a6eaf2; font: 700 8px/1 var(--f-ui); letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+.cn-seller-points { gap: 7px; }
+.cn-seller-points span { border-color: rgba(139,117,255,.2); background: rgba(124,92,255,.045); }
+@media (max-width: 700px) {
+  .cn-seller-poster { min-height: 420px; gap: 13px; padding: 16px; border-radius: 20px; }
+  .cn-seller-preview-brand { gap: 6px; font-size: 8px; }
+  .cn-seller-preview-brand b { font-size: 7px; }
+  .cn-seller-preview-status { gap: 5px; padding: 6px 7px; font-size: 7px; }
+  .cn-seller-feature { min-height: 252px; padding: 12px; border-radius: 14px; background-position: center, center, 72% center; }
+  .cn-seller-feature-copy > strong { max-width: 15ch; font-size: 23px; }
+  .cn-seller-profile-copy > strong { font-size: 9px; }
+  .cn-seller-contact-pill { gap: 5px; padding: 8px; font-size: 7px; }
+}
