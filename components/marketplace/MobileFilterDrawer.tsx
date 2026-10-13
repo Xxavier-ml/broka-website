@@ -1,36 +1,31 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { SlidersHorizontal, X, RotateCcw, Check } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
+import {
+  DEFAULT_MARKETPLACE_SORT,
+  MARKETPLACE_CONDITIONS,
+  MARKETPLACE_SORT_OPTIONS,
+  PRICE_MAX_KES,
+  PRICE_MIN_KES,
+  PRICE_STEP_KES,
+  sortParam,
+  type MarketplaceSort,
+} from "@/lib/marketplace-filters";
 
-const conditions = [
-  { value: "", label: "Any condition" },
-  { value: "new", label: "New" },
-  { value: "used", label: "Used" },
-  { value: "refurbished", label: "Refurbished" },
-] as const;
-const priceRanges = [
-  { value: "", label: "Any price", min: undefined, max: undefined },
-  { value: "0-5000", label: "Under KSh 5,000", min: 0, max: 5000 },
-  { value: "5000-25000", label: "KSh 5,000 – 25,000", min: 5000, max: 25000 },
-  { value: "25000-100000", label: "KSh 25,000 – 100,000", min: 25000, max: 100000 },
-  { value: "100000-", label: "Over KSh 100,000", min: 100000, max: undefined },
-] as const;
-const sortOptions = [
-  { value: "featured", label: "Featured" },
-  { value: "recent", label: "Newest first" },
-  { value: "price_low", label: "Price: low to high" },
-  { value: "price_high", label: "Price: high to low" },
-] as const;
-const CUSTOM_PRICE_KEY = "custom" as const;
-type PriceKey = (typeof priceRanges)[number]["value"] | typeof CUSTOM_PRICE_KEY;
-type FilterState = { condition: string; price: PriceKey; county: string; sort: string };
+/**
+ * Filters and sort in one sheet, on the same four controls the app's filter
+ * sheet offers: price range (KES), condition, location and sort. Everything
+ * else a category supports comes from the category page's own filter list.
+ *
+ * The values it writes are the API's parameters exactly as the app writes
+ * them (`sort`, `condition`, `min_price`, `max_price`, `location`) - notably
+ * `location`, not the `county` this sheet used to send, which the API has no
+ * parameter for.
+ */
 
-function priceKey(min?: number, max?: number): PriceKey {
-  return priceRanges.find((range) => range.min === min && range.max === max)?.value
-    ?? (min != null || max != null ? CUSTOM_PRICE_KEY : "");
-}
+type FilterState = { condition: string; minPrice: string; maxPrice: string; location: string; sort: MarketplaceSort };
 
 export type MobileFilterDrawerProps = {
   action?: string;
@@ -39,11 +34,22 @@ export type MobileFilterDrawerProps = {
   condition?: string;
   minPrice?: number;
   maxPrice?: number;
-  county?: string;
-  sort: string;
+  location?: string;
+  sort: MarketplaceSort;
   iconOnly?: boolean;
   deferApply?: boolean;
 };
+
+function priceField(value?: number): string {
+  return value != null ? String(value) : "";
+}
+
+function priceParam(value: string): number | undefined {
+  if (value.trim() === "") return undefined;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return undefined;
+  return Math.min(Math.round(parsed), PRICE_MAX_KES);
+}
 
 export function MobileFilterDrawer({
   action,
@@ -52,7 +58,7 @@ export function MobileFilterDrawer({
   condition,
   minPrice,
   maxPrice,
-  county,
+  location,
   sort,
   iconOnly = false,
   deferApply = false,
@@ -61,15 +67,27 @@ export function MobileFilterDrawer({
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
-  const initialPrice = useMemo(() => priceKey(minPrice, maxPrice), [minPrice, maxPrice]);
-  const [local, setLocal] = useState<FilterState>({ condition: condition ?? "", price: initialPrice, county: county ?? "", sort: sort || "featured" });
+  const initial: FilterState = {
+    condition: condition ?? "",
+    minPrice: priceField(minPrice),
+    maxPrice: priceField(maxPrice),
+    location: location ?? "",
+    sort: sort || DEFAULT_MARKETPLACE_SORT,
+  };
+  const [local, setLocal] = useState<FilterState>(initial);
   const activeCount = deferApply
-    ? [local.condition, local.price, local.county, local.sort !== "featured"].filter(Boolean).length
-    : [condition, minPrice != null || maxPrice != null, county, sort !== "featured"].filter(Boolean).length;
+    ? [local.condition, local.minPrice || local.maxPrice, local.location, sortParam(local.sort)].filter(Boolean).length
+    : [condition, minPrice != null || maxPrice != null, location, sortParam(sort)].filter(Boolean).length;
 
   useEffect(() => {
-    setLocal({ condition: condition ?? "", price: initialPrice, county: county ?? "", sort: sort || "featured" });
-  }, [condition, county, initialPrice, sort]);
+    setLocal({
+      condition: condition ?? "",
+      minPrice: priceField(minPrice),
+      maxPrice: priceField(maxPrice),
+      location: location ?? "",
+      sort: sort || DEFAULT_MARKETPLACE_SORT,
+    });
+  }, [condition, minPrice, maxPrice, location, sort]);
 
   useEffect(() => {
     if (!open) return;
@@ -83,33 +101,31 @@ export function MobileFilterDrawer({
     };
   }, [open]);
 
-  const navigate = (next: typeof local) => {
+  const navigate = (next: FilterState) => {
     const target = action ?? pathname;
     const params = new URLSearchParams();
     if (q) params.set("q", q);
     if (category && pathname === "/browse") params.set("category", category);
     if (next.condition) params.set("condition", next.condition);
-    if (next.price === CUSTOM_PRICE_KEY) {
-      if (minPrice != null) params.set("min_price", String(minPrice));
-      if (maxPrice != null) params.set("max_price", String(maxPrice));
-    } else {
-      const price = priceRanges.find((range) => range.value === next.price);
-      if (price?.min != null) params.set("min_price", String(price.min));
-      if (price?.max != null) params.set("max_price", String(price.max));
-    }
-    if (next.county.trim()) params.set("county", next.county.trim());
-    if (next.sort && next.sort !== "featured") params.set("sort", next.sort);
+    // Both ends are the price filter; the app's slider bounds them at 5,000,000 KES.
+    const min = priceParam(next.minPrice);
+    const max = priceParam(next.maxPrice);
+    if (min != null) params.set("min_price", String(min));
+    if (max != null) params.set("max_price", String(max));
+    if (next.location.trim()) params.set("location", next.location.trim());
+    const sortValue = sortParam(next.sort);
+    if (sortValue) params.set("sort", sortValue);
     startTransition(() => router.replace(`${target}${params.toString() ? `?${params}` : ""}`, { scroll: false }));
   };
 
-  const update = (key: keyof typeof local, value: string) => {
+  const update = <K extends keyof FilterState>(key: K, value: FilterState[K]) => {
     const next = { ...local, [key]: value };
     setLocal(next);
     if (!deferApply) navigate(next);
   };
 
   const clear = () => {
-    const next: FilterState = { condition: "", price: "", county: "", sort: "featured" };
+    const next: FilterState = { condition: "", minPrice: "", maxPrice: "", location: "", sort: DEFAULT_MARKETPLACE_SORT };
     setLocal(next);
     if (!deferApply) navigate(next);
   };
@@ -137,23 +153,39 @@ export function MobileFilterDrawer({
             </header>
             <div className="mobile-filter-body">
               <label className="mobile-filter-field">Sort by
-                <select value={local.sort} onChange={(event) => update("sort", event.target.value)}>
-                  {sortOptions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                <select value={local.sort} onChange={(event) => update("sort", event.target.value as MarketplaceSort)}>
+                  {MARKETPLACE_SORT_OPTIONS.map((option) => <option key={option.key} value={option.key}>{option.label}</option>)}
                 </select>
               </label>
-              <label className="mobile-filter-field">Condition
-                <select value={local.condition} onChange={(event) => update("condition", event.target.value)}>
-                  {conditions.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                </select>
-              </label>
-              <label className="mobile-filter-field">Price range
-                <select value={local.price} onChange={(event) => update("price", event.target.value)}>
-                  {local.price === CUSTOM_PRICE_KEY && <option value={CUSTOM_PRICE_KEY} disabled>Current custom range</option>}
-                  {priceRanges.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                </select>
-              </label>
-              <label className="mobile-filter-field">County <span className="mobile-filter-optional">optional</span>
-                <input value={local.county} onChange={(event) => setLocal((current) => ({ ...current, county: event.target.value }))} placeholder="e.g. Nairobi" inputMode="text" />
+              <fieldset className="mobile-filter-field">
+                <legend>Condition</legend>
+                <div className="mobile-filter-chips">
+                  {MARKETPLACE_CONDITIONS.map((option) => (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`mobile-filter-chip${local.condition === option.value ? " active" : ""}`}
+                      aria-pressed={local.condition === option.value}
+                      onClick={() => update("condition", local.condition === option.value ? "" : option.value)}
+                    >
+                      {option.label}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
+              <fieldset className="mobile-filter-field">
+                <legend>Price range (KES)</legend>
+                <div className="mobile-filter-price">
+                  <label>From
+                    <input value={local.minPrice} onChange={(event) => update("minPrice", event.target.value)} placeholder={String(PRICE_MIN_KES)} inputMode="numeric" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} />
+                  </label>
+                  <label>To
+                    <input value={local.maxPrice} onChange={(event) => update("maxPrice", event.target.value)} placeholder={String(PRICE_MAX_KES)} inputMode="numeric" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} />
+                  </label>
+                </div>
+              </fieldset>
+              <label className="mobile-filter-field">Location <span className="mobile-filter-optional">optional</span>
+                <input value={local.location} onChange={(event) => setLocal((current) => ({ ...current, location: event.target.value }))} placeholder="e.g. Nairobi, Kisumu" inputMode="text" />
               </label>
               {pending && <p className="mobile-filter-status" role="status">Updating listings…</p>}
             </div>

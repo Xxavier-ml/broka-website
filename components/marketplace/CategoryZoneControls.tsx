@@ -2,23 +2,78 @@ import Link from "next/link";
 import { SlidersHorizontal } from "lucide-react";
 import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
 import { withQuery } from "@/lib/params";
+import {
+  MARKETPLACE_CONDITIONS,
+  PRICE_MAX_KES,
+  PRICE_MIN_KES,
+  PRICE_STEP_KES,
+  attributeParam,
+  facetRowLabel,
+  fieldLabel,
+  leadingFacetField,
+  numberRangeBounds,
+  rangeAttribute,
+  rendersAsChips,
+  scalarAttribute,
+  sheetFields,
+  sortParam,
+  type AttributeValue,
+  type MarketplaceCondition,
+  type MarketplaceSort,
+} from "@/lib/marketplace-filters";
 
-function labelFor(value: string) {
-  const labels: Record<string, string> = {
-    ram: "RAM",
-    smart_tv: "Smart TV",
-    compatible_with: "Compatible with",
-    screen_size: "Screen size",
-    engine_size: "Engine size",
-    seating_capacity: "Seating capacity",
-    payload_capacity: "Payload capacity",
-    storage_capacity: "Storage capacity",
-    storage_type: "Storage type",
-    battery_health: "Battery health",
-    length_ft: "Length (ft)",
-  };
-  if (labels[value]) return labels[value];
-  return value.replace(/[_-]+/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+/**
+ * The browsing controls, matching the app's category zone and subcategory
+ * screens: a subcategory rail, a "shop by make / brand" facet row, a chip row
+ * per option field, the condition chips, then the remaining filters (price,
+ * location, free-text and range fields) in one form.
+ *
+ * Which filters exist and what they offer is decided by the API
+ * (`GET /categories/{id}/filters`), never here - that is what keeps the web
+ * marketplace and the app offering the same choices.
+ */
+
+function ChipRow({
+  label,
+  allLabel,
+  route,
+  keep,
+  paramName,
+  values,
+  current,
+}: {
+  label: string;
+  allLabel: string;
+  route: string;
+  keep: Record<string, string | undefined>;
+  paramName: string;
+  values: string[];
+  current: string;
+}) {
+  return (
+    <nav className="category-filter-chip-group" aria-label={label}>
+      <span className="category-filter-chip-label">{label}</span>
+      <div className="category-filter-chips">
+        <Link
+          className={`category-filter-chip${!current ? " active" : ""}`}
+          href={withQuery(route, { ...keep, [paramName]: undefined })}
+          aria-current={!current ? "page" : undefined}
+        >
+          {allLabel}
+        </Link>
+        {values.map((value) => (
+          <Link
+            key={value}
+            className={`category-filter-chip${current === value ? " active" : ""}`}
+            href={withQuery(route, { ...keep, [paramName]: value })}
+            aria-current={current === value ? "page" : undefined}
+          >
+            {value}
+          </Link>
+        ))}
+      </div>
+    </nav>
+  );
 }
 
 export function CategoryZoneControls({
@@ -31,7 +86,7 @@ export function CategoryZoneControls({
   condition,
   minPrice,
   maxPrice,
-  county,
+  location,
   sort,
   attributes,
   showSubcategories = true,
@@ -42,19 +97,58 @@ export function CategoryZoneControls({
   filters: CategoryFilterField[];
   q?: string;
   subcategoryId?: string;
-  condition?: string;
+  condition?: MarketplaceCondition;
   minPrice?: number;
   maxPrice?: number;
-  county?: string;
-  sort: string;
-  attributes: Record<string, string>;
+  location?: string;
+  sort: MarketplaceSort;
+  attributes: Record<string, AttributeValue>;
   showSubcategories?: boolean;
 }) {
-  const keep = { q, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county, sort: sort === "featured" ? undefined : sort, subcategory_id: subcategoryId };
-  const attributeQuery = Object.fromEntries(Object.entries(attributes).map(([field, value]) => [`attribute_${field}`, value]));
-  const optionFilters = filters.filter((field) => field.options?.length);
-  const activeCount = [subcategoryId, condition, minPrice != null || maxPrice != null ? "price" : undefined, county, ...Object.values(attributes)].filter(Boolean).length;
-  const clearHref = withQuery(route, { q, sort: sort === "featured" ? undefined : sort, subcategory_id: subcategoryId });
+  const keep: Record<string, string | undefined> = {
+    q,
+    condition,
+    min_price: minPrice?.toString(),
+    max_price: maxPrice?.toString(),
+    location,
+    sort: sortParam(sort),
+    subcategory_id: subcategoryId,
+  };
+  // The app leads a subcategory with one facet row ("Shop by brand/make") and
+  // drops that field from the rest of the list so the same filter cannot be
+  // set twice (`subcategory_screen.dart:_sheetFields`).
+  const facet = leadingFacetField(filters);
+  const fields = sheetFields(filters, facet);
+  const chipFields = fields.filter(rendersAsChips);
+  const inputFields = fields.filter((field) => !rendersAsChips(field));
+  const inputFieldNames = new Set(inputFields.map((field) => field.field_name));
+  // Chip fields travel as links, so their current value has to ride along in
+  // the form as a hidden input - otherwise applying the form would drop it.
+  const hiddenAttributes = Object.entries(attributes).filter(
+    ([name, value]) => typeof value === "string" && !inputFieldNames.has(name),
+  );
+  const activeCount = [
+    subcategoryId,
+    condition,
+    minPrice != null || maxPrice != null ? "price" : undefined,
+    location,
+    ...Object.values(attributes),
+  ].filter(Boolean).length;
+  const clearHref = withQuery(route, { q, sort: sortParam(sort), subcategory_id: subcategoryId });
+  // Every other attribute has to ride along on a chip link, or picking a brand
+  // would silently drop the condition, the price and the other brands.
+  const attributeQuery: Record<string, string | undefined> = {};
+  for (const [name, value] of Object.entries(attributes)) {
+    if (typeof value === "string") {
+      attributeQuery[attributeParam(name)] = value;
+      continue;
+    }
+    const { min, max } = rangeAttribute(value);
+    if (min != null) attributeQuery[`${attributeParam(name)}_min`] = String(min);
+    if (max != null) attributeQuery[`${attributeParam(name)}_max`] = String(max);
+  }
+  const keepWithAttributes = { ...keep, ...attributeQuery };
+
   return (
     <div className="category-zone-controls" aria-label={`${category?.name ?? "Category"} browsing controls`}>
       {showSubcategories && subcategories.length > 0 && (
@@ -63,55 +157,99 @@ export function CategoryZoneControls({
           {subcategories.map((sub) => <Link key={sub.id} className={`subcategory-chip${subcategoryId === sub.id ? " active" : ""}`} href={withQuery(route, { ...keep, subcategory_id: sub.id })}>{sub.name}</Link>)}
         </nav>
       )}
-      {optionFilters.map((field) => {
-        const fieldLabel = labelFor(field.field_name);
-        const currentValue = attributes[field.field_name];
-        return (
-          <nav key={field.field_name} className="category-filter-chip-group" aria-label={`Filter by ${fieldLabel}`}>
-            <span className="category-filter-chip-label">{fieldLabel}</span>
-            <div className="category-filter-chips">
-              <Link
-                className={`category-filter-chip${!currentValue ? " active" : ""}`}
-                href={withQuery(route, { ...keep, ...attributeQuery, [`attribute_${field.field_name}`]: undefined })}
-                aria-current={!currentValue ? "page" : undefined}
-              >
-                All
-              </Link>
-              {field.options?.map((option) => (
-                <Link
-                  key={option}
-                  className={`category-filter-chip${currentValue === option ? " active" : ""}`}
-                  href={withQuery(route, { ...keep, ...attributeQuery, [`attribute_${field.field_name}`]: option })}
-                  aria-current={currentValue === option ? "page" : undefined}
-                >
-                  {option}
-                </Link>
-              ))}
-            </div>
-          </nav>
-        );
-      })}
+
+      {facet && (
+        <ChipRow
+          label={`Shop by ${facet.field_name.toLowerCase()}`}
+          allLabel={`All ${facetRowLabel(facet)}`}
+          route={route}
+          keep={keepWithAttributes}
+          paramName={attributeParam(facet.field_name)}
+          values={facet.options ?? []}
+          current={scalarAttribute(attributes[facet.field_name])}
+        />
+      )}
+
+      {chipFields.map((field) => (
+        <ChipRow
+          key={field.field_name}
+          label={fieldLabel(field.field_name)}
+          allLabel="All"
+          route={route}
+          keep={keepWithAttributes}
+          paramName={attributeParam(field.field_name)}
+          values={field.options ?? []}
+          current={scalarAttribute(attributes[field.field_name])}
+        />
+      ))}
+
+      <nav className="category-filter-chip-group" aria-label="Filter by condition">
+        <span className="category-filter-chip-label">Condition</span>
+        <div className="category-filter-chips">
+          <Link
+            className={`category-filter-chip${!condition ? " active" : ""}`}
+            href={withQuery(route, { ...keepWithAttributes, condition: undefined })}
+            aria-current={!condition ? "page" : undefined}
+          >
+            Any
+          </Link>
+          {MARKETPLACE_CONDITIONS.map((option) => (
+            <Link
+              key={option.value}
+              className={`category-filter-chip${condition === option.value ? " active" : ""}`}
+              href={withQuery(route, { ...keepWithAttributes, condition: option.value })}
+              aria-current={condition === option.value ? "page" : undefined}
+            >
+              {option.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
+
       <details className="category-filter-details">
         <summary><SlidersHorizontal size={16} aria-hidden="true" /> Filters{activeCount > 0 && <span>{activeCount}</span>}</summary>
         <form method="get" action={route} className="category-filter-form">
           {q && <input type="hidden" name="q" value={q} />}
           {subcategoryId && <input type="hidden" name="subcategory_id" value={subcategoryId} />}
-          {sort !== "featured" && <input type="hidden" name="sort" value={sort} />}
-          <label>Condition<select name="condition" defaultValue={condition ?? ""}><option value="">Any condition</option><option value="new">New</option><option value="used">Used</option><option value="refurbished">Refurbished</option></select></label>
-          <label>Minimum price<input name="min_price" type="number" min="0" placeholder="Any" defaultValue={minPrice ?? ""} /></label>
-          <label>Maximum price<input name="max_price" type="number" min="0" placeholder="Any" defaultValue={maxPrice ?? ""} /></label>
-          <label>County<input name="county" placeholder="e.g. Nairobi" defaultValue={county ?? ""} /></label>
-          {filters.filter((field) => !field.options?.length).map((field) => {
-            const name = `attribute_${field.field_name}`;
-            const label = labelFor(field.field_name);
-            if (field.options?.length) {
-              return <label key={field.field_name}>{label}<select name={name} defaultValue={attributes[field.field_name] ?? ""}><option value="">Any</option>{field.options.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>;
+          {sortParam(sort) && <input type="hidden" name="sort" value={sortParam(sort)} />}
+          {condition && <input type="hidden" name="condition" value={condition} />}
+          {hiddenAttributes.map(([name, value]) => <input key={name} type="hidden" name={attributeParam(name)} value={value as string} />)}
+          {/* The app's price filter is a 0 - 5,000,000 KES range ("Price range (KES)"); both ends go on the wire as min_price / max_price. */}
+          <label>Price range (KES) from
+            <input name="min_price" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} placeholder={String(PRICE_MIN_KES)} defaultValue={minPrice ?? ""} />
+          </label>
+          <label>to
+            <input name="max_price" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} placeholder={String(PRICE_MAX_KES)} defaultValue={maxPrice ?? ""} />
+          </label>
+          <label>Location<input name="location" placeholder="e.g. Nairobi, Kisumu" defaultValue={location ?? ""} /></label>
+          {inputFields.map((field) => {
+            if (field.field_type === "number_range") {
+              const [min, max] = numberRangeBounds(field.field_name);
+              const bounds = rangeAttribute(attributes[field.field_name]);
+              const label = fieldLabel(field.field_name);
+              return (
+                <fieldset key={field.field_name}>
+                  <legend>{label}</legend>
+                  <label>{label} from
+                    <input name={`${attributeParam(field.field_name)}_min`} type="number" min={min} max={max} step="any" placeholder={String(min)} defaultValue={bounds.min ?? ""} />
+                  </label>
+                  <label>{label} to
+                    <input name={`${attributeParam(field.field_name)}_max`} type="number" min={min} max={max} step="any" placeholder={String(max)} defaultValue={bounds.max ?? ""} />
+                  </label>
+                </fieldset>
+              );
             }
-            return <label key={field.field_name}>{label}<input name={name} type={field.field_type === "number_range" ? "number" : "text"} inputMode={field.field_type === "number_range" ? "numeric" : undefined} min={field.field_type === "number_range" ? 0 : undefined} step={field.field_type === "number_range" ? "any" : undefined} defaultValue={attributes[field.field_name] ?? ""} placeholder={`Any ${label.toLowerCase()}`} /></label>;
+            const label = fieldLabel(field.field_name);
+            return (
+              <label key={field.field_name}>{label}
+                <input name={attributeParam(field.field_name)} type="text" defaultValue={scalarAttribute(attributes[field.field_name])} placeholder={`Any ${label.toLowerCase()}`} />
+              </label>
+            );
           })}
           <button type="submit">Apply filters</button>
         </form>
       </details>
+
       {activeCount > 0 && <Link href={clearHref} className="category-zone-clear">Clear filters</Link>}
     </div>
   );

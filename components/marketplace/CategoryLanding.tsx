@@ -11,14 +11,17 @@ import { SearchForm } from "./SearchForm";
 import { CategoryZoneControls } from "./CategoryZoneControls";
 import { CategorySubcategoryGrid } from "./CategorySubcategoryGrid";
 import type { CategoryFilterField, CategoryNode } from "@/lib/api/categories";
+import {
+  MARKETPLACE_SORT_OPTIONS,
+  attributeParam,
+  sortParam,
+  type AttributeValue,
+  type MarketplaceCondition,
+  type MarketplaceSort,
+} from "@/lib/marketplace-filters";
 
- type CategorySort = "featured" | "recent" | "price_low" | "price_high";
-const sortOptions: { key: CategorySort; label: string }[] = [
-  { key: "featured", label: "Featured" },
-  { key: "recent", label: "Newest" },
-  { key: "price_low", label: "Price: low to high" },
-  { key: "price_high", label: "Price: high to low" },
-];
+/** The app's sort labels, and its default ranking for the first entry. */
+const sortOptions: { key: MarketplaceSort; label: string }[] = MARKETPLACE_SORT_OPTIONS.map((option) => ({ key: option.key, label: option.label }));
 
 export function CategoryLanding({
   category,
@@ -27,7 +30,7 @@ export function CategoryLanding({
   condition,
   minPrice,
   maxPrice,
-  county,
+  location,
   result,
   failed,
   categoryNode,
@@ -41,18 +44,18 @@ export function CategoryLanding({
 }: {
   category: string;
   q?: string;
-  sort: CategorySort;
-  condition?: "new" | "used" | "refurbished";
+  sort: MarketplaceSort;
+  condition?: MarketplaceCondition;
   minPrice?: number;
   maxPrice?: number;
-  county?: string;
+  location?: string;
   result: ListingPage;
   failed: boolean;
   categoryNode?: CategoryNode | null;
   subcategories?: CategoryNode[];
   filters?: CategoryFilterField[];
   subcategoryId?: string;
-  attributes?: Record<string, string>;
+  attributes?: Record<string, AttributeValue>;
   subcategoryName?: string;
   routeOverride?: string;
   heroArt?: string;
@@ -72,17 +75,28 @@ export function CategoryLanding({
     condition,
     min_price: minPrice?.toString(),
     max_price: maxPrice?.toString(),
-    county,
-    sort: sort === "featured" ? undefined : sort,
+    location,
+    sort: sortParam(sort),
   };
   const activeFilters = {
     condition,
     min_price: minPrice?.toString(),
     max_price: maxPrice?.toString(),
-    county,
-    sort: sort === "featured" ? undefined : sort,
+    location,
+    sort: sortParam(sort),
   };
   const retryHref = withQuery(route, { ...preserved, ...activeFilters });
+  // Changing the sort must not throw the filters away, so the attribute
+  // parameters ride along on the sort links too.
+  const attributeQuery: Record<string, string | undefined> = {};
+  for (const [name, value] of Object.entries(attributes ?? {})) {
+    if (typeof value === "string") {
+      attributeQuery[attributeParam(name)] = value;
+      continue;
+    }
+    if (value.min != null) attributeQuery[`${attributeParam(name)}_min`] = String(value.min);
+    if (value.max != null) attributeQuery[`${attributeParam(name)}_max`] = String(value.max);
+  }
   const agricultureQuickNames = new Set(["Farm Equipment", "Farm Tools", "Fertilizers & Agrochemicals"]);
   const quickSubcategories = content.category === "Agriculture"
     ? (subcategories ?? []).filter((subcategory) => agricultureQuickNames.has(subcategory.name))
@@ -109,7 +123,7 @@ export function CategoryLanding({
             hidden={activeFilters}
             label={`Search ${content.category} listings`}
             className="sform-lg browse-search browse-search-v0 category-search"
-            filters={{ action: route, category: content.category, condition, minPrice, maxPrice, county, sort }}
+            filters={{ action: route, category: content.category, condition, minPrice, maxPrice, location, sort }}
             filterRowClassName="category-search-filter-row"
           />
         </div>
@@ -118,7 +132,7 @@ export function CategoryLanding({
       <section className={`category-results browse-section category-results-${categorySlug(content.category)}`} aria-label={`${content.category} listings`}>
         <div className="wrap">
           {!subcategoryName && <CategorySubcategoryGrid category={content.category} route={route} subcategories={subcategories ?? []} keep={preserved} />}
-          {(subcategoryName || !(subcategories?.length) || showAgricultureQuickFilters) && <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={quickSubcategories} showSubcategories={showAgricultureQuickFilters} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} sort={sort} attributes={attributes ?? {}} />}
+          {(subcategoryName || !(subcategories?.length) || showAgricultureQuickFilters) && <CategoryZoneControls route={route} category={categoryNode ?? null} subcategories={quickSubcategories} showSubcategories={showAgricultureQuickFilters} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} sort={sort} attributes={attributes ?? {}} />}
           <div className="listing-v0-toolbar category-results-toolbar">
             <p className="browse-count" role="status">
               {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "listing" : "listings"}`}
@@ -129,7 +143,7 @@ export function CategoryLanding({
                   key={option.key}
                   href={withQuery(route, {
                     ...preserved,
-                    sort: option.key === "featured" ? undefined : option.key,
+                    sort: sortParam(option.key),
                   })}
                   className={sort === option.key ? "active" : ""}
                   aria-current={sort === option.key ? "page" : undefined}

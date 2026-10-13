@@ -7,13 +7,22 @@ import { canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import type { ListingPage } from "@/lib/api/listings";
 import { CategoryLanding } from "./CategoryLanding";
+import {
+  MARKETPLACE_SORT_OPTIONS,
+  parseMarketplaceCondition,
+  parseMarketplaceSort,
+  parsePriceKes,
+  sortParam,
+  type MarketplaceCondition,
+  type MarketplaceSort,
+} from "@/lib/marketplace-filters";
 
-const sortOptions = [
-  { key: "featured", label: "Featured" },
-  { key: "recent", label: "Newest" },
-  { key: "price_low", label: "Price: low to high" },
-  { key: "price_high", label: "Price: high to low" },
-] as const;
+/**
+ * The sort options are the app's, label for label (`feed_sort_row.dart`).
+ * "Top ranked" is the backend's own ranking rather than a date order, and it
+ * is the default, so it travels as no parameter at all.
+ */
+const sortOptions = MARKETPLACE_SORT_OPTIONS;
 
 export function BrowseView({
   q,
@@ -22,26 +31,27 @@ export function BrowseView({
   condition,
   minPrice,
   maxPrice,
-  county,
+  location,
   result,
   failed,
 }: {
   q?: string;
   category?: string;
-  sort: (typeof sortOptions)[number]["key"];
-  condition?: "new" | "used" | "refurbished";
+  sort: MarketplaceSort;
+  condition?: MarketplaceCondition;
   minPrice?: number;
   maxPrice?: number;
-  county?: string;
+  /** Free text matched against the listing's location, as the app's filter sends it. */
+  location?: string;
   result: ListingPage;
   failed: boolean;
 }) {
   const canonical = canonicalCategory(category);
   if (canonical) {
-    return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={result} failed={failed} />;
+    return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={result} failed={failed} />;
   }
 
-  const query = { q, category, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county };
+  const query = { q, category, sort: sortParam(sort), condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), location };
 
   return (
     <>
@@ -60,7 +70,7 @@ export function BrowseView({
               hidden={{ category }}
               className="sform-lg browse-search browse-search-v0"
               label="Search marketplace"
-              filters={{ action: "/browse", category, condition, minPrice, maxPrice, county, sort }}
+              filters={{ action: "/browse", category, condition, minPrice, maxPrice, location, sort }}
               filterRowClassName="browse-search-filter-row"
             />
           </div>
@@ -77,7 +87,7 @@ export function BrowseView({
               basePath="/browse"
               active={category ?? null}
               className="browse-category-rail browse-v0-category-rail"
-              keep={{ q, sort: sort === "featured" ? undefined : sort, condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), county }}
+              keep={{ q, sort: sortParam(sort), condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), location }}
             />
           </div>
         </div>
@@ -95,7 +105,7 @@ export function BrowseView({
             </div>
             <nav className="browse-sort" aria-label="Sort listings">
               {sortOptions.map((option) => (
-                <Link key={option.key} href={withQuery("/browse", { ...query, sort: option.key === "featured" ? undefined : option.key })} className={sort === option.key ? "active" : ""} aria-current={sort === option.key ? "page" : undefined}>
+                <Link key={option.key} href={withQuery("/browse", { ...query, sort: sortParam(option.key) })} className={sort === option.key ? "active" : ""} aria-current={sort === option.key ? "page" : undefined}>
                   {option.label}
                 </Link>
               ))}
@@ -118,20 +128,11 @@ export function BrowseView({
   );
 }
 
-export function parseBrowseSort(value?: string) {
-  return sortOptions.some((option) => option.key === value) ? (value as (typeof sortOptions)[number]["key"]) : "featured";
-}
+// Re-exported for the browse routes, which have always imported them from here.
+export const parseBrowseSort = parseMarketplaceSort;
+export const parseBrowseCondition = parseMarketplaceCondition;
+export const parseBrowsePrice = parsePriceKes;
 
 export function parseBrowseCategory(value?: string) {
   return canonicalCategory(value);
-}
-
-export function parseBrowseCondition(value?: string) {
-  return value === "new" || value === "used" || value === "refurbished" ? value : undefined;
-}
-
-export function parseBrowsePrice(value?: string) {
-  if (!value) return undefined;
-  const parsed = Number(value);
-  return Number.isFinite(parsed) && parsed >= 0 ? parsed : undefined;
 }

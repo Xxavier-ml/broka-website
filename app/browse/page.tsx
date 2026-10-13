@@ -26,7 +26,11 @@ export default async function BrowsePage({ searchParams }: { searchParams: Searc
   const condition = parseBrowseCondition(firstParam(sp.condition));
   const minPrice = parseBrowsePrice(firstParam(sp.min_price));
   const maxPrice = parseBrowsePrice(firstParam(sp.max_price));
-  const county = firstParam(sp.county) || undefined;
-  const response = await orFallback(() => listListings({ search: q, category: category ?? undefined, sort, condition, minPrice, maxPrice, county, limit: 24 }), { items: [], total: 0 });
-  return <BrowseView q={q} category={category ?? undefined} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed} />;
+  // `location` is the API's parameter, and it is what the app sends.
+  // `county` is what this page sent before it matched the app: the API has no
+  // such parameter, so the old links are folded into the working one.
+  const location = firstParam(sp.location) ?? firstParam(sp.county);
+  // 20 to a page, like the app (`listings_repository.dart`).
+  const response = await orFallback(() => listListings({ search: q, category: category ?? undefined, sort, condition, minPrice, maxPrice, location, limit: 20 }), { items: [], total: 0 });
+  return <BrowseView q={q} category={category ?? undefined} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed} />;
 }

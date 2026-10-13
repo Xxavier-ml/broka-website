@@ -8,6 +8,12 @@ import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
 import { filtersForCategory, filtersForSubcategory } from "@/lib/category-filters";
+import {
+  attributesFromParams,
+  parseMarketplaceCondition,
+  parseMarketplaceSort,
+  parsePriceKes,
+} from "@/lib/marketplace-filters";
 
 type Props = { params: Promise<{ category: string }>; searchParams: SearchParams };
 
@@ -24,14 +30,11 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
   if (!category) notFound();
   const sp = await searchParams;
   const q = firstParam(sp.q);
-  const sortValue = firstParam(sp.sort);
-  const sort = sortValue === "recent" || sortValue === "price_low" || sortValue === "price_high" ? sortValue : "featured";
-  const conditionValue = firstParam(sp.condition);
-  const condition = conditionValue === "new" || conditionValue === "used" || conditionValue === "refurbished" ? conditionValue : undefined;
-  const parsePrice = (value?: string) => { const n = value ? Number(value) : NaN; return Number.isFinite(n) && n >= 0 ? n : undefined; };
-  const minPrice = parsePrice(firstParam(sp.min_price));
-  const maxPrice = parsePrice(firstParam(sp.max_price));
-  const county = firstParam(sp.county);
+  const sort = parseMarketplaceSort(firstParam(sp.sort));
+  const condition = parseMarketplaceCondition(firstParam(sp.condition));
+  const minPrice = parsePriceKes(firstParam(sp.min_price));
+  const maxPrice = parsePriceKes(firstParam(sp.max_price));
+  const location = firstParam(sp.location) ?? firstParam(sp.county);
   const subcategoryId = firstParam(sp.subcategory_id);
   const zoneResponse = await orFallback(() => getCategoryZone(category), { category: null, subcategories: [], filters: [] });
   const selectedSubcategory = zoneResponse.data.subcategories.find((item) => item.id === subcategoryId);
@@ -41,17 +44,28 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
   const filters = selectedSubcategory
     ? filtersForSubcategory(category, categorySlug(selectedSubcategory.name), childFilters.data)
     : filtersForCategory(category, zoneResponse.data.filters);
-  const attributes: Record<string, string> = {};
-  for (const [key, value] of Object.entries(sp)) {
-    if (key.startsWith("attribute_")) {
-      const field = key.slice("attribute_".length);
-      const selected = firstParam(value);
-      if (field && selected) attributes[field] = selected;
-    }
-  }
+  // Every filter that is not condition, price, location, sort or search is an
+  // attribute, built exactly as the app builds it (`category_zone_screen.dart`).
+  const attributes = attributesFromParams(sp, filters);
   const response = await orFallback(
-    () => listListings({ search: q, category, categoryId: zoneResponse.data.category?.id, subcategoryId, attributes, sort, condition, minPrice, maxPrice, county, limit: 24 }),
+    () => listListings({
+      search: q,
+      // One scope per request, the app's way: a chosen subcategory stands
+      // alone, otherwise the category id (which the API expands to its
+      // children). The name rides along only as a fallback for when the
+      // category tree is unreachable.
+      categoryId: selectedSubcategory ? undefined : zoneResponse.data.category?.id,
+      subcategoryId,
+      category,
+      attributes,
+      sort,
+      condition,
+      minPrice,
+      maxPrice,
+      location,
+      limit: 20,
+    }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category={category} subcategoryName={selectedSubcategory?.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategoryId} attributes={attributes} />;
+  return <CategoryLanding category={category} subcategoryName={selectedSubcategory?.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategoryId} attributes={attributes} />;
 }

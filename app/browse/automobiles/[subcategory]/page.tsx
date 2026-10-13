@@ -8,6 +8,12 @@ import { automobileSubcategorySlug } from "@/lib/automobiles";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
+import {
+  attributesFromParams,
+  parseMarketplaceCondition,
+  parseMarketplaceSort,
+  parsePriceKes,
+} from "@/lib/marketplace-filters";
 
 type Props = { params: Promise<{ subcategory: string }>; searchParams: SearchParams };
 
@@ -34,27 +40,18 @@ export default async function AutomobileSubcategoryPage({ params, searchParams }
   const heroArt = automobileSubcategoryArtwork(subcategory.name)?.image;
   const sp = await searchParams;
   const q = firstParam(sp.q);
-  const sortValue = firstParam(sp.sort);
-  const sort = sortValue === "recent" || sortValue === "price_low" || sortValue === "price_high" ? sortValue : "featured";
-  const conditionValue = firstParam(sp.condition);
-  const condition = conditionValue === "new" || conditionValue === "used" || conditionValue === "refurbished" ? conditionValue : undefined;
-  const parsePrice = (value?: string) => { const n = value ? Number(value) : NaN; return Number.isFinite(n) && n >= 0 ? n : undefined; };
-  const minPrice = parsePrice(firstParam(sp.min_price));
-  const maxPrice = parsePrice(firstParam(sp.max_price));
-  const county = firstParam(sp.county);
-  const attributes: Record<string, string> = {};
-  for (const [key, value] of Object.entries(sp)) {
-    if (key.startsWith("attribute_")) {
-      const field = key.slice("attribute_".length);
-      const selected = firstParam(value);
-      if (field && selected) attributes[field] = selected;
-    }
-  }
+  const sort = parseMarketplaceSort(firstParam(sp.sort));
+  const condition = parseMarketplaceCondition(firstParam(sp.condition));
+  const minPrice = parsePriceKes(firstParam(sp.min_price));
+  const maxPrice = parsePriceKes(firstParam(sp.max_price));
+  const location = firstParam(sp.location) ?? firstParam(sp.county);
   const childFilters = await orFallback(() => getCategoryFilters(subcategory.id), []);
   const filters = filtersForSubcategory("Automobiles", automobileSubcategorySlug(subcategory.name), childFilters.data);
+  const attributes = attributesFromParams(sp, filters);
   const response = await orFallback(
-    () => listListings({ search: q, category: "Automobiles", categoryId: zoneResponse.data.category?.id, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, county, limit: 24 }),
+    // A subcategory stands alone, as it does on the app's subcategory screen.
+    () => listListings({ search: q, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, location, limit: 20 }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} county={county} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
+  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
 }
