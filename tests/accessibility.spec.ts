@@ -93,6 +93,28 @@ test("mobile marketplace category artwork uses moderate landscape cards", async 
   }
 });
 
+test("homepage trust visual presents a connected three-step protection flow", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  const panel = page.locator(".cn-trust-visual");
+  await expect(panel).toBeVisible();
+  await expect(panel.locator(".cn-trust-visual-copy h3")).toHaveText("Escrow");
+  await expect(panel.locator(".cn-trust-flow-step")).toHaveCount(3);
+  await expect(panel.locator(".cn-trust-flow-copy strong")).toHaveText([
+    "Context",
+    "Protection",
+    "Resolution",
+  ]);
+
+  const pageWidth = await page.evaluate(() => ({
+    viewport: document.documentElement.clientWidth,
+    content: document.documentElement.scrollWidth,
+  }));
+  expect(pageWidth.content, "trust card should not cause horizontal page scrolling").toBeLessThanOrEqual(pageWidth.viewport);
+});
+
 test("search combobox exposes an operable listbox and closes with Escape", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/browse", { waitUntil: "domcontentloaded" });
