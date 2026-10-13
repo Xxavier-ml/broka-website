@@ -60,17 +60,37 @@ test("homepage shows category artwork instead of live product cards", async ({ p
     .toHaveAttribute("href", "/browse/home-and-furniture");
 });
 
-test("mobile marketplace category artwork uses near-full-width cards", async ({ page }) => {
+test("mobile marketplace category artwork uses moderate landscape cards", async ({ page }) => {
   const viewportWidth = 375;
   await page.setViewportSize({ width: viewportWidth, height: 812 });
+  await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/browse", { waitUntil: "domcontentloaded" });
 
   const card = page.locator(".browse-category-rail .category-card").nth(1);
   await expect(card).toBeVisible();
   const box = await card.boundingBox();
   expect(box, "category card should have a measurable box").not.toBeNull();
-  expect(box!.width, "category artwork card should nearly fill the phone width").toBeGreaterThan(viewportWidth * 0.9);
-  expect(box!.height, "category artwork card should be taller than the previous compact tile").toBeGreaterThanOrEqual(230);
+  expect(box!.width, "category artwork card should remain large enough to browse").toBeGreaterThan(viewportWidth * 0.72);
+  expect(box!.width, "category artwork card should leave a visible neighboring-card peek").toBeLessThan(viewportWidth * 0.85);
+  expect(box!.height, "category artwork card should keep a comfortable landscape height").toBeGreaterThan(160);
+  expect(box!.height, "category artwork card should avoid dominating the viewport").toBeLessThan(210);
+  expect(box!.width / box!.height, "category artwork card should be clearly rectangular").toBeGreaterThan(1.4);
+
+  const previous = await page.locator(".category-card-nav-prev").boundingBox();
+  const next = await page.locator(".category-card-nav-next").boundingBox();
+  const visibleCard = page.locator(".browse-category-rail .category-card").first();
+  const icon = await visibleCard.locator(".category-card-icon").boundingBox();
+  const label = await visibleCard.locator(".category-card-name").boundingBox();
+  expect(previous, "previous arrow should have a measurable box").not.toBeNull();
+  expect(next, "next arrow should have a measurable box").not.toBeNull();
+  expect(icon, "category icon should have a measurable box").not.toBeNull();
+  expect(label, "category label should have a measurable box").not.toBeNull();
+  const overlaps = (a: { x: number; y: number; width: number; height: number }, b: { x: number; y: number; width: number; height: number }) =>
+    a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+  for (const arrow of [previous!, next!]) {
+    expect(overlaps(arrow, icon!), "carousel arrows should not cover the category icon").toBe(false);
+    expect(overlaps(arrow, label!), "carousel arrows should not cover the category label").toBe(false);
+  }
 });
 
 test("search combobox exposes an operable listbox and closes with Escape", async ({ page }) => {
