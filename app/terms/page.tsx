@@ -25,8 +25,8 @@ export default function Terms() {
 
             <h2>What the website is</h2>
             <p>
-              The website introduces BROKA and lets you look at auctions and online stores. It is for viewing only. You
-              cannot bid, make an offer, message a seller or pay on the website; those actions are in the{" "}
+              The website introduces BROKA and lets you browse marketplace products and online stores. It is for viewing only.
+              You cannot make an offer, message a seller or pay on the website; those actions are in the{" "}
               <Link href="/download">BROKA app</Link>.
             </p>
 
@@ -34,8 +34,7 @@ export default function Terms() {
             <ul>
               <li>Item descriptions, photos, prices and locations are written by sellers, not by BROKA.</li>
               <li>
-                A listing shown on the website is not an offer to sell by BROKA, and a bid or price shown here may already
-                have changed. Prices and auction times update about once a minute.
+                A listing shown on the website is not an offer to sell by BROKA, and a price shown here may already have changed.
               </li>
               <li>Take care before you deal with anyone. Inspect items, and use the app&apos;s escrow for payment.</li>
             </ul>

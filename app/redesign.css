@@ -355,10 +355,8 @@ body { background-color: #05060d; }
 
 /* Detail surfaces, seller onboarding, forms, FAQs, and company cards. */
 .gallery-main { border-color: var(--c-rule); border-radius: 18px; background: rgba(14,17,32,.92); }
-.bidbox { border-color: rgba(159,143,255,.32); border-radius: 18px; background: linear-gradient(135deg, rgba(139,117,255,.12), rgba(84,215,233,.045)), rgba(9,12,25,.92); }
-.facts, .specs, .bids { border-color: var(--c-rule); border-radius: 14px; }
-.facts > div, .specs > div, .bids li { background: rgba(9,12,24,.92); }
-.bids li.top { background: rgba(139,117,255,.11); }
+.facts, .specs { border-color: var(--c-rule); border-radius: 14px; }
+.facts > div, .specs > div { background: rgba(9,12,24,.92); }
 .ccard, .dl-step, .listing-start-option, .sell-path-card, .account-card, .account-gate {
   border-color: var(--c-rule); border-radius: 18px; background: rgba(9,12,24,.88);
 }
@@ -864,7 +862,6 @@ body { background-color: #05060d; }
 .listing-v0-toolbar .browse-count { flex: 1 1 auto; min-width: 0; margin: 0; color: var(--c-text-2); font-size: 13px; }
 .listing-v0-toolbar .ftabs { flex: 0 1 auto; min-width: 0; margin: 0; }
 .listing-v0-toolbar .browse-sort { flex: 0 1 auto; }
-.auction-listing-toolbar .browse-count { flex: 1 1 auto; }
 .store-products-toolbar { margin-top: 12px; }
 .store-products-toolbar .ftabs { max-width: 100%; overflow-x: auto; scrollbar-width: none; }
 .store-products-toolbar .ftabs::-webkit-scrollbar { display: none; }
@@ -904,8 +901,6 @@ body { background-color: #05060d; }
   .listing-v0-toolbar .browse-count { font-size: 12px; }
   .listing-v0-toolbar .browse-sort { display: none; }
   .category-results-toolbar .mobile-filter-trigger { display: inline-flex; width: auto; min-height: 42px; flex: 0 0 auto; padding-inline: 11px; font-size: 12px; }
-  .auction-listing-toolbar { flex-wrap: wrap; }
-  .auction-listing-toolbar .ftabs { width: 100%; }
   .store-products-toolbar { align-items: flex-start; flex-direction: column; gap: 6px; }
   .store-products-toolbar .ftabs { width: 100%; }
   .store-cover { height: 138px; margin-top: 68px; }
@@ -1650,3 +1645,8 @@ body { background-color: #05060d; }
 @media (max-width: 900px) { .cx-hero { padding-top: calc(76px + 32px); } .cx-hero-grid { grid-template-columns: 1fr; } .cx-hero-copy { max-width: 720px; } .cx-hero-title { max-width: 11ch; } .cx-hero-visual { max-width: 660px; justify-self: center; margin-top: 8px; } .cx-proof-strip { grid-template-columns: repeat(2,1fr); } .cx-proof-item:nth-child(3), .cx-proof-item:nth-child(4) { border-top: 1px solid rgba(195,202,226,.1); } .cx-proof-item:nth-child(3) { border-left: 0; } .cx-market-header { gap: 18px; } }
 @media (max-width: 620px) { .cx-hero { min-height: auto; padding-bottom: 20px; } .cx-kicker { margin-bottom: 18px; font-size: 8px; } .cx-kicker span:last-of-type { display: none; } .cx-hero-title { font-size: clamp(43px,12vw,62px); } .cx-hero-sub { margin-top: 17px; font-size: 15px; } .cx-hero-actions { margin-top: 20px; } .cx-primary-action, .cx-secondary-action { min-height: 46px; padding-inline: 15px; font-size: 12px; } .cx-hero-note { align-items: flex-start; font-size: 10px; } .cx-intent-grid { grid-template-columns: 1fr; gap: 6px; margin-top: 22px; } .cx-intent-card { min-height: 56px; padding: 8px; } .cx-hero-visual { margin-top: 16px; } .cx-visual-topline { margin-inline: 2px; font-size: 7px; } .cx-core-frame { min-height: 390px; border-radius: 19px; } .cx-core-frame .zo { top: 41%; max-width: 360px; } .cx-signal-label { padding: 6px 7px; font-size: 7px; } .cx-signal-buyer { top: 17%; left: 3%; } .cx-signal-context { top: 10%; right: 3%; } .cx-signal-trust { display: none; } .cx-query-card { right: 10px; bottom: 10px; width: min(260px,78%); padding: 11px; } .cx-query-card p { margin: 12px 0 11px; font-size: 12px; } .cx-visual-footer { margin-inline: 2px; font-size: 7px; } .cx-proof-strip { margin-top: 22px; } .cx-proof-item { min-height: 64px; gap: 8px; padding: 10px 8px; } .cx-proof-mark { width: 29px; height: 29px; flex-basis: 29px; border-radius: 8px; } .cx-proof-item strong { font-size: 11px; } .cx-proof-item small { font-size: 8px; letter-spacing: .03em; } .cx-market-header { display: block; } .cx-market-header > p { margin-top: 14px !important; } .cx-market-footnote { display: grid; gap: 6px; font-size: 9px; } }
 @media (prefers-reduced-motion: reduce) { .cx-reveal { animation: none; } .cx-intent-card { transition: none; } }
+
+.listing-start-grid-single { grid-template-columns: minmax(0, 640px); justify-content: center; }
+@media (max-width: 700px) {
+  .listing-start-grid-single { grid-template-columns: 1fr; }
+}

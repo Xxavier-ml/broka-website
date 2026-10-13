@@ -44,40 +44,12 @@ export function parseUtc(iso: string | null | undefined): Date | null {
   return Number.isNaN(d.getTime()) ? null : d;
 }
 
-const dateTime = new Intl.DateTimeFormat("en-KE", {
-  day: "numeric",
-  month: "short",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-  timeZone: "Africa/Nairobi",
-});
-
-/** "29 Sept 2026, 15:30" in Nairobi time. */
-export function formatDateTime(iso: string | null | undefined): string | null {
-  const d = parseUtc(iso);
-  return d ? `${dateTime.format(d)} EAT` : null;
-}
-
 const monthYear = new Intl.DateTimeFormat("en-KE", { month: "long", year: "numeric", timeZone: "UTC" });
 
 /** "January 2025" */
 export function monthYearOf(iso: string | null | undefined): string | null {
   const d = parseUtc(iso);
   return d ? monthYear.format(d) : null;
-}
-
-/** "3d 4h", "2h 05m", "4m 12s", "38s": the two largest units, for a countdown. */
-export function formatCountdown(totalSeconds: number): string {
-  const s = Math.max(0, Math.floor(totalSeconds));
-  const d = Math.floor(s / 86400);
-  const h = Math.floor((s % 86400) / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  if (d > 0) return `${d}d ${h}h`;
-  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m`;
-  if (m > 0) return `${m}m ${String(sec).padStart(2, "0")}s`;
-  return `${sec}s`;
 }
 
 export function plural(n: number, word: string): string {
@@ -97,18 +69,6 @@ export function clip(text: string, max = 160): string {
 export function conditionLabel(condition: string | null | undefined): string | null {
   const c = condition?.trim().toLowerCase();
   return c ? c[0]!.toUpperCase() + c.slice(1) : null;
-}
-
-/**
- * A bidder's name for a public page: "Jane Wanjiru" becomes "J*** W.".
- * Bid history is public on the API, but a full name next to a price on an
- * indexed page is more than a visitor needs to see.
- */
-export function maskName(name: string | null | undefined): string {
-  const parts = (name ?? "").trim().split(/\s+/).filter(Boolean);
-  if (!parts.length) return "Bidder";
-  const first = `${parts[0]![0]!.toUpperCase()}***`;
-  return parts.length > 1 ? `${first} ${parts[parts.length - 1]![0]!.toUpperCase()}.` : first;
 }
 
 /** Turns an attribute key like "screen_size" into "Screen size". */

@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Download, Gavel, MessageCircle, ShieldCheck, Sparkles, Store, Smartphone } from "lucide-react";
+import { Download, MessageCircle, Search, ShieldCheck, Sparkles, Store, Smartphone } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
 import { APP_DOWNLOAD_URL, CONTACT, mailto } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Get the BROKA app",
   description:
-    "Download the BROKA app for Android to bid in auctions, negotiate with Zeno, open your own online store and pay safely through escrow.",
+    "Download the BROKA app for Android to explore products, negotiate with Zeno, open your own online store and pay safely through escrow.",
   alternates: { canonical: "https://www.broka.co.ke/download" },
 };
 
 const FEATURES = [
-  { icon: Gavel, title: "Bid in live auctions", body: "Place bids, follow the countdown and get updates as the bidding moves." },
+  { icon: Search, title: "Explore products", body: "Browse marketplace categories and compare useful seller and product context." },
   { icon: Sparkles, title: "Negotiate with Zeno", body: "BROKA's AI broker helps both sides reach a fair price, and coaches you privately." },
   { icon: ShieldCheck, title: "Pay through escrow", body: "Your money is held safely until you confirm you have what you paid for." },
   { icon: MessageCircle, title: "Chat and call sellers", body: "Talk to sellers inside BROKA, without sharing your number." },
@@ -25,7 +25,7 @@ export default function DownloadPage() {
     <>
       <PageHero
         eyebrow="Get the app"
-        headline="Bid, buy and sell — from your phone."
+        headline="Browse, buy and sell — from your phone."
         sub="The website is for browsing. Everything that involves an account, a conversation or money happens in the BROKA app."
         atmosphere="atm-violet"
       >
@@ -62,7 +62,7 @@ export default function DownloadPage() {
             </li>
             <li className="dl-step">
               <h3>Open BROKA and sign up</h3>
-              <p>Create your account, then browse, bid, chat with sellers and let Zeno help you get a better deal.</p>
+              <p>Create your account, then browse, chat with sellers and let Zeno help you get a better deal.</p>
             </li>
           </ol>
           <p className="dl-note" style={{ margin: "22px auto 0", textAlign: "center" }}>
@@ -103,8 +103,8 @@ export default function DownloadPage() {
             ))}
           </div>
           <div style={{ textAlign: "center", marginTop: 44 }}>
-            <Link href="/auctions" className="btn btn-ghost" style={{ marginRight: 10 }}>
-              Browse auctions
+            <Link href="/browse" className="btn btn-ghost" style={{ marginRight: 10 }}>
+              Browse marketplace
             </Link>
             <Link href="/stores" className="btn btn-ghost">
               Browse stores

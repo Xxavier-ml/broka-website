@@ -16,7 +16,7 @@ export function Media({
   image: ResolvedImage | null;
   category: string | null | undefined;
   alt: string;
-  /** Overrides the category emoji (an auction with no category shows a gavel). */
+  /** Optional category icon override for the fallback tile. */
   emoji?: string;
   sizes?: string;
 }) {

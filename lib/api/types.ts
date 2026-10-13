@@ -1,6 +1,6 @@
 // The shapes the BROKA API returns, as far as the website reads them.
-// Mirrors backend/api/domains/{listings,stores,auctions} in the main
-// repository (`_listing_dict`, `_store_dict`, AuctionsService). Only public
+// Mirrors backend/api/domains/{listings,stores} in the main
+// repository (`_listing_dict`, `_store_dict`). Only public
 // fields are listed: the website is read-only and never sees private ones.
 
 /** One stored image in three sizes (URLs, or paths on the API). */
@@ -30,11 +30,9 @@ export interface Listing {
   location_name: string | null;
   location_county: string | null;
   location_subcounty: string | null;
-  listing_type: "direct" | "auction" | string;
+  listing_type: string;
   status: string;
   views: number;
-  target_bidders: number | null;
-  auction_date: string | null;
   photos: ImageSizes[];
   cover: ImageSizes | null;
   /** Legacy base64 photos, comma-separated, for listings not converted yet. */
@@ -64,46 +62,6 @@ export interface Listing {
   store_id: string | null;
   store_name: string | null;
   store_slug: string | null;
-}
-
-export type AuctionStatus = "upcoming" | "live" | "ended";
-export type AuctionOutcome = "won" | "no_bids" | "reserve_not_met" | "unpaid" | null;
-
-/** The auction grid's row (GET /auctions). */
-export interface AuctionSummary {
-  id: string;
-  listing_id: string;
-  name: string;
-  location_name: string | null;
-  target_bidders: number | null;
-  auction_date: string | null;
-  status: AuctionStatus;
-  current_bid: number | null;
-  bid_count: number;
-  min_bid_increment: number | null;
-  min_next_bid: number | null;
-  starting_price: number | null;
-  starts_at: string | null;
-  ends_at: string | null;
-  server_time: string;
-  seconds_remaining: number | null;
-  has_reserve: boolean;
-  reserve_met: boolean | null;
-  outcome: AuctionOutcome;
-  winning_amount: number | null;
-}
-
-export interface Bid {
-  bidder_name: string;
-  amount: number;
-  created_at: string | null;
-}
-
-/** One auction (GET /auctions/{id}). */
-export interface AuctionDetail extends Omit<AuctionSummary, "winning_amount"> {
-  winning_amount: number | null;
-  winner_name: string | null;
-  bid_history: Bid[];
 }
 
 export interface StoreOwner {

@@ -32,7 +32,6 @@ export const navLinks: NavGroup[] = [
     href: "/browse",
     children: [
       { label: "Browse all products", href: "/browse", description: "Every listing on BROKA, by category" },
-      { label: "Auction House", href: "/auctions", description: "Live, ending soon and upcoming auctions" },
       { label: "Online stores", href: "/stores", description: "Seller storefronts and what they sell" },
     ],
   },
@@ -69,7 +68,6 @@ export const footerNav: { title: string; links: NavLink[] }[] = [
     title: "Marketplace",
     links: [
       { label: "Browse all products", href: "/browse" },
-      { label: "Auction House", href: "/auctions" },
       { label: "Online stores", href: "/stores" },
     ],
   },

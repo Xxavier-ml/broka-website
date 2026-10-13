@@ -1,5 +1,5 @@
 /* ================================================================
-   MARKETPLACE — auctions, online stores and their detail pages.
+   MARKETPLACE — product listings, online stores and their detail pages.
    Uses the tokens from globals.css; nothing here restyles an existing
    class. Cards are translucent glass so the live network shows through.
    ================================================================ */
@@ -326,8 +326,6 @@
 .lcard-price-label { font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-text-3); }
 .lcard-price-amount { font-family: var(--f-display); font-size: 21px; font-weight: 800; letter-spacing: -0.03em; color: var(--c-v-soft); }
 .lcard-meta { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12.5px; color: var(--c-text-2); }
-.lcard-time strong { color: var(--c-text-1); font-weight: 700; }
-.lcard-time[data-urgent] strong, .bidbox-time[data-urgent] strong { color: #FBBF24; }
 .lcard-bids { display: inline-flex; align-items: center; gap: 5px; color: var(--c-text-3); }
 .lcard-place { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--c-text-3); }
 .lcard-outcome { font-size: 12px; font-weight: 600; color: var(--c-a-light); }
@@ -475,13 +473,6 @@
 .gallery-controls span { min-width: 38px; text-align: center; color: var(--c-text-2); font: 11px var(--f-ui); }
 .gallery-hint { position: absolute; left: 12px; bottom: 16px; display: inline-flex; align-items: center; gap: 5px; color: rgba(255,255,255,.75); font: 11px var(--f-ui); text-shadow: 0 1px 8px #000; pointer-events: none; }
 
-.bidbox { display: grid; gap: 4px; padding: 22px 24px; border: 1px solid var(--c-rule-v); border-radius: 18px; background: linear-gradient(135deg, rgba(107, 86, 255, 0.16), rgba(34, 201, 240, 0.06)), rgba(7, 10, 30, 0.7); }
-.bidbox-label { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--c-text-3); }
-.bidbox-amount { font-family: var(--f-display); font-size: clamp(30px, 4vw, 44px); font-weight: 800; letter-spacing: -0.04em; line-height: 1.05; }
-.bidbox-time { display: inline-flex; align-items: center; gap: 6px; font-size: 14px; color: var(--c-text-2); margin-top: 6px; }
-.bidbox-time strong { color: var(--c-text-1); }
-.bidbox-outcome { font-size: 14px; font-weight: 600; color: var(--c-a-light); margin-top: 6px; }
-.bidbox-note { font-size: 12.5px; color: var(--c-text-3); margin-top: 4px; }
 
 .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; border: 1px solid var(--c-rule); border-radius: 16px; overflow: hidden; background: var(--c-rule); }
 .facts > div { padding: 14px 16px; background: rgba(7, 10, 30, 0.78); }
@@ -496,14 +487,6 @@
 .specs dt { font-size: 13px; color: var(--c-text-3); }
 .specs dd { font-size: 14px; color: var(--c-text-1); overflow-wrap: anywhere; }
 
-.bids { display: grid; border: 1px solid var(--c-rule); border-radius: 16px; overflow: hidden; }
-.bids li { display: grid; grid-template-columns: 28px 1fr auto auto; gap: 14px; align-items: center; padding: 12px 18px; background: rgba(7, 10, 30, 0.6); font-size: 13.5px; }
-.bids li + li { border-top: 1px solid var(--c-rule); }
-.bids li.top { background: rgba(107, 86, 255, 0.12); }
-.bids-rank { color: var(--c-text-3); font-size: 12px; }
-.bids-amount { font-family: var(--f-display); font-weight: 700; }
-.bids-when { color: var(--c-text-3); font-size: 12px; }
-.bids-note { margin-top: 8px; }
 
 .seller { padding: 22px; border: 1px solid var(--c-rule); border-radius: 18px; background: rgba(7, 10, 30, 0.72); }
 .seller-row { display: flex; align-items: center; gap: 14px; }
@@ -574,8 +557,6 @@
   .sform-btn { padding: 9px 14px; }
   .sform-lg .sform-btn { padding: 11px 18px; }
   .appcta-banner { grid-template-columns: 1fr; padding: 22px; gap: 16px; }
-  .bids li { grid-template-columns: 24px 1fr auto; }
-  .bids-when { display: none; }
   .specs > div { grid-template-columns: 1fr; gap: 2px; }
   .live-head { flex-direction: column; align-items: flex-start; gap: 6px; }
   .detail-top { padding-top: calc(74px + 20px); }

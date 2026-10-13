@@ -75,7 +75,6 @@ export default async function StoresPage({ searchParams }: { searchParams: Searc
                   ? [{ label: "Clear search", href: "/stores" }]
                   : [
                       { label: "Browse all products", href: "/browse" },
-                      { label: "See the Auction House", href: "/auctions" },
                       { label: "Get the app", href: "/download" },
                     ]
               }

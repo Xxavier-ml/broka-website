@@ -2,26 +2,19 @@ import Link from "next/link";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { FlowMesh } from "@/components/visuals/FlowMesh";
 import { HomeHero } from "@/components/home/HomeHero";
+import { HomeDiscovery } from "@/components/home/HomeDiscovery";
 import { BrandMotion } from "@/components/home/BrandMotion";
 import { CommerceNarrative } from "@/components/home/CommerceNarrative";
-import { LiveMarketplace } from "@/components/marketplace/LiveMarketplace";
-import { getHomeData } from "@/lib/api/home";
-
-// The auctions, stores and featured listings come from the BROKA API; rebuild
-// from fresh data every minute rather than once at deploy time.
-export const revalidate = 60;
 
 /**
- * The home page is read as one connected transaction:
- * invitation → live market → discovery → deal flow → trust → seller → proof → CTA.
- * The supporting pages retain the deeper versions of each idea.
+ * The home page introduces BROKA, points visitors toward marketplace discovery,
+ * and then explains the platform's approach to trust and commerce.
  */
-export default async function Home() {
-  const market = await getHomeData();
+export default function Home() {
   return (
     <>
-      <HomeHero data={market} />
-      <LiveMarketplace data={market} />
+      <HomeHero />
+      <HomeDiscovery />
       <CommerceNarrative />
 
       <section className="sec atm-violet-center has-field" aria-labelledby="cta-h">

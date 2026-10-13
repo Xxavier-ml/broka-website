@@ -2,9 +2,9 @@
 
 ## Goal
 
-Turn the existing BROKA public website into a premium, conversion-first entry point for buyers, sellers, and curious product visitors while preserving the existing connected-network background, route contracts, real marketplace data, app boundary, accessibility behavior, and first-party brand assets.
+Turn the existing BROKA public website into a premium, conversion-first entry point for buyers, sellers, and curious product visitors while preserving the connected-network background, active marketplace routes, app boundary, accessibility behavior, and first-party brand assets.
 
-The primary conversion action is to move a visitor into the app or live marketplace. The homepage should make the choice obvious within the first screen: **Find a deal**, **Sell with context**, or **Meet Zeno**. The marketplace preview should use real API-backed inventory whenever available and remain honest when data is unavailable.
+The primary conversion action is to move a visitor into the app or marketplace. The homepage should make the choice obvious within the first screen: **Explore the marketplace**, **Sell with context**, or **Meet Zeno**. Homepage category artwork is illustrative and links into the API-backed product catalogue, where current inventory belongs.
 
 ## Research-backed decisions
 
@@ -17,14 +17,14 @@ The primary conversion action is to move a visitor into the app or live marketpl
 1. **Homepage conversion architecture**
    - Replace the current welcome-first hero with a sharper promise and three clear routes: buyer, seller, and Zeno.
    - Keep the existing Zeno orbit and network field, but frame it as a live intelligence interface instead of a purely atmospheric illustration.
-   - Bring a live marketplace proof rail into the first meaningful scroll: real featured listing cards, auctions/stores when returned by the API, and honest empty/unavailable states.
+   - Keep the homepage free of live product cards; use original category artwork as a visual gateway into marketplace browsing.
    - Add a compact trust strip based only on real product capabilities already present in the app/site: escrow/protected payments, seller context, Zeno assistance, and mobile-first access.
    - Keep the deeper narrative sections, but tighten them around outcomes and scannable decision points.
 
 2. **Marketplace conversion layer**
-   - Retain all existing browse/store/auction/listing routes and query behavior.
+   - Retain active browse, store, listing and search query behavior.
    - Upgrade the marketplace preview, browse hero, store directory, and product-card hierarchy so photography, KES price, seller/location context, and the app handoff are the visual priority.
-   - Make the app boundary explicit at the moment of intent: browse remains read-only; negotiating, messaging, bidding, and paying happen in the app.
+   - Make the app boundary explicit at the moment of intent: browse remains read-only; negotiating, messaging and paying happen in the app.
    - Preserve live-vs-simulated disclosures and never invent marketplace counts, ratings, testimonials, or performance metrics.
 
 3. **Visual system**
@@ -47,7 +47,7 @@ The primary conversion action is to move a visitor into the app or live marketpl
 - `app/page.tsx`: homepage composition and conversion ordering.
 - `components/home/HomeHero.tsx`: first-screen promise, route choices, Zeno intelligence panel, and truthful stats.
 - `components/home/CommerceNarrative.tsx`: outcome-led journey, trust, and seller sections.
-- `components/marketplace/LiveMarketplace.tsx`: proof rail and app handoff treatment.
+- `components/home/HomeDiscovery.tsx`: original category artwork and links into marketplace browsing.
 - `app/redesign.css`: reversible presentation layer for homepage and marketplace surfaces; existing business logic remains untouched.
 - `app/globals.css`, `app/home.css`, `app/marketplace.css`: only targeted token/responsive corrections if needed after visual review.
 - `public/manus-routes.json`: complete static page route manifest for the current App Router route set.
@@ -57,13 +57,13 @@ The primary conversion action is to move a visitor into the app or live marketpl
 ## Constraints preserved
 
 - Existing background color and connected network remain.
-- Existing route paths, navigation labels, form names, query strings, API data contracts, legal language, SEO metadata, and accessibility semantics remain.
-- No new purchase, bid, listing, chat, payment, or authentication behavior is added to the marketing site.
+- Active route paths, navigation labels, form names, query strings, product data contracts, legal language, SEO metadata, and accessibility semantics remain.
+- No new purchase, listing, chat, payment, or authentication behavior is added to the marketing site.
 - All claims and visible marketplace signals stay grounded in existing data or clearly marked as simulated.
 
 ## Delivery
 
 - Run dependency install, typecheck/build, and the existing accessibility suite.
 - Start the local Next server and inspect desktop/mobile rendering at the homepage and key marketplace routes.
-- Commit the finished source and push it to `main` on `Xxavier-ml/broka-website`.
+- Commit the finished source on a review branch and open a pull request for `Xxavier-ml/broka-website`.
 - Produce a source bundle zip as a backup deliverable, excluding `.git` and dependency caches.
