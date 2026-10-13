@@ -60,6 +60,19 @@ test("homepage shows category artwork instead of live product cards", async ({ p
     .toHaveAttribute("href", "/browse/home-and-furniture");
 });
 
+test("mobile marketplace category artwork uses near-full-width cards", async ({ page }) => {
+  const viewportWidth = 375;
+  await page.setViewportSize({ width: viewportWidth, height: 812 });
+  await page.goto("/browse", { waitUntil: "domcontentloaded" });
+
+  const card = page.locator(".browse-category-rail .category-card").nth(1);
+  await expect(card).toBeVisible();
+  const box = await card.boundingBox();
+  expect(box, "category card should have a measurable box").not.toBeNull();
+  expect(box!.width, "category artwork card should nearly fill the phone width").toBeGreaterThan(viewportWidth * 0.9);
+  expect(box!.height, "category artwork card should be taller than the previous compact tile").toBeGreaterThanOrEqual(230);
+});
+
 test("search combobox exposes an operable listbox and closes with Escape", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.goto("/browse", { waitUntil: "domcontentloaded" });

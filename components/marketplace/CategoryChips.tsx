@@ -138,7 +138,7 @@ export function CategoryChips({
               {artwork && (
                 <picture>
                   {artwork.srcSet && (
-                    <source type="image/webp" srcSet={artwork.srcSet} sizes="(max-width: 620px) 72vw, (max-width: 900px) 33vw, 25vw" />
+                    <source type="image/webp" srcSet={artwork.srcSet} sizes="(max-width: 620px) 94vw, (max-width: 900px) 36vw, 25vw" />
                   )}
                   <img src={artwork.fallback} alt="" loading="lazy" decoding="async" />
                 </picture>
