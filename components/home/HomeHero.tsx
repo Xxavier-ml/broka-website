@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Check, CircleDollarSign, Search, ShieldCheck, Sparkles, Store, UserRound } from "lucide-react";
+import { ArrowUpRight, Check, MessageCircle, Search, Sparkles, Store, UserRound } from "lucide-react";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
 
@@ -43,7 +43,7 @@ export function HomeHero() {
             <em>in the market.</em>
           </h1>
           <p className="cx-hero-sub cx-reveal" style={{ ["--d" as string]: "0.16s" }}>
-            BROKA connects buyers and sellers with market context, Zeno intelligence and protected payment rails — so the next step is easier to see and easier to trust.
+            BROKA helps buyers discover listings, compare seller context and see clearer next steps with Zeno.
           </p>
           <div className="cx-hero-actions cx-reveal" style={{ ["--d" as string]: "0.24s" }}>
             <Link href="/browse" className="btn btn-primary cx-primary-action">
@@ -54,7 +54,7 @@ export function HomeHero() {
             </Link>
           </div>
           <p className="cx-hero-note cx-reveal" style={{ ["--d" as string]: "0.32s" }}>
-            <ShieldCheck size={14} aria-hidden="true" /> Browse the marketplace first. Move to the app when you are ready to negotiate, chat or pay.
+            <MessageCircle size={14} aria-hidden="true" /> Browse listings, compare the details, then contact the seller directly.
           </p>
 
           <div className="cx-intent-grid cx-reveal" style={{ ["--d" as string]: "0.4s" }} aria-label="Choose your starting point">
@@ -88,7 +88,7 @@ export function HomeHero() {
             <ZenoOrbit />
             <span className="cx-signal-label cx-signal-buyer"><b>01</b> BUYER INTENT</span>
             <span className="cx-signal-label cx-signal-context"><b>02</b> MARKET CONTEXT</span>
-            <span className="cx-signal-label cx-signal-trust"><b>03</b> TRUST LAYER</span>
+            <span className="cx-signal-label cx-signal-trust"><b>03</b> SELLER CONTEXT</span>
             <div className="cx-query-card">
               <div className="cx-query-heading"><span className="cx-live-dot" /> SIMULATED PRODUCT MOMENT <span>ZEN/01</span></div>
               <p>I need a 55-inch TV under <strong>KSh 50,000</strong></p>
@@ -100,7 +100,7 @@ export function HomeHero() {
             </div>
           </div>
           <div className="cx-visual-footer">
-            <span><CircleDollarSign size={14} aria-hidden="true" /> context before commitment</span>
+            <span><Search size={14} aria-hidden="true" /> details before contact</span>
             <span>BUYER <b>↔</b> SELLER</span>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function HomeHero() {
       <div className="wrap cx-proof-strip cx-reveal" style={{ ["--d" as string]: "0.48s" }} aria-label="BROKA product signals">
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-violet"><Search size={16} aria-hidden="true" /></span><span><strong>21 categories</strong><small>to explore</small></span></div>
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-cyan"><Store size={16} aria-hidden="true" /></span><span><strong>Built in Kenya</strong><small>for local commerce</small></span></div>
-        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-amber"><ShieldCheck size={16} aria-hidden="true" /></span><span><strong>Protected</strong><small>payment layer</small></span></div>
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-amber"><MessageCircle size={16} aria-hidden="true" /></span><span><strong>Seller context</strong><small>in view</small></span></div>
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-green"><UserRound size={16} aria-hidden="true" /></span><span><strong>Human-led</strong><small>AI-assisted decisions</small></span></div>
         <SignalLine />
       </div>

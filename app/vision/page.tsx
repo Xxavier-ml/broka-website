@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 const principles = [
   { icon: "📱", title: "Mobile-first by design", body: "Commerce in East Africa moves through mobile. BROKA is built around that reality — not retrofitted to it after the fact." },
   { icon: "💬", title: "Local language commerce", body: "Intelligent commerce should work in Swahili, Kikuyu and other local languages — not just in English. This is a core long-term direction." },
-  { icon: "💳", title: "Local payment infrastructure", body: "M-Pesa and local payment rails are the infrastructure most people already use. BROKA works with them, not around them." },
+  { icon: "💳", title: "Local commerce context", body: "Local payment methods are part of everyday commerce. BROKA does not process buyer-seller payments; buyers and sellers arrange payment directly." },
   { icon: "🎙️", title: "Voice interaction", body: "Not everyone is a fluent smartphone user. Voice-based interaction with Zeno is part of the accessibility vision for the longer term." },
   { icon: "🤝", title: "Informal market fit", body: "Most commerce in East Africa happens informally. BROKA is designed for how real people actually trade — not for a sanitised digital marketplace ideal." },
   { icon: "🌍", title: "Regional trust infrastructure", body: "Trust systems that work across borders, currencies and communities — infrastructure that doesn't exist yet but that commerce across the region needs." },
@@ -22,7 +22,7 @@ export default function Vision() {
       <PageHero
         eyebrow="The long-term vision"
         headline="Commerce should speak your language."
-        sub="Intelligent commerce should not be the exclusive domain of highly technical or urban users. BROKA is designed to be accessible to anyone who buys or sells — regardless of how they access technology, what language they speak, or where they are."
+        sub="Intelligent commerce should not be the exclusive domain of highly technical or urban users. BROKA is designed to help people discover listings and seller context, whatever device they use or language they speak."
         atmosphere="atm-amber"
       />
 
@@ -44,7 +44,7 @@ export default function Vision() {
                 tier: "kenya",
                 label: "Where we start",
                 place: "Kenya",
-                body: "Kenyan commerce — its patterns, languages, payment systems and informal networks — shapes everything BROKA is designed around. M-Pesa, Nairobi's informal markets, the culture of negotiation and trust: this is the foundation.",
+              body: "Kenyan commerce — its patterns, languages and informal networks — shapes everything BROKA is designed around. Buyers and sellers agree payment directly with each other; BROKA focuses on discovery and seller context.",
               },
               {
                 tier: "africa",
@@ -77,7 +77,7 @@ export default function Vision() {
           <div className="sec-header-center">
             <span className="t-eyebrow t-eyebrow-amber">Accessible commerce</span>
             <h2 className="t-h2" id="access-h">What we mean by accessible.</h2>
-            <p className="t-body">Accessibility in commerce is not just about UI. It is about language, payment method, device type, and whether the system understands the way you actually trade.</p>
+            <p className="t-body">Accessibility in commerce is not just about UI. It is about language, device type and whether useful product and seller information is easy to understand.</p>
           </div>
           <div className="vision-principles">
             {principles.map((p) => (

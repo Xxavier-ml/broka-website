@@ -15,11 +15,12 @@ export default function Privacy() {
       <section className="sec-sm bg-1">
         <div className="wrap">
           <div className="legal">
-            <p className="legal-updated">Last updated 29 September 2026</p>
+            <p className="legal-updated">Last updated 14 October 2026</p>
 
             <p>
-              This policy covers the BROKA website at www.broka.co.ke. The BROKA mobile app handles more information
-              (your account, chats, deals and payments) and is described where you sign up in the app.
+              This policy covers the BROKA website at www.broka.co.ke. The mobile app handles account details, chats,
+              saved listings and seller tools; its privacy information is provided in the app. BROKA does not process
+              buyer-seller payments.
             </p>
 
             <h2>What we collect on this website</h2>

@@ -1,20 +1,20 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Download, MessageCircle, Search, ShieldCheck, Sparkles, Store, Smartphone } from "lucide-react";
+import { Download, Handshake, MessageCircle, Search, Sparkles, Store, Smartphone } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
 import { APP_DOWNLOAD_URL, CONTACT, mailto } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Get the BROKA app",
   description:
-    "Download the BROKA app for Android to explore products, negotiate with Zeno, open your own online store and pay safely through escrow.",
+    "Download the BROKA app for Android to explore listings, connect with sellers, use Zeno for context, and manage your own store.",
   alternates: { canonical: "https://www.broka.co.ke/download" },
 };
 
 const FEATURES = [
   { icon: Search, title: "Explore products", body: "Browse marketplace categories and compare useful seller and product context." },
-  { icon: Sparkles, title: "Negotiate with Zeno", body: "BROKA's AI broker helps both sides reach a fair price, and coaches you privately." },
-  { icon: ShieldCheck, title: "Pay through escrow", body: "Your money is held safely until you confirm you have what you paid for." },
+  { icon: Sparkles, title: "Think clearly with Zeno", body: "Compare listing details, clarify what matters to you and prepare questions before contacting a seller." },
+  { icon: Handshake, title: "Arrange directly", body: "BROKA helps you discover and connect. Buyers and sellers agree payment, delivery and final terms directly; BROKA does not process or hold payments." },
   { icon: MessageCircle, title: "Chat and call sellers", body: "Talk to sellers inside BROKA, without sharing your number." },
   { icon: Store, title: "Open your own store", body: "Set up an online store with its own link and add products in minutes." },
   { icon: Smartphone, title: "Sell from your phone", body: "List an item with photos, let Zeno help with the price, and reach buyers across Kenya." },
@@ -25,8 +25,8 @@ export default function DownloadPage() {
     <>
       <PageHero
         eyebrow="Get the app"
-        headline="Browse, buy and sell — from your phone."
-        sub="The website is for browsing. Everything that involves an account, a conversation or money happens in the BROKA app."
+        headline="Browse, connect and sell — from your phone."
+        sub="The app adds account and conversation features. Buyers and sellers arrange any purchase, payment and delivery directly with each other."
         atmosphere="atm-violet"
       >
         <div className="dl-hero-actions">

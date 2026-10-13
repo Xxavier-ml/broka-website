@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Handshake, MapPin, ShieldCheck, Truck, Eye, Tag, ChevronLeft } from "lucide-react";
+import { Handshake, MapPin, Truck, Eye, Tag, ChevronLeft } from "lucide-react";
 import { getListing } from "@/lib/api/listings";
 import { coverImage, galleryImages } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
@@ -92,7 +92,7 @@ export default async function ListingPage({ params }: Props) {
           <div className="detail-app-toolbar">
             <Link href="/browse" className="detail-app-back"><ChevronLeft size={16} aria-hidden="true" /> Browse marketplace</Link>
             <span className="detail-app-kicker">BROKA / LISTING DETAIL</span>
-            <span className="detail-app-sale-badge">DIRECT SALE</span>
+            <span className="detail-app-sale-badge">MARKETPLACE LISTING</span>
           </div>
           <div className="detail-grid">
             <Gallery images={images} alt={l.name} fallback={<Media image={null} category={l.category} alt={l.name} />} />
@@ -119,7 +119,7 @@ export default async function ListingPage({ params }: Props) {
                   <div className="detail-term detail-term-price">
                     <span className="detail-term-label"><Handshake size={15} aria-hidden="true" /> PRICE</span>
                     <strong>{l.price_negotiable ? "Negotiable" : "Fixed price"}</strong>
-                    <p>{l.price_negotiable ? "Make an offer in the BROKA app" : "Seller's asking price"}</p>
+                    <p>{l.price_negotiable ? "Contact the seller to discuss price" : "Seller's asking price"}</p>
                     <b>{formatUnitPrice(l.price, l.price_unit)}</b>
                   </div>
                   <div className="detail-term detail-term-delivery">
@@ -136,7 +136,6 @@ export default async function ListingPage({ params }: Props) {
                     ...(l.quantity && l.quantity > 1 ? [{ label: "Available", value: `${l.quantity}${l.price_unit ? ` ${l.price_unit}s` : ""}` }] : []),
                     ...(condition ? [{ label: "Condition", value: condition }] : []),
                     { label: "Category", value: <><Tag size={13} aria-hidden="true" /> {l.category}</> },
-                    { label: "Trust", value: <><ShieldCheck size={13} aria-hidden="true" /> Escrow protected</> },
                   ]}
                 />
               </div>

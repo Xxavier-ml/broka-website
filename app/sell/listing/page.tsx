@@ -17,7 +17,7 @@ export default function CreateListingPage() {
           <Link href="/account?next=/sell/listing" className="card listing-start-option">
             <span className="sell-path-icon"><Tag size={21} /></span>
             <h2 className="t-h4">Fixed-price product</h2>
-            <p className="t-body">Set a price, explain what you are selling, and let buyers send an offer or move toward a purchase.</p>
+            <p className="t-body">Set a price, explain what you are selling, and help interested buyers find the listing and contact you directly.</p>
             <span className="preview-link">Continue to seller account →</span>
           </Link>
         </div>

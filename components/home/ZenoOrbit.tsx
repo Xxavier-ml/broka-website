@@ -169,9 +169,9 @@ export function ZenoOrbit() {
             <Sparkles size={14} /> Zeno
           </span>
           <span className="zo-bubble-text">
-            Finds. Negotiates.{" "}
+            Finds. Clarifies.{" "}
             <br />
-            Gets you better deals.
+            Helps you decide.
           </span>
         </div>
       </div>

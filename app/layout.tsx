@@ -25,18 +25,18 @@ const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variabl
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.broka.co.ke"),
   title: { default: "BROKA — The Future of Intelligent Commerce", template: "%s | BROKA" },
-  description: "Welcome to BROKA — the future of intelligent commerce. Discover, understand and negotiate better deals with AI-powered tools built in Kenya.",
-  keywords: ["BROKA","intelligent commerce","AI","marketplace","Kenya","East Africa","Zeno","negotiation"],
+  description: "Discover marketplace products and stores in Kenya, compare seller context, and use Zeno for clearer decisions.",
+  keywords: ["BROKA","intelligent commerce","AI","marketplace","Kenya","East Africa","Zeno","seller context"],
   authors: [{ name: "BROKA" }],
   openGraph: {
     title: "BROKA — The Future of Intelligent Commerce",
-    description: "Welcome to BROKA — intelligent discovery, fairer negotiation and trusted commerce, built in Kenya.",
+    description: "BROKA helps people discover marketplace listings, compare seller context and connect directly with sellers in Kenya.",
     url: "https://www.broka.co.ke/",
     siteName: "BROKA",
     type: "website",
     locale: "en_KE",
   },
-  twitter: { card: "summary_large_image", title: "BROKA — The Future of Intelligent Commerce", description: "Welcome to BROKA — intelligent commerce, built in Kenya." },
+  twitter: { card: "summary_large_image", title: "BROKA — The Future of Intelligent Commerce", description: "Discover listings, compare seller context and connect directly with sellers in Kenya." },
   // "./" resolves to each page's own address. A fixed home-page URL here was inherited by
   // every page, telling search engines that all of them are duplicates of the home page.
   alternates: { canonical: "./" },
@@ -59,7 +59,7 @@ const organization = {
   url: SITE_URL,
   logo: `${SITE_URL}/assets/broka-logo.png`,
   description:
-    "BROKA is an intelligent commerce platform connecting buyers and sellers in Kenya, with AI-assisted negotiation and escrow-protected payments.",
+    "BROKA helps people in Kenya discover marketplace listings and compare seller context. Buyers and sellers arrange purchases and payments directly; BROKA does not process or hold payments.",
   email: CONTACT.adminEmail,
   telephone: CONTACT.phone,
   address: { "@type": "PostalAddress", addressLocality: CONTACT.city, addressCountry: "KE" },

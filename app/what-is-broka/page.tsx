@@ -4,7 +4,7 @@ import { PageHero } from "@/components/sections/PageHero";
 
 export const metadata: Metadata = {
   title: "What is BROKA",
-  description: "BROKA is an intelligent commerce platform connecting buyers and sellers with AI-assisted discovery, negotiation and trust tools built in.",
+  description: "BROKA helps buyers discover listings, compare seller context and connect directly. Buyers and sellers arrange purchases and payments themselves.",
 };
 
 export default function WhatIsBroka() {
@@ -13,7 +13,7 @@ export default function WhatIsBroka() {
       <PageHero
         eyebrow="What is BROKA"
         headline="Commerce intelligence, not just a marketplace."
-        sub="BROKA is an intelligent commerce platform designed to connect buyers and sellers more directly — with AI-assisted discovery, negotiation and trust built into the experience from the ground up."
+        sub="BROKA helps buyers discover listings, compare useful seller and product context, and connect directly with sellers. It does not process or hold buyer-seller payments."
         atmosphere="atm-violet"
       >
         <Link href="/how-it-works" className="btn btn-primary">See how it works</Link>
@@ -66,7 +66,7 @@ export default function WhatIsBroka() {
                 <div>
                   <p className="wib-col-label new">BROKA model</p>
                   <div className="wib-items">
-                    {["Direct buyer–seller connection", "AI provides shared context", "Transparent pricing assistance", "Trust built into the platform", "Reduced friction by design", "Dispute resolution layer"].map((i) => (
+                    {["Direct buyer–seller contact", "AI-assisted discovery", "Seller-provided price context", "Product details in one place", "Reduced search friction", "Payments arranged by the parties"].map((i) => (
                       <div key={i} className="wib-item new">
                         <span style={{ color: "var(--c-v-light)" }}>+</span> {i}
                       </div>
@@ -90,15 +90,15 @@ export default function WhatIsBroka() {
           <div className="pillars-grid">
             {[
               { num: "01", title: "Discover", body: "Find products, sellers and opportunities that match what you actually need — not just what happens to be listed. Context-aware search, seller profiles and relevant market information.", badge: "Live" },
-              { num: "02", title: "Understand", body: "Get useful context about products, sellers and deals before committing. Better information on both sides leads to better decisions for everyone.", badge: "Live" },
-              { num: "03", title: "Negotiate", body: "Zeno can assist the negotiation process — helping buyers frame requests, providing sellers with context, and helping both sides move toward a fair agreement.", badge: "Building" },
-              { num: "04", title: "Complete", body: "Move toward payment, delivery, trust and dispute resolution — all within one platform. Commerce that doesn't end at the handshake.", badge: "Building" },
+              { num: "02", title: "Understand", body: "Compare useful product and seller details before deciding what to do next. Better information can support better decisions.", badge: "Live" },
+              { num: "03", title: "Use Zeno", body: "Zeno can help you clarify what you need, understand listing details and prepare questions for a seller.", badge: "Building" },
+              { num: "04", title: "Connect", body: "Contact the seller directly to discuss any purchase. Buyers and sellers agree payment and delivery themselves; BROKA does not process the sale.", badge: "Direct" },
             ].map((p) => (
               <div className="pillar" key={p.num}>
                 <span className="pillar-num">{p.num}</span>
                 <h3 className="pillar-title">{p.title}</h3>
                 <p className="pillar-body">{p.body}</p>
-                <span className={`badge badge-dot ${p.badge === "Live" ? "badge-live" : "badge-building"}`} style={{ marginTop: 16 }}>{p.badge}</span>
+                <span className={`badge badge-dot ${p.badge === "Live" ? "badge-live" : p.badge === "Direct" ? "badge-later" : "badge-building"}`} style={{ marginTop: 16 }}>{p.badge}</span>
               </div>
             ))}
           </div>
@@ -115,18 +115,18 @@ export default function WhatIsBroka() {
           <div className="wib-perspective">
             <div className="wib-pov">
               <p className="wib-pov-label">For buyers</p>
-              <h3>Find it. Understand it. Negotiate it.</h3>
+              <h3>Find it. Understand it. Contact the seller.</h3>
               <ul>
-                {["Describe what you need in plain language", "See relevant sellers and their history", "Get pricing context before making an offer", "Negotiate with Zeno's assistance", "Complete the transaction with a trust layer"].map((li) => (
+                {["Describe what you need in plain language", "Explore relevant listings and seller details", "Compare price, condition and location", "Use Zeno to prepare questions", "Arrange any purchase directly with the seller"].map((li) => (
                   <li key={li}>{li}</li>
                 ))}
               </ul>
             </div>
             <div className="wib-pov">
               <p className="wib-pov-label" style={{ color: "var(--c-a)" }}>For sellers</p>
-              <h3>List. Be discovered. Close deals.</h3>
+              <h3>List. Be discovered. Connect.</h3>
               <ul>
-                {["List products or services with minimal friction", "Be surfaced to buyers with genuine intent", "Receive and respond to negotiation requests", "Build verifiable seller reputation over time", "Complete transactions with platform-backed trust"].map((li) => (
+                {["List products or services with minimal friction", "Be surfaced to relevant buyers", "Share useful product and seller context", "Respond to buyer questions directly", "Agree any sale and payment with the buyer"].map((li) => (
                   <li key={li}>{li}</li>
                 ))}
               </ul>
@@ -140,7 +140,7 @@ export default function WhatIsBroka() {
         <div className="wrap">
           <div className="final-cta">
             <h2 className="t-h2" id="wib-cta-h" style={{ marginBottom: 16 }}>Ready to see it in action?</h2>
-            <p>Walk through a full transaction journey or explore Zeno in depth.</p>
+            <p>See how marketplace discovery works or explore Zeno in depth.</p>
             <div className="final-cta-actions" style={{ marginTop: 32 }}>
               <Link href="/how-it-works" className="btn btn-primary">See how it works</Link>
               <Link href="/zeno" className="btn btn-ghost">Meet Zeno →</Link>

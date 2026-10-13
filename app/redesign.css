@@ -1672,3 +1672,71 @@ body { background-color: #05060d; }
 @media (max-width: 700px) {
   .listing-start-grid-single { grid-template-columns: 1fr; }
 }
+
+
+/* Homepage marketplace discovery visual: category art, useful context, direct connection. */
+.cn-trust { background: radial-gradient(ellipse 70% 70% at 72% 48%, rgba(124,92,255,.08), transparent 72%), rgba(9,11,23,.56); }
+.cn-trust-panel .t-eyebrow-amber { color: #80e6ee; }
+.cn-trust-panel .t-h2 em { color: #67dce9; }
+.cn-trust-stack { border-color: rgba(84,215,233,.2); }
+.cn-trust-row { border-color: rgba(84,215,233,.15); }
+.cn-trust-row > span { color: #67dce9; }
+.cn-trust-visual { min-height: 0; display: grid; grid-template-rows: auto minmax(0,1fr) auto auto; gap: 18px; padding: 23px; border-color: rgba(84,215,233,.25); background: radial-gradient(ellipse 65% 62% at 78% 18%, rgba(124,92,255,.22), transparent 72%), radial-gradient(ellipse 58% 52% at 12% 100%, rgba(84,215,233,.14), transparent 72%), linear-gradient(145deg, rgba(15,21,42,.98), rgba(6,9,20,.98)); box-shadow: 0 32px 76px -52px rgba(92,72,255,.7), inset 0 1px rgba(255,255,255,.07); }
+.cn-trust-visual::before { opacity: .28; background-image: linear-gradient(rgba(168,149,255,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(168,149,255,.08) 1px, transparent 1px); background-size: 34px 34px; mask-image: radial-gradient(ellipse at 52% 44%, #000, transparent 88%); }
+.cn-trust-visual::after { top: -142px; right: 0; width: min(280px, 78%); height: auto; aspect-ratio: 1; border-color: rgba(84,215,233,.15); box-shadow: 0 0 0 22px rgba(124,92,255,.045), 0 0 0 48px rgba(84,215,233,.03); }
+.cn-market-header, .cn-market-brand, .cn-market-status { display: flex; align-items: center; }
+.cn-market-header { justify-content: space-between; gap: 10px; }
+.cn-market-brand { gap: 8px; color: #f0effb; font: 750 9px/1 var(--f-ui); letter-spacing: .13em; white-space: nowrap; }
+.cn-market-brand i { display: grid; place-items: center; width: 25px; height: 25px; border: 1px solid rgba(168,149,255,.48); border-radius: 8px; background: linear-gradient(145deg, rgba(124,92,255,.52), rgba(84,215,233,.2)); color: #e2dcff; font: 800 14px/1 var(--f-display); font-style: normal; letter-spacing: -.06em; box-shadow: 0 0 18px -7px rgba(124,92,255,.9); }
+.cn-market-brand b { color: #8f9ab5; font-size: 8px; font-weight: 600; letter-spacing: .1em; }
+.cn-market-status { gap: 6px; padding: 8px 10px; border: 1px solid rgba(84,215,233,.22); border-radius: 999px; background: rgba(84,215,233,.055); color: #9debf2; font: 700 8px/1 var(--f-ui); letter-spacing: .08em; white-space: nowrap; }
+.cn-market-status i { width: 6px; height: 6px; border-radius: 50%; background: #71e2c2; box-shadow: 0 0 10px rgba(113,226,194,.85); }
+.cn-market-stage { display: grid; grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr); gap: 18px; align-items: center; min-height: 250px; }
+.cn-market-art { position: relative; min-width: 0; height: 265px; isolation: isolate; }
+.cn-market-orbit { position: absolute; top: 50%; left: 50%; border: 1px solid rgba(168,149,255,.18); border-radius: 50%; transform: translate(-50%,-50%) rotate(-18deg) scaleY(.66); pointer-events: none; }
+.cn-market-orbit-a { width: min(92%, 310px); aspect-ratio: 1; box-shadow: 0 0 0 18px rgba(124,92,255,.025); }
+.cn-market-orbit-b { width: min(70%, 238px); aspect-ratio: 1; border-color: rgba(84,215,233,.16); transform: translate(-50%,-50%) rotate(22deg) scaleY(.72); }
+.cn-market-image { position: absolute; overflow: hidden; display: flex; align-items: flex-end; width: 50%; height: 48%; border: 1px solid rgba(230,231,255,.35); border-radius: 14px; background-size: cover; background-position: center; box-shadow: 0 18px 40px -20px rgba(0,0,0,.9), 0 0 22px -12px rgba(84,215,233,.45); }
+.cn-market-image::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(6,9,20,.02) 24%, rgba(6,9,20,.78) 100%); }
+.cn-market-image span { position: relative; z-index: 1; margin: 0 10px 9px; color: #f2f3ff; font: 700 8px/1 var(--f-ui); letter-spacing: .1em; text-transform: uppercase; text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+.cn-market-image-electronics { top: 5%; left: 27%; z-index: 2; background-image: url('/assets/home-discovery/electronics.webp'); transform: rotate(-8deg); }
+.cn-market-image-fashion { bottom: 5%; left: 1%; z-index: 3; background-image: url('/assets/home-discovery/fashion-craft.webp'); transform: rotate(7deg); }
+.cn-market-image-home { right: 1%; bottom: 1%; z-index: 2; background-image: url('/assets/home-discovery/home-living.webp'); transform: rotate(-5deg); }
+.cn-market-lens { position: absolute; top: 51%; left: 51%; z-index: 4; display: grid; place-items: center; gap: 5px; width: 76px; height: 76px; border: 1px solid rgba(84,215,233,.48); border-radius: 50%; background: radial-gradient(circle at 35% 26%, rgba(124,92,255,.42), rgba(8,13,30,.94) 72%); color: #bbf6fb; box-shadow: 0 0 0 7px rgba(84,215,233,.055), 0 0 34px rgba(84,215,233,.25), inset 0 1px rgba(255,255,255,.12); transform: translate(-50%,-50%); }
+.cn-market-lens span { font: 700 6px/1 var(--f-ui); letter-spacing: .15em; }
+.cn-market-spark { position: absolute; z-index: 5; width: 6px; height: 6px; border-radius: 50%; background: #71e2c2; box-shadow: 0 0 13px rgba(113,226,194,.9); }
+.cn-market-spark-one { top: 20%; right: 14%; }
+.cn-market-spark-two { bottom: 21%; left: 24%; width: 4px; height: 4px; background: #d5bb68; box-shadow: 0 0 12px rgba(213,187,104,.8); }
+.cn-market-copy > span { color: #72dced; font: 700 8px/1.2 var(--f-ui); letter-spacing: .16em; }
+.cn-market-copy h3 { margin: 10px 0 9px; color: #f5f2ff; font: 800 clamp(23px, 2.8vw, 32px)/1.02 var(--f-display); letter-spacing: -.05em; }
+.cn-market-copy p { max-width: 260px; color: #a4aec4; font: 500 11px/1.55 var(--f-ui); }
+.cn-market-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 16px; }
+.cn-market-tags span { padding: 6px 7px; border: 1px solid rgba(168,149,255,.2); border-radius: 6px; background: rgba(9,12,27,.62); color: #b6c2d7; font: 650 7px/1 var(--f-ui); letter-spacing: .08em; }
+.cn-market-flow { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.cn-market-flow li { position: relative; display: grid; align-content: start; gap: 6px; min-width: 0; min-height: 72px; padding: 11px 10px; border: 1px solid rgba(168,149,255,.16); border-radius: 11px; background: linear-gradient(145deg, rgba(19,23,45,.82), rgba(8,11,23,.82)); }
+.cn-market-flow li:not(:last-child)::after { content: ""; position: absolute; z-index: 2; top: 20px; right: -9px; width: 9px; height: 1px; background: linear-gradient(90deg, rgba(84,215,233,.65), rgba(168,149,255,.65)); }
+.cn-market-flow li > span { color: #72dced; font: 700 8px/1 var(--f-ui); letter-spacing: .08em; }
+.cn-market-flow strong { color: #f0effb; font: 650 11px/1.1 var(--f-display); }
+.cn-market-flow small { color: #8793ac; font: 500 8px/1.2 var(--f-ui); }
+.cn-market-footer { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding-top: 3px; color: #91a0b8; font: 650 7px/1.3 var(--f-ui); letter-spacing: .09em; }
+.cn-market-footer > span:first-child { display: inline-flex; align-items: center; gap: 6px; color: #a8eff2; }
+.cn-market-footer svg { color: #72dced; }
+@media (max-width: 700px) {
+  .cn-trust-visual { gap: 14px; padding: 17px; border-radius: 20px; }
+  .cn-market-stage { grid-template-columns: 1fr; gap: 4px; }
+  .cn-market-art { height: 190px; }
+  .cn-market-image { border-radius: 12px; }
+  .cn-market-lens { width: 68px; height: 68px; }
+  .cn-market-copy h3 { margin: 7px 0 6px; font-size: 24px; }
+  .cn-market-copy p { max-width: 100%; font-size: 10px; }
+  .cn-market-tags { margin-top: 10px; }
+  .cn-market-flow { gap: 5px; }
+  .cn-market-flow li { min-height: 64px; gap: 5px; padding: 9px 7px; }
+  .cn-market-flow li:not(:last-child)::after { right: -6px; width: 6px; }
+  .cn-market-flow strong { font-size: 9px; }
+  .cn-market-flow small { font-size: 7px; }
+  .cn-market-footer { align-items: flex-start; flex-direction: column; gap: 6px; font-size: 7px; }
+}
+@media (prefers-reduced-motion: reduce) { .cn-market-orbit { transform: translate(-50%,-50%) rotate(0) scaleY(.72); } }
+
+.cn-market-image-electronics span { align-self: flex-start; margin: 9px; padding: 4px 6px; border: 1px solid rgba(230,231,255,.2); border-radius: 5px; background: rgba(6,9,20,.72); }

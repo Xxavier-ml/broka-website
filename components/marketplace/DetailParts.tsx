@@ -99,7 +99,7 @@ export function SellerCard({
           <em>{dealTimeMinutes == null ? "No completed deals" : `agreed to paid · ${timedDeals || 0} deal${timedDeals === 1 ? "" : "s"}`}</em>
         </div>
       </div>
-      <p className="seller-standing-note">Measured by BROKA from the seller&apos;s deals and chats</p>
+      <p className="seller-standing-note">Marketplace seller and conversation context. Any sale and payment are arranged directly between buyer and seller.</p>
       {store && (
         <Link href={`/stores/${store.slug}`} className="seller-store">
           <StoreIcon size={15} aria-hidden="true" /> Visit {store.name}

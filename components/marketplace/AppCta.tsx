@@ -4,24 +4,23 @@ import { Smartphone } from "lucide-react";
 
 type Kind = "store" | "product" | "general";
 
-// The website only shows listings. Everything that involves an account, a
-// conversation or money happens in the app, and these panels say so plainly
-// wherever a visitor might expect to make an offer or buy.
+// The website is for browsing. The app adds account and conversation features;
+// buyers and sellers arrange purchases and payments directly with each other.
 const COPY: Record<Kind, { title: string; body: string; points: string[] }> = {
   store: {
-    title: "Shop this store in the app",
-    body: "Browse the details here. To make an offer, message the seller or buy, open the store in the BROKA app.",
-    points: ["Chat with the seller", "Negotiate with Zeno, BROKA's AI broker", "Pay safely through escrow"],
+    title: "Explore this store in the app",
+    body: "Browse more from this seller or start a conversation in the BROKA app. Any purchase and payment are arranged directly between you and the seller.",
+    points: ["Explore more seller listings", "Message or call the seller", "Agree any purchase directly"],
   },
   product: {
-    title: "Make an offer in the app",
-    body: "You can see everything about this listing here. Offers, chat and payment happen in the BROKA app.",
-    points: ["Make an offer or negotiate with Zeno", "Message the seller", "Pay safely through escrow"],
+    title: "Continue with this listing",
+    body: "Review the listing and seller context, then contact the seller directly if you have questions. BROKA does not process or hold payments.",
+    points: ["Review the listing details", "Message or call the seller", "Arrange next steps directly"],
   },
   general: {
-    title: "The rest happens in the app",
-    body: "Browse products and stores here. Offers, conversations and payments happen in the BROKA app.",
-    points: ["Make an offer or negotiate with Zeno", "Chat and call sellers", "Pay safely through escrow"],
+    title: "Take the next step in the app",
+    body: "Browse products and stores, use Zeno for context, and contact sellers. Buyers and sellers arrange any transaction directly.",
+    points: ["Explore marketplace listings", "Chat or call sellers", "Arrange payments and delivery directly"],
   },
 };
 

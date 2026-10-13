@@ -93,20 +93,22 @@ test("mobile marketplace category artwork uses moderate landscape cards", async 
   }
 });
 
-test("homepage trust visual presents a connected three-step protection flow", async ({ page }) => {
+test("homepage marketplace visual presents a direct Discover–Compare–Connect flow", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
   const panel = page.locator(".cn-trust-visual");
   await expect(panel).toBeVisible();
-  await expect(panel.locator(".cn-trust-visual-copy h3")).toHaveText("Escrow");
-  await expect(panel.locator(".cn-trust-flow-step")).toHaveCount(3);
-  await expect(panel.locator(".cn-trust-flow-copy strong")).toHaveText([
-    "Context",
-    "Protection",
-    "Resolution",
+  await expect(panel.locator(".cn-market-copy h3")).toHaveText("Find your next move.");
+  await expect(panel.locator(".cn-market-flow li")).toHaveCount(3);
+  await expect(panel.locator(".cn-market-flow strong")).toHaveText([
+    "Discover",
+    "Compare",
+    "Connect",
   ]);
+  await expect(panel).toContainText("SALE & PAYMENT ARRANGED DIRECTLY");
+  await expect(panel).not.toContainText(/escrow|m-pesa/i);
 
   const pageWidth = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
