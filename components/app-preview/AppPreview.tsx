@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Bell, ChevronRight, Grid2X2, Heart, Inbox, MapPin, Menu, Mic, Plus, Search, Sparkles, Store } from "lucide-react";
+import { ArrowRight, Bell, ChevronRight, Grid2X2, Heart, Inbox, MapPin, Menu, Mic, Plus, Search, Smartphone, Sparkles, Store } from "lucide-react";
 
 const categories = [
   { name: "Automobiles", emoji: "🚘", image: "/assets/category-backgrounds/automobiles.jpg", tone: "rose" },
@@ -67,6 +67,7 @@ export function AppPreview() {
               <div><span className="ap-feature-icon cyan"><Sparkles size={18} /></span><span><b>Let Zeno help you look</b><small>Ask for a search that fits what you need.</small></span></div>
               <div><span className="ap-feature-icon gold"><Store size={18} /></span><span><b>Connect directly</b><small>See seller and location context on each listing.</small></span></div>
             </div>
+            <Link href="/app-preview/listing-detail" className="ap-detail-entry"><span><Smartphone size={18} /></span><span><strong>Open a listing detail preview</strong><small>See the router’s photos, availability and deal terms.</small></span><ArrowRight size={18} /></Link>
             <p className="ap-disclaimer"><span>ⓘ</span> This interactive preview uses sample listings. It is not connected to live inventory or account features.</p>
           </div>
 
@@ -100,7 +101,7 @@ export function AppPreview() {
                       <button className={`ap-save ${isSaved ? "saved" : ""}`} aria-label={isSaved ? "Remove from saved" : "Save listing"} onClick={() => setSaved(isSaved ? saved.filter((n) => n !== originalIndex) : [...saved, originalIndex])}><Heart size={15} fill={isSaved ? "currentColor" : "none"} /></button>
                       {item.tag && <span className="ap-showcase">✦ {item.tag}</span>}
                     </div>
-                    <div className="ap-listing-info"><b className="ap-listing-name">{item.title}</b><div className="ap-listing-price"><strong>{item.price}</strong><button aria-label={`View ${item.title}`}><ArrowRight size={17} /></button></div><div className="ap-listing-meta"><span><MapPin size={13} />{item.place}</span><span>{item.age}</span></div><div className="ap-seller"><span className="ap-seller-avatar">{item.seller.charAt(0)}</span><b>▣ {item.seller} <span>›</span></b></div></div>
+                    <div className="ap-listing-info"><Link href="/app-preview/listing-detail" className="ap-listing-detail-link"><b className="ap-listing-name">{item.title}</b></Link><div className="ap-listing-price"><strong>{item.price}</strong><Link href="/app-preview/listing-detail" className="ap-detail-arrow" aria-label={`View ${item.title} details`}><ArrowRight size={17} /></Link></div><div className="ap-listing-meta"><span><MapPin size={13} />{item.place}</span><span>{item.age}</span></div><div className="ap-seller"><span className="ap-seller-avatar">{item.seller.charAt(0)}</span><b>▣ {item.seller} <span>›</span></b></div></div>
                   </article>;
                 })}</div> : <div className="ap-empty">No sample listings match “{query}”. Try “router”.</div>}
               </div>

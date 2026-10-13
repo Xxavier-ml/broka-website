@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { AppPreview } from "@/components/app-preview/AppPreview";
 import "./app-preview.css";
+import "./preview-links.css";
 
 export const metadata: Metadata = {
   title: "Explore the BROKA app",
