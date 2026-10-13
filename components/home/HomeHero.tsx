@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Check, MessageCircle, Search, Sparkles, Store, UserRound } from "lucide-react";
+import { ArrowUpRight, Check, MessageCircle, Search, Smartphone, Sparkles, Store, UserRound } from "lucide-react";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
 
@@ -51,6 +51,9 @@ export function HomeHero() {
             </Link>
             <Link href="/sell" className="btn btn-ghost cx-secondary-action">
               Sell with context <ArrowUpRight size={16} aria-hidden="true" />
+            </Link>
+            <Link href="/app-preview" className="btn btn-ghost cx-secondary-action">
+              Preview the app <Smartphone size={16} aria-hidden="true" />
             </Link>
           </div>
           <p className="cx-hero-note cx-reveal" style={{ ["--d" as string]: "0.32s" }}>
