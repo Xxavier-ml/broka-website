@@ -33,6 +33,9 @@ export default function DownloadPage() {
           <a href={APP_DOWNLOAD_URL} className="btn btn-primary" rel="noopener noreferrer">
             <Download size={16} aria-hidden="true" /> Download for Android
           </a>
+          <Link href="/app-preview" className="btn btn-ghost">
+            <Smartphone size={16} aria-hidden="true" /> Explore the app preview
+          </Link>
           <span className="badge badge-later">iPhone · coming later</span>
         </div>
       </PageHero>
