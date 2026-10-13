@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Handshake, MapPin, ShieldCheck, Truck, Eye, Tag, ChevronLeft } from "lucide-react";
 import { getListing } from "@/lib/api/listings";
 import { coverImage, galleryImages } from "@/lib/api/images";
@@ -17,8 +17,7 @@ type Props = { params: Promise<{ id: string }> };
 
 async function load(id: string) {
   const l = await getListing(id);
-  if (!l) return null;
-  if (l.listing_type === "auction") redirect(`/auctions/${l.id}`);
+  if (!l || l.listing_type !== "direct") return null;
   return l;
 }
 

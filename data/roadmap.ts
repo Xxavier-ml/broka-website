@@ -31,7 +31,6 @@ export const roadmap: RoadmapPhase[] = [
     status: "building",
     description: "What we are building toward",
     items: [
-      "Auction infrastructure",
       "Integrated payments",
       "Escrow layer",
       "Dispute resolution",

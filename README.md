@@ -1,7 +1,7 @@
 # BROKA Web
 
 The public website for BROKA: what it is, how it works, and a read-only window
-onto the marketplace (auctions and online stores).
+onto direct-price marketplace products and online stores.
 
 ## Stack
 
@@ -25,31 +25,31 @@ Open `http://localhost:3000`.
 | Section | Routes | Notes |
 |---|---|---|
 | About BROKA | `/`, `/what-is-broka`, `/how-it-works`, `/zeno`, `/technology`, `/vision`, `/founders`, `/roadmap`, `/faq` | Marketing content |
-| Auction House | `/auctions`, `/auctions/[id]` | Live, ending soon, upcoming and completed auctions, with the current bid, countdown and bid history |
+| Marketplace | `/browse`, `/browse/[category]`, `/categories` | Direct-price products, category search, filters and seller context |
 | Online stores | `/stores`, `/stores/[slug]`, `/listings/[id]` | Store directory, a store's page and products, a product's details |
 | Store links | `/store/*` | Served by the web storefront, a separate deployment (below) |
-| Search | `/search` | One search across auctions and stores |
+| Search | `/search` | Legacy search addresses route to `/browse` |
 | Get the app | `/download` | Android APK from the BROKA GitHub releases |
 | Contact | `/contact` | Email, phone, WhatsApp and the co-founders' addresses, plus an email form |
 | Legal | `/privacy`, `/terms` | Review with a lawyer before launch |
 
-The website is **view-only**. Bidding, making offers, chatting, calling and
-paying are in the mobile app, and every listing page says so and links to
-`/download`. Only auctions and online-store products appear on the site: a
-personal listing outside a store answers 404 here.
+The website is **view-only**. Making offers, chatting, calling and paying are
+in the mobile app, and every listing page says so and links to `/download`.
+The homepage uses generated category artwork to guide visitors into `/browse`;
+it does not show live product cards. Old marketplace addresses redirect to the
+current product catalogue.
 
 ## Where the listing data comes from
 
 Server components read the BROKA API's public, unauthenticated `GET`
-endpoints (`lib/api/`): `/auctions`, `/auctions/{id}`, `/listings/`,
+endpoints (`lib/api/`): `/listings/`,
 `/listings/{id}`, `/stores`, `/stores/slug/{slug}`, `/stores/{id}/listings`,
 `/stores/{id}/categories`. Responses are cached for 30 to 60 seconds, so a
 busy page costs the API about one request a minute. The browser never calls the
 API. If the API is down, list pages say so and keep working; detail pages show
 an error page with a retry.
 
-Nothing private is shown: no phone numbers, no user ids, no reserve prices
-(the API does not send them), and bidder names are shortened ("J*** W.").
+Nothing private is shown: no phone numbers or user ids.
 
 Settings are in `.env.example`.
 
@@ -89,12 +89,12 @@ counts scale with the screen, it pauses in hidden tabs, and with
 `prefers-reduced-motion` it draws one still frame. Without WebGL the CSS
 gradient on `.netbg` shows instead.
 
-**The home hero** (`components/home/`): Zeno (`public/assets/zeno-full.webp`,
+**The home page** (`components/home/`): Zeno (`public/assets/zeno-full.webp`,
 from the app's assets) in a glowing ring with an orbit passing behind and in
-front of him, category tiles, a dotted Kenya map with a Nairobi beacon, and
-live stats from the API. The scene tilts toward the mouse in 3D and sways
-gently on touch screens. Large glows animate as HTML layers so the GPU runs
-them without repainting the SVG.
+front of him, a dotted Kenya map with a Nairobi beacon, and three generated
+category images that link into the marketplace. The category art is illustrative;
+live products are shown on `/browse`. The hero scene tilts toward the mouse in
+3D and sways gently on touch screens.
 
 ## Contact details
 
@@ -103,8 +103,8 @@ download URL), and the founders' addresses in `data/founders.ts`.
 
 ## Not covered yet
 
-- Authentication, bidding, messaging, payments or a database. Those stay in the app.
+- Authentication, messaging, payments or a database. Those stay in the app.
 - ESLint is not installed in this repository (`npm run lint` needs it).
-- Link-preview images for shared auctions and stores use the API's image URL
+- Link-preview images for shared products and stores use the API's image URL
   as is. The main repository's storefront converts them to JPEG for WhatsApp,
   which this site does not yet.

@@ -5,6 +5,12 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: []
   },
+  async redirects() {
+    return [
+      { source: "/auctions", destination: "/browse", permanent: false },
+      { source: "/auctions/:id", destination: "/browse", permanent: false },
+    ];
+  },
   // The app and the API hand every seller a link of the form
   // broka.co.ke/store/<name> (STORE_LINK_BASE in the main repository), and
   // those links are already on flyers and in bios. They belong to the web

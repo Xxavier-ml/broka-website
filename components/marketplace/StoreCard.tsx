@@ -41,10 +41,10 @@ export function StoreCard({ store }: { store: Store }) {
         )}
       </div>
       <div className="lcard-body scard-body">
-        <h3 className="lcard-title">
+        <h2 className="lcard-title">
           {store.name}
           {store.owner?.verified && <BadgeCheck size={16} className="scard-verified" aria-label="Verified seller" />}
-        </h3>
+        </h2>
         {store.category && (
           <span className="lcard-cat">
             <span aria-hidden="true">{v.emoji}</span> {store.category}

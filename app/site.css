@@ -46,7 +46,7 @@ main, .ftr { position: relative; z-index: 1; }
 
 /* Dense UI reads better in a sans at small sizes; the serif is for reading. */
 .lbadge, .chip, .ftab, .sform-input, .sform-btn, .contact-input, .zdemo-input,
-.facts dt, .detail-h, .lcard-price-label, .bidbox-label, .ftr-col-title, .ccard-label,
+.facts dt, .detail-h, .lcard-price-label, .ftr-col-title, .ccard-label,
 .pager-count, .result-count, .crumbs, .zeno-ctx-key, .zdemo-label, .zdemo-section-label,
 .badge, .lcard-cat, .rm-phase-desc, .founder-role, .pillar-num, .journey-num, .wib-col-label,
 .vision-tier-label, .tech-pillar-label, .wib-pov-label {

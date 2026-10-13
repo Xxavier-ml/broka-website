@@ -2,17 +2,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Smartphone } from "lucide-react";
 
-type Kind = "auction" | "store" | "product" | "general";
+type Kind = "store" | "product" | "general";
 
 // The website only shows listings. Everything that involves an account, a
 // conversation or money happens in the app, and these panels say so plainly
-// wherever a visitor might expect a "Bid" or "Buy" button.
+// wherever a visitor might expect to make an offer or buy.
 const COPY: Record<Kind, { title: string; body: string; points: string[] }> = {
-  auction: {
-    title: "Bid in the BROKA app",
-    body: "This page is for looking. Placing bids, following an auction live and paying if you win all happen in the app.",
-    points: ["Place and track your bids", "Live updates as the bidding moves", "Pay safely through escrow"],
-  },
   store: {
     title: "Shop this store in the app",
     body: "Browse the details here. To make an offer, message the seller or buy, open the store in the BROKA app.",
@@ -25,8 +20,8 @@ const COPY: Record<Kind, { title: string; body: string; points: string[] }> = {
   },
   general: {
     title: "The rest happens in the app",
-    body: "The website shows auctions and online stores. Bidding, buying, chatting and paying are in the BROKA app.",
-    points: ["Bid and negotiate with Zeno", "Chat and call sellers", "Pay safely through escrow"],
+    body: "Browse products and stores here. Offers, conversations and payments happen in the BROKA app.",
+    points: ["Make an offer or negotiate with Zeno", "Chat and call sellers", "Pay safely through escrow"],
   },
 };
 

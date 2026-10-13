@@ -39,12 +39,12 @@ export default function Privacy() {
               </li>
             </ul>
 
-            <h2>Listings, auctions and stores</h2>
+            <h2>Marketplace listings and stores</h2>
             <p>
-              The auctions and online stores shown here are read from BROKA&apos;s public marketplace. They contain what
+              The product listings and online stores shown here are read from BROKA&apos;s public marketplace. They contain what
               sellers chose to publish: item details, photos, prices, a general location and a seller&apos;s public track
-              record such as a rating. We do not show sellers&apos; phone numbers, and bidder names in an auction&apos;s history
-              are shortened. If a seller&apos;s business email is shown, it is because they verified it for their store.
+              record such as a rating. We do not show sellers&apos; phone numbers. If a seller&apos;s business email is shown,
+              it is because they verified it for their store.
             </p>
 
             <h2>When you email or call us</h2>

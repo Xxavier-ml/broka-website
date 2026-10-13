@@ -4,7 +4,7 @@ import { expect, test } from "@playwright/test";
 const routes = [
   { name: "home", path: "/" },
   { name: "browse", path: "/browse" },
-  { name: "auctions", path: "/auctions" },
+  { name: "stores", path: "/stores" },
   { name: "contact", path: "/contact" },
   { name: "Zeno", path: "/zeno" },
   { name: "listing detail", path: "/listings/fbea38cd-1c50-45e9-a637-f7b86e36b4b2" },
@@ -41,6 +41,24 @@ for (const route of routes) {
     });
   }
 }
+
+test("legacy marketplace URLs open the current marketplace", async ({ page }) => {
+  await page.goto("/auctions", { waitUntil: "domcontentloaded" });
+  await expect(page).toHaveURL(/\/browse(?:\?.*)?$/);
+  await expect(page.locator("#main")).toBeVisible();
+});
+
+test("homepage shows category artwork instead of live product cards", async ({ page }) => {
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".home-discovery-card")).toHaveCount(3);
+  await expect(page.locator(".lcard-product")).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Explore Electronics in the marketplace" }))
+    .toHaveAttribute("href", "/browse/electronics");
+  await expect(page.getByRole("link", { name: "Explore Fashion in the marketplace" }))
+    .toHaveAttribute("href", "/browse/fashion");
+  await expect(page.getByRole("link", { name: "Explore Home & Furniture in the marketplace" }))
+    .toHaveAttribute("href", "/browse/home-and-furniture");
+});
 
 test("search combobox exposes an operable listbox and closes with Escape", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });

@@ -1,10 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, Check, CircleDollarSign, Search, ShieldCheck, Sparkles, Store, UserRound } from "lucide-react";
-import type { HomeData } from "@/lib/api/home";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
-
-const nf = new Intl.NumberFormat("en-KE");
 
 /** Kenya's flag, drawn: the emoji shows as the letters "KE" on Windows. */
 function KenyaFlag() {
@@ -25,14 +22,11 @@ function SignalLine() {
 }
 
 /**
- * The homepage's first decision: find a deal, sell with context, or meet Zeno.
+ * The homepage's first decision: explore the marketplace, sell with context, or meet Zeno.
  * The network background and Zeno core stay recognizable, while the copy and
  * route cards make the value proposition legible before the visitor scrolls.
  */
-export function HomeHero({ data }: { data: HomeData }) {
-  const liveListings = data.activeListings != null ? nf.format(data.activeListings) : null;
-  const liveStores = data.storeCount != null ? nf.format(data.storeCount) : null;
-
+export function HomeHero() {
   return (
     <section className="cx-hero" aria-labelledby="cx-hero-title">
       <KenyaMap className="cx-kenya" />
@@ -49,24 +43,24 @@ export function HomeHero({ data }: { data: HomeData }) {
             <em>in the market.</em>
           </h1>
           <p className="cx-hero-sub cx-reveal" style={{ ["--d" as string]: "0.16s" }}>
-            BROKA connects real listings, seller context, Zeno intelligence and protected payment rails — so the next deal is easier to see and easier to trust.
+            BROKA connects buyers and sellers with market context, Zeno intelligence and protected payment rails — so the next step is easier to see and easier to trust.
           </p>
           <div className="cx-hero-actions cx-reveal" style={{ ["--d" as string]: "0.24s" }}>
             <Link href="/browse" className="btn btn-primary cx-primary-action">
-              Find a deal <ArrowUpRight size={16} aria-hidden="true" />
+              Explore the marketplace <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
             <Link href="/sell" className="btn btn-ghost cx-secondary-action">
               Sell with context <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
           </div>
           <p className="cx-hero-note cx-reveal" style={{ ["--d" as string]: "0.32s" }}>
-            <ShieldCheck size={14} aria-hidden="true" /> View the marketplace first. Move to the app when you are ready to negotiate, chat or pay.
+            <ShieldCheck size={14} aria-hidden="true" /> Browse the marketplace first. Move to the app when you are ready to negotiate, chat or pay.
           </p>
 
           <div className="cx-intent-grid cx-reveal" style={{ ["--d" as string]: "0.4s" }} aria-label="Choose your starting point">
             <Link href="/browse" className="cx-intent-card">
               <span className="cx-intent-icon cx-intent-violet"><Search size={17} aria-hidden="true" /></span>
-              <span><strong>Find a deal</strong><small>Search real listings</small></span>
+              <span><strong>Explore products</strong><small>Browse the marketplace</small></span>
               <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
             <Link href="/sell" className="cx-intent-card">
@@ -113,8 +107,8 @@ export function HomeHero({ data }: { data: HomeData }) {
       </div>
 
       <div className="wrap cx-proof-strip cx-reveal" style={{ ["--d" as string]: "0.48s" }} aria-label="BROKA product signals">
-        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-violet"><Search size={16} aria-hidden="true" /></span><span><strong>{liveListings ?? "Real"}</strong><small>{liveListings ? "active listings" : "marketplace listings"}</small></span></div>
-        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-cyan"><Store size={16} aria-hidden="true" /></span><span><strong>{liveStores ?? "Online"}</strong><small>{liveStores ? "online stores" : "seller storefronts"}</small></span></div>
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-violet"><Search size={16} aria-hidden="true" /></span><span><strong>21 categories</strong><small>to explore</small></span></div>
+        <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-cyan"><Store size={16} aria-hidden="true" /></span><span><strong>Built in Kenya</strong><small>for local commerce</small></span></div>
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-amber"><ShieldCheck size={16} aria-hidden="true" /></span><span><strong>Protected</strong><small>payment layer</small></span></div>
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-green"><UserRound size={16} aria-hidden="true" /></span><span><strong>Human-led</strong><small>AI-assisted decisions</small></span></div>
         <SignalLine />
