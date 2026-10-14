@@ -6,7 +6,7 @@ import "./listing-detail/listing-detail.css";
 
 export const metadata: Metadata = {
   title: "Explore the BROKA app",
-  description: "Explore BROKA’s interactive app preview: browse the homescreen, open a sample listing, review seller standing and ask Zeno—all in one page.",
+  description: "Browse two distinct BROKA app screens side by side: the homescreen and a full listing with seller metrics, deal terms and Zeno Insight.",
   alternates: { canonical: "https://www.broka.co.ke/app-preview" },
 };
 
