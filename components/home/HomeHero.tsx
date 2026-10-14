@@ -60,6 +60,7 @@ export function HomeHero() {
               placeholder="Search phones, cars, apartments, land…"
               className="hp-search"
               iconSubmit
+              showSuggestionsOnEmptyFocus={false}
               label="Search the marketplace"
             />
           </div>

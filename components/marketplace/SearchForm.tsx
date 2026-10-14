@@ -36,6 +36,7 @@ export function SearchForm({
   label = "Search",
   className = "",
   iconSubmit = false,
+  showSuggestionsOnEmptyFocus = true,
   filters,
   filterRowClassName = "",
 }: {
@@ -46,6 +47,8 @@ export function SearchForm({
   label?: string;
   className?: string;
   iconSubmit?: boolean;
+  /** Whether to show recent/trending suggestions before the visitor types. */
+  showSuggestionsOnEmptyFocus?: boolean;
   filters?: Omit<MobileFilterDrawerProps, "q" | "iconOnly">;
   filterRowClassName?: string;
 }) {
@@ -61,7 +64,7 @@ export function SearchForm({
   const [open, setOpen] = useState(false);
   const shellClass = `sform-shell${className.includes("sform-lg") ? " sform-shell-lg" : ""}`;
   const trimmedQuery = query.trim();
-  const focusMenuOpen = open && trimmedQuery.length === 0;
+  const focusMenuOpen = showSuggestionsOnEmptyFocus && open && trimmedQuery.length === 0;
   const suggestionsOpen = open && trimmedQuery.length >= 2 && suggestions.length > 0;
   const menuOpen = focusMenuOpen || suggestionsOpen;
   const suggestionsId = `${inputId}-suggestions`;
@@ -165,6 +168,7 @@ export function SearchForm({
 
   const openFocusMenu = () => {
     if (!query.trim()) {
+      if (!showSuggestionsOnEmptyFocus) return;
       setRecentSearches(readRecentSearches());
       setOpen(true);
       void fetch("/api/search-trending", { headers: { Accept: "application/json" } })

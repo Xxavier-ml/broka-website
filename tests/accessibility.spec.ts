@@ -67,6 +67,27 @@ test("homepage offers real search and category routes instead of live product ca
     .toHaveAttribute("href", "/browse/automobiles");
 });
 
+test("homepage search avoids a duplicate empty-query overlay but keeps typed suggestions", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.route("**/api/search-suggestions**", (route) => route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ items: [{ id: "sample-1", name: "iPhone 15", category: "Electronics" }] }),
+  }));
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+
+  const search = page.getByRole("combobox", { name: "Search the marketplace" });
+  const popup = page.locator(".hp-hero-search .sform-suggestions");
+  await search.click();
+  await expect(search).toHaveAttribute("aria-expanded", "false");
+  await expect(popup).toBeHidden();
+  await expect(page.locator(".hp-chips")).toBeVisible();
+
+  await search.fill("iphone");
+  await expect(popup).toBeVisible();
+  await expect(popup).toContainText("iPhone 15");
+});
+
 test("mobile marketplace category artwork uses moderate landscape cards", async ({ page }) => {
   const viewportWidth = 375;
   await page.setViewportSize({ width: viewportWidth, height: 812 });
