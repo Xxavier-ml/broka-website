@@ -117,6 +117,48 @@ test("homepage marketplace visual presents a direct Discover–Compare–Connect
   expect(pageWidth.content, "trust card should not cause horizontal page scrolling").toBeLessThanOrEqual(pageWidth.viewport);
 });
 
+test("homepage closing call to action offers clear buyer and seller routes", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const section = page.getByRole("region", { name: "Make your next deal a clearer one." });
+  await expect(section.getByRole("link", { name: /Explore the marketplace/ })).toHaveAttribute("href", "/browse");
+  await expect(section.getByRole("link", { name: /Create a listing/ })).toHaveAttribute("href", "/sell");
+  await expect(section.getByRole("link", { name: /Read the FAQ/ })).toHaveAttribute("href", "/faq");
+  const pageWidth = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));
+  expect(pageWidth.content, "closing CTA should not cause horizontal scrolling on a phone").toBeLessThanOrEqual(pageWidth.viewport);
+});
+
+test("desktop navigation dropdown opens by keyboard and Escape restores focus", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle", { timeout: 12_000 }).catch(() => undefined);
+  await page.waitForTimeout(250);
+  const trigger = page.getByRole("link", { name: "Marketplace", exact: true });
+  const menu = page.locator("#nav-marketplace-links");
+  await trigger.focus();
+  await expect(trigger).toHaveAttribute("aria-expanded", "true");
+  await expect(menu.getByRole("link", { name: /Browse all products/ })).toBeVisible();
+  await trigger.press("ArrowDown");
+  await expect(menu.getByRole("link", { name: /Browse all products/ })).toBeFocused();
+  await page.keyboard.press("Escape");
+  await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveAttribute("aria-expanded", "false");
+});
+
+test("mobile navigation opens, routes, and closes after selection", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.waitForLoadState("networkidle", { timeout: 12_000 }).catch(() => undefined);
+  const openButton = page.getByRole("button", { name: "Open menu" });
+  await openButton.click();
+  const mobileNav = page.locator("#mobile-nav");
+  await expect(mobileNav).toHaveAttribute("aria-hidden", "false");
+  await mobileNav.getByRole("link", { name: /Browse all products/ }).click();
+  await expect(page).toHaveURL(/\/browse(?:\?.*)?$/);
+  await expect(page.getByRole("button", { name: "Open menu" })).toHaveAttribute("aria-expanded", "false");
+  await expect(mobileNav).toHaveAttribute("aria-hidden", "true");
+});
+
 test("homepage seller showcase presents a sample listing and direct-contact path", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: "reduce" });

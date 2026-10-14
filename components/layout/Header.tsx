@@ -29,6 +29,7 @@ export function Header() {
   const dropOpen = openGroup !== null;
   const [scrolled, setScrolled] = useState(false);
   const navRef = useRef<HTMLElement>(null);
+  const suppressFocusOpen = useRef(false);
   const closeMenu = () => setMenuOpen(false);
 
   // Clear header at the top of the page, glass once content scrolls under it.
@@ -56,6 +57,12 @@ export function Header() {
     if (!dropOpen && !menuOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
+      const activeTrigger = navRef.current?.querySelector<HTMLAnchorElement>('.hdr-dropdown-btn[aria-expanded="true"]');
+      if (activeTrigger) {
+        suppressFocusOpen.current = true;
+        activeTrigger.focus();
+        requestAnimationFrame(() => { suppressFocusOpen.current = false; });
+      }
       setOpenGroup(null);
       setMenuOpen(false);
     };
@@ -105,24 +112,41 @@ export function Header() {
                   key={item.label}
                   onMouseEnter={() => setOpenGroup(item.label)}
                   onMouseLeave={() => setOpenGroup((g) => (g === item.label ? null : g))}
+                  onFocus={() => {
+                    if (!suppressFocusOpen.current) setOpenGroup(item.label);
+                  }}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) {
+                      setOpenGroup((g) => (g === item.label ? null : g));
+                    }
+                  }}
                 >
                   <Link
                     href={item.href}
                     className={`hdr-dropdown-btn${isGroupActive(item) ? " active" : ""}`}
                     aria-expanded={openGroup === item.label}
-                    aria-haspopup="true"
+                    aria-controls={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}-links`}
                     aria-current={isGroupActive(item) ? "page" : undefined}
                     onClick={() => setOpenGroup(null)}
+                    onKeyDown={(event) => {
+                      if (event.key === "ArrowDown") {
+                        event.preventDefault();
+                        setOpenGroup(item.label);
+                        requestAnimationFrame(() => {
+                          document.getElementById(`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}-links`)
+                            ?.querySelector<HTMLAnchorElement>("a")?.focus();
+                        });
+                      }
+                    }}
                   >
                     {item.label}
                     <ChevronDown className="hdr-dropdown-chevron" size={14} aria-hidden="true" />
                   </Link>
-                  <div className={`hdr-dropdown-menu${openGroup === item.label ? " open" : ""}`} role="menu">
+                  <div id={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}-links`} className={`hdr-dropdown-menu${openGroup === item.label ? " open" : ""}`}>
                     {item.children.map((child) => (
                       <Link
                         key={child.href}
                         href={child.href}
-                        role="menuitem"
                         className={isActive(child.href) ? "active" : ""}
                         aria-current={isActive(child.href) ? "page" : undefined}
                       >
