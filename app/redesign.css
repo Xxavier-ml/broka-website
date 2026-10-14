@@ -1799,3 +1799,26 @@ body { background-color: #05060d; }
   .cn-seller-profile-copy > strong { font-size: 9px; }
   .cn-seller-contact-pill { gap: 5px; padding: 8px; font-size: 7px; }
 }
+
+/* Sort dropdown, matching the app's FeedSortRow (count left, sort right). */
+.sort-select { flex: 0 1 190px; min-width: 0; }
+.sort-select select {
+  width: 100%; min-height: 40px; padding: 0 12px; border: 1px solid var(--c-rule); border-radius: 12px;
+  background: rgba(8,10,20,.62); color: var(--c-text-2); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer;
+}
+.sort-select select:hover, .sort-select select:focus-visible { border-color: rgba(166,148,255,.45); color: var(--c-text); }
+.category-zone-controls--facet { margin-bottom: 4px; }
+
+/* Filter sheet chips and price pair (the markup existed without any styling). */
+.mobile-filter-field legend { padding: 0; margin-bottom: 8px; color: var(--c-text-2); font: 600 12px var(--f-ui); }
+fieldset.mobile-filter-field { margin: 0; padding: 0; border: 0; min-width: 0; }
+.mobile-filter-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.mobile-filter-chip {
+  min-height: 38px; padding: 0 14px; border: 1px solid var(--c-rule); border-radius: 999px;
+  background: rgba(8,10,20,.62); color: var(--c-text-2); font: 600 13px var(--f-ui); cursor: pointer;
+}
+.mobile-filter-chip:hover { border-color: rgba(166,148,255,.45); }
+.mobile-filter-chip.active { border-color: transparent; color: #fff; background: linear-gradient(135deg, #8b75ff, #22c9f0); }
+.mobile-filter-price { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.mobile-filter-price label { display: grid; gap: 6px; color: var(--c-text-3); font: 500 11px var(--f-ui); }
+.mobile-filter-body { overflow-y: auto; }

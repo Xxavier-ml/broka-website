@@ -2,7 +2,9 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { SlidersHorizontal, X, RotateCcw, Check } from "lucide-react";
+import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
+import type { CategoryFilterField } from "@/lib/api/categories";
 import {
   DEFAULT_MARKETPLACE_SORT,
   MARKETPLACE_CONDITIONS,
@@ -10,7 +12,14 @@ import {
   PRICE_MAX_KES,
   PRICE_MIN_KES,
   PRICE_STEP_KES,
+  attributeParam,
+  fieldLabel,
+  numberRangeBounds,
+  rangeAttribute,
+  rendersAsChips,
+  scalarAttribute,
   sortParam,
+  type AttributeValue,
   type MarketplaceSort,
 } from "@/lib/marketplace-filters";
 
@@ -38,6 +47,15 @@ export type MobileFilterDrawerProps = {
   sort: MarketplaceSort;
   iconOnly?: boolean;
   deferApply?: boolean;
+  /**
+   * The category's own filter fields (storage, RAM, mileage...), shown in the
+   * sheet as the app's filter sheet shows them, and the attributes currently
+   * applied. Every applied attribute rides along on apply, so changing the
+   * price can no longer silently drop the brand.
+   */
+  fields?: CategoryFilterField[];
+  attributes?: Record<string, AttributeValue>;
+  subcategoryId?: string;
 };
 
 function priceField(value?: number): string {
@@ -62,6 +80,9 @@ export function MobileFilterDrawer({
   sort,
   iconOnly = false,
   deferApply = false,
+  fields = [],
+  attributes = {},
+  subcategoryId,
 }: MobileFilterDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -75,9 +96,13 @@ export function MobileFilterDrawer({
     sort: sort || DEFAULT_MARKETPLACE_SORT,
   };
   const [local, setLocal] = useState<FilterState>(initial);
-  const activeCount = deferApply
+  const [attrs, setAttrs] = useState<Record<string, AttributeValue>>(attributes);
+  const attrKey = JSON.stringify(attributes);
+  const fieldNames = new Set(fields.map((field) => field.field_name));
+  const appliedFieldCount = Object.entries(attributes).filter(([name, value]) => fieldNames.has(name) && (typeof value === "string" ? value : value.min != null || value.max != null)).length;
+  const activeCount = (deferApply
     ? [local.condition, local.minPrice || local.maxPrice, local.location, sortParam(local.sort)].filter(Boolean).length
-    : [condition, minPrice != null || maxPrice != null, location, sortParam(sort)].filter(Boolean).length;
+    : [condition, minPrice != null || maxPrice != null, location, sortParam(sort)].filter(Boolean).length) + appliedFieldCount;
 
   useEffect(() => {
     setLocal({
@@ -87,7 +112,8 @@ export function MobileFilterDrawer({
       location: location ?? "",
       sort: sort || DEFAULT_MARKETPLACE_SORT,
     });
-  }, [condition, minPrice, maxPrice, location, sort]);
+    setAttrs(JSON.parse(attrKey) as Record<string, AttributeValue>);
+  }, [condition, minPrice, maxPrice, location, sort, attrKey]);
 
   useEffect(() => {
     if (!open) return;
@@ -101,7 +127,7 @@ export function MobileFilterDrawer({
     };
   }, [open]);
 
-  const navigate = (next: FilterState) => {
+  const navigate = (next: FilterState, nextAttrs: Record<string, AttributeValue> = attrs) => {
     const target = action ?? pathname;
     const params = new URLSearchParams();
     if (q) params.set("q", q);
@@ -115,6 +141,15 @@ export function MobileFilterDrawer({
     if (next.location.trim()) params.set("location", next.location.trim());
     const sortValue = sortParam(next.sort);
     if (sortValue) params.set("sort", sortValue);
+    if (subcategoryId) params.set("subcategory_id", subcategoryId);
+    for (const [name, value] of Object.entries(nextAttrs)) {
+      if (typeof value === "string") {
+        if (value) params.set(attributeParam(name), value);
+        continue;
+      }
+      if (value.min != null) params.set(`${attributeParam(name)}_min`, String(value.min));
+      if (value.max != null) params.set(`${attributeParam(name)}_max`, String(value.max));
+    }
     startTransition(() => router.replace(`${target}${params.toString() ? `?${params}` : ""}`, { scroll: false }));
   };
 
@@ -124,10 +159,19 @@ export function MobileFilterDrawer({
     if (!deferApply) navigate(next);
   };
 
+  const setAttr = (name: string, value: AttributeValue | undefined) => {
+    const next = { ...attrs };
+    if (value === undefined || value === "") delete next[name];
+    else next[name] = value;
+    setAttrs(next);
+  };
   const clear = () => {
     const next: FilterState = { condition: "", minPrice: "", maxPrice: "", location: "", sort: DEFAULT_MARKETPLACE_SORT };
+    // Fields outside the sheet (the brand row) are not the sheet's to clear.
+    const kept = Object.fromEntries(Object.entries(attrs).filter(([name]) => !fieldNames.has(name)));
     setLocal(next);
-    if (!deferApply) navigate(next);
+    setAttrs(kept);
+    if (!deferApply) navigate(next, kept);
   };
 
   return (
@@ -144,7 +188,7 @@ export function MobileFilterDrawer({
         <span className={iconOnly ? "sr-only" : undefined}>Filters & sort</span>
         {activeCount > 0 && <span className="mobile-filter-count">{activeCount}</span>}
       </button>
-      {open && (
+      {open && createPortal(
         <div className="mobile-filter-layer" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
           <section className="mobile-filter-drawer" role="dialog" aria-modal="true" aria-labelledby="mobile-filter-title">
             <header className="mobile-filter-header">
@@ -187,6 +231,44 @@ export function MobileFilterDrawer({
               <label className="mobile-filter-field">Location <span className="mobile-filter-optional">optional</span>
                 <input value={local.location} onChange={(event) => setLocal((current) => ({ ...current, location: event.target.value }))} placeholder="e.g. Nairobi, Kisumu" inputMode="text" />
               </label>
+              {fields.map((field) => {
+                const label = fieldLabel(field.field_name);
+                if (rendersAsChips(field)) {
+                  const current = scalarAttribute(attrs[field.field_name]);
+                  return (
+                    <fieldset key={field.field_name} className="mobile-filter-field">
+                      <legend>{label}</legend>
+                      <div className="mobile-filter-chips">
+                        {(field.options ?? []).map((option) => (
+                          <button key={option} type="button" className={`mobile-filter-chip${current === option ? " active" : ""}`} aria-pressed={current === option} onClick={() => setAttr(field.field_name, current === option ? undefined : option)}>{option}</button>
+                        ))}
+                      </div>
+                    </fieldset>
+                  );
+                }
+                if (field.field_type === "number_range") {
+                  const [lo, hi] = numberRangeBounds(field.field_name);
+                  const range = rangeAttribute(attrs[field.field_name]);
+                  const setBound = (which: "min" | "max", raw: string) => {
+                    const merged = { ...range, [which]: raw.trim() === "" ? undefined : Number(raw) };
+                    setAttr(field.field_name, merged.min == null && merged.max == null ? undefined : merged);
+                  };
+                  return (
+                    <fieldset key={field.field_name} className="mobile-filter-field">
+                      <legend>{label}</legend>
+                      <div className="mobile-filter-price">
+                        <label>From<input type="number" inputMode="numeric" min={lo} max={hi} step="any" placeholder={String(lo)} value={range.min ?? ""} onChange={(event) => setBound("min", event.target.value)} /></label>
+                        <label>To<input type="number" inputMode="numeric" min={lo} max={hi} step="any" placeholder={String(hi)} value={range.max ?? ""} onChange={(event) => setBound("max", event.target.value)} /></label>
+                      </div>
+                    </fieldset>
+                  );
+                }
+                return (
+                  <label key={field.field_name} className="mobile-filter-field">{label}
+                    <input value={scalarAttribute(attrs[field.field_name])} onChange={(event) => setAttr(field.field_name, event.target.value)} placeholder={`Any ${label.toLowerCase()}`} />
+                  </label>
+                );
+              })}
               {pending && <p className="mobile-filter-status" role="status">Updating listings…</p>}
             </div>
             <footer className="mobile-filter-footer">
@@ -194,7 +276,8 @@ export function MobileFilterDrawer({
               <button type="button" className="btn btn-primary" onClick={() => { navigate(local); setOpen(false); }}><Check size={15} /> View results</button>
             </footer>
           </section>
-        </div>
+        </div>,
+        document.body,
       )}
     </>
   );

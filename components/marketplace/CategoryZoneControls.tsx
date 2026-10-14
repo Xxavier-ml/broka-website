@@ -90,6 +90,7 @@ export function CategoryZoneControls({
   sort,
   attributes,
   showSubcategories = true,
+  facetOnly = false,
 }: {
   route: string;
   category: CategoryNode | null;
@@ -104,6 +105,8 @@ export function CategoryZoneControls({
   sort: MarketplaceSort;
   attributes: Record<string, AttributeValue>;
   showSubcategories?: boolean;
+  /** Subcategory screens: just "Shop by brand/make"; everything else lives in the filter sheet, as in the app. */
+  facetOnly?: boolean;
 }) {
   const keep: Record<string, string | undefined> = {
     q,
@@ -149,6 +152,22 @@ export function CategoryZoneControls({
   }
   const keepWithAttributes = { ...keep, ...attributeQuery };
 
+  if (facetOnly) {
+    if (!facet) return null;
+    return (
+      <div className="category-zone-controls category-zone-controls--facet">
+        <ChipRow
+          label={`Shop by ${facet.field_name.toLowerCase()}`}
+          allLabel={`All ${facetRowLabel(facet)}`}
+          route={route}
+          keep={keepWithAttributes}
+          paramName={attributeParam(facet.field_name)}
+          values={facet.options ?? []}
+          current={scalarAttribute(attributes[facet.field_name])}
+        />
+      </div>
+    );
+  }
   return (
     <div className="category-zone-controls" aria-label={`${category?.name ?? "Category"} browsing controls`}>
       {showSubcategories && subcategories.length > 0 && (
