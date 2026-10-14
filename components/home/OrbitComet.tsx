@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 type OrbitCometProps = {
@@ -14,7 +15,15 @@ type OrbitCometProps = {
   centerY: number;
 };
 
-/** Animated orbit light; omitted entirely when the user requests reduced motion. */
+/**
+ * Animated orbit light.
+ *
+ * useReducedMotion() returns null on the server and a real value in the
+ * browser, so deciding whether to render from it produced different markup on
+ * each side and React threw a hydration error on the homepage. The lights are
+ * now always part of the first render — server and browser agree — and are
+ * removed after mount for visitors who asked for reduced motion.
+ */
 export function OrbitComet({
   path,
   duration,
@@ -27,7 +36,9 @@ export function OrbitComet({
   centerY,
 }: OrbitCometProps) {
   const reduceMotion = useReducedMotion();
-  if (reduceMotion !== false) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (mounted && reduceMotion) return null;
 
   return (
     <g clipPath={`url(#${back ? "zo-back" : "zo-front"})`}>

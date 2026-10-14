@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ArrowUpRight, Check, MessageCircle, Search, Smartphone, Sparkles, Store, UserRound } from "lucide-react";
+import { ArrowUpRight, Check, MessageCircle, Search, Sparkles, Store, UserRound } from "lucide-react";
+import { SearchForm } from "@/components/marketplace/SearchForm";
 import { KenyaMap } from "./KenyaMap";
 import { ZenoOrbit } from "./ZenoOrbit";
 
@@ -22,10 +23,15 @@ function SignalLine() {
 }
 
 /**
- * The homepage's first decision: explore the marketplace, sell with context, or meet Zeno.
- * The network background and Zeno core stay recognizable, while the copy and
- * route cards make the value proposition legible before the visitor scrolls.
+ * What most visitors do first is look for something specific, so the hero now
+ * opens with the marketplace search itself instead of a marketing button. The
+ * popular terms underneath are the quickest route into a result page, the
+ * primary action installs the app (where conversations happen), and the trust
+ * row answers the three things a first-time visitor wants to know: is it free,
+ * who am I dealing with, and does BROKA hold my money.
  */
+const POPULAR = ["Phones", "Laptops", "Cars", "Apartments", "Land", "Furniture"];
+
 export function HomeHero() {
   return (
     <section className="cx-hero" aria-labelledby="cx-hero-title">
@@ -43,40 +49,46 @@ export function HomeHero() {
             <em>in the market.</em>
           </h1>
           <p className="cx-hero-sub cx-reveal" style={{ ["--d" as string]: "0.16s" }}>
-            BROKA helps buyers discover listings, compare seller context and see clearer next steps with Zeno.
-          </p>
-          <div className="cx-hero-actions cx-reveal" style={{ ["--d" as string]: "0.24s" }}>
-            <Link href="/browse" className="btn btn-primary cx-primary-action">
-              Explore the marketplace <ArrowUpRight size={16} aria-hidden="true" />
-            </Link>
-            <Link href="/sell" className="btn btn-ghost cx-secondary-action">
-              Sell with context <ArrowUpRight size={16} aria-hidden="true" />
-            </Link>
-            <Link href="/app-preview" className="btn btn-ghost cx-secondary-action">
-              Preview the app <Smartphone size={16} aria-hidden="true" />
-            </Link>
-          </div>
-          <p className="cx-hero-note cx-reveal" style={{ ["--d" as string]: "0.32s" }}>
-            <MessageCircle size={14} aria-hidden="true" /> Browse listings, compare the details, then contact the seller directly.
+            Search listings from sellers across Kenya, compare price, condition and location,
+            then talk to the seller directly — with the details up front.
           </p>
 
-          <div className="cx-intent-grid cx-reveal" style={{ ["--d" as string]: "0.4s" }} aria-label="Choose your starting point">
-            <Link href="/browse" className="cx-intent-card">
-              <span className="cx-intent-icon cx-intent-violet"><Search size={17} aria-hidden="true" /></span>
-              <span><strong>Explore products</strong><small>Browse the marketplace</small></span>
-              <ArrowUpRight size={15} aria-hidden="true" />
+          {/* The fastest route to a result: search the real marketplace here. */}
+          <div className="hp-hero-search cx-reveal" style={{ ["--d" as string]: "0.22s" }}>
+            <SearchForm
+              action="/search"
+              placeholder="Search phones, cars, apartments, land…"
+              className="hp-search"
+              iconSubmit
+              label="Search the marketplace"
+            />
+          </div>
+          <nav className="hp-chips cx-reveal" style={{ ["--d" as string]: "0.28s" }} aria-label="Popular searches">
+            <span className="hp-chips-label">Popular:</span>
+            {POPULAR.map((term) => (
+              <Link key={term} href={`/search?q=${encodeURIComponent(term)}`} className="hp-chip">
+                {term}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="cx-hero-actions cx-reveal" style={{ ["--d" as string]: "0.34s" }}>
+            <Link href="/download" className="btn btn-primary cx-primary-action">
+              Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
             </Link>
-            <Link href="/sell" className="cx-intent-card">
-              <span className="cx-intent-icon cx-intent-cyan"><Store size={17} aria-hidden="true" /></span>
-              <span><strong>Sell with context</strong><small>Reach the right buyer</small></span>
-              <ArrowUpRight size={15} aria-hidden="true" />
+            <Link href="/sell" className="btn btn-ghost cx-secondary-action">
+              Sell on BROKA <Store size={16} aria-hidden="true" />
             </Link>
-            <Link href="/zeno" className="cx-intent-card">
-              <span className="cx-intent-icon cx-intent-amber"><Sparkles size={17} aria-hidden="true" /></span>
-              <span><strong>Meet Zeno</strong><small>Make the next step clearer</small></span>
-              <ArrowUpRight size={15} aria-hidden="true" />
+            <Link href="/zeno" className="btn btn-ghost cx-secondary-action">
+              Meet Zeno <Sparkles size={16} aria-hidden="true" />
             </Link>
           </div>
+
+          <ul className="hp-hero-trust cx-reveal" style={{ ["--d" as string]: "0.4s" }}>
+            <li><Check size={13} aria-hidden="true" /> Clear listing context</li>
+            <li><Check size={13} aria-hidden="true" /> Contact sellers directly</li>
+            <li><Check size={13} aria-hidden="true" /> Arrange payment directly</li>
+          </ul>
         </div>
 
         <div className="cx-hero-visual cx-reveal" style={{ ["--d" as string]: "0.12s" }}>
@@ -109,7 +121,7 @@ export function HomeHero() {
         </div>
       </div>
 
-      <div className="wrap cx-proof-strip cx-reveal" style={{ ["--d" as string]: "0.48s" }} aria-label="BROKA product signals">
+      <div className="wrap cx-proof-strip cx-reveal" style={{ ["--d" as string]: "0.46s" }} aria-label="BROKA product signals">
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-violet"><Search size={16} aria-hidden="true" /></span><span><strong>21 categories</strong><small>to explore</small></span></div>
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-cyan"><Store size={16} aria-hidden="true" /></span><span><strong>Built in Kenya</strong><small>for local commerce</small></span></div>
         <div className="cx-proof-item"><span className="cx-proof-mark cx-mark-amber"><MessageCircle size={16} aria-hidden="true" /></span><span><strong>Seller context</strong><small>in view</small></span></div>

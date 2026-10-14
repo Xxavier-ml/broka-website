@@ -99,9 +99,9 @@ export function Header() {
               <span className="hdr-word-tag">Intelligent Commerce</span>
             </span>
           </Link>
-          <span className="hdr-status" aria-label="BROKA website is still in development">
+          <span className="hdr-status" aria-label="BROKA is built in Kenya">
             <span className="hdr-status-dot" aria-hidden="true" />
-            <span>In development</span>
+            <span>Built in Kenya</span>
           </span>
           {/* Desktop nav */}
           <nav className="hdr-nav" aria-label="Primary navigation" ref={navRef}>

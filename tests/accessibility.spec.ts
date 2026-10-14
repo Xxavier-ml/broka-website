@@ -48,9 +48,10 @@ test("legacy marketplace URLs open the current marketplace", async ({ page }) =>
   await expect(page.locator("#main")).toBeVisible();
 });
 
-test("homepage shows category artwork instead of live product cards", async ({ page }) => {
+test("homepage offers real search and category routes instead of live product cards", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.locator(".home-discovery-card")).toHaveCount(3);
+  await expect(page.getByRole("combobox", { name: "Search the marketplace" })).toBeVisible();
+  await expect(page.locator(".hp-cat")).toHaveCount(8);
   await expect(page.locator(".lcard-product")).toHaveCount(0);
   await expect(page.getByRole("link", { name: "Explore Electronics in the marketplace" }))
     .toHaveAttribute("href", "/browse/electronics");
@@ -58,6 +59,8 @@ test("homepage shows category artwork instead of live product cards", async ({ p
     .toHaveAttribute("href", "/browse/fashion");
   await expect(page.getByRole("link", { name: "Explore Home & Furniture in the marketplace" }))
     .toHaveAttribute("href", "/browse/home-and-furniture");
+  await expect(page.getByRole("link", { name: "Explore Automobiles in the marketplace" }))
+    .toHaveAttribute("href", "/browse/automobiles");
 });
 
 test("mobile marketplace category artwork uses moderate landscape cards", async ({ page }) => {
@@ -93,22 +96,17 @@ test("mobile marketplace category artwork uses moderate landscape cards", async 
   }
 });
 
-test("homepage marketplace visual presents a direct Discover–Compare–Connect flow", async ({ page }) => {
+test("homepage explains the Discover–Compare–Connect flow", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
-  const panel = page.locator(".cn-trust-visual");
-  await expect(panel).toBeVisible();
-  await expect(panel.locator(".cn-market-copy h3")).toHaveText("Find your next move.");
-  await expect(panel.locator(".cn-market-flow li")).toHaveCount(3);
-  await expect(panel.locator(".cn-market-flow strong")).toHaveText([
-    "Discover",
-    "Compare",
-    "Connect",
-  ]);
-  await expect(panel).toContainText("SALE & PAYMENT ARRANGED DIRECTLY");
-  await expect(panel).not.toContainText(/escrow|m-pesa/i);
+  const section = page.locator(".hp-steps");
+  await expect(section.getByRole("heading", { level: 2 })).toHaveText("Three steps from “I need this” to a seller.");
+  await expect(section.locator(".hp-step")).toHaveCount(3);
+  await expect(section.locator(".hp-step-title")).toContainText(["Discover", "Compare", "Connect"]);
+  await expect(section).toContainText("BROKA does not process or hold payments");
+  await expect(section).not.toContainText(/escrow|m-pesa/i);
 
   const pageWidth = await page.evaluate(() => ({
     viewport: document.documentElement.clientWidth,
@@ -159,24 +157,23 @@ test("mobile navigation opens, routes, and closes after selection", async ({ pag
   await expect(mobileNav).toHaveAttribute("aria-hidden", "true");
 });
 
-test("homepage seller showcase presents a sample listing and direct-contact path", async ({ page }) => {
+test("homepage seller showcase presents an illustrative image and direct listing path", async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/", { waitUntil: "domcontentloaded" });
 
-  const section = page.locator(".cn-seller");
+  const section = page.locator(".hp-sellers");
   await section.scrollIntoViewIfNeeded();
   await page.waitForTimeout(900);
-  await expect(section.getByRole("heading", { name: "Make your listings easy to understand." })).toBeVisible();
-  const preview = section.locator(".cn-seller-poster");
-  await expect(preview).toContainText("SAMPLE PREVIEW");
-  await expect(preview).toContainText("Contact seller");
-  await expect(preview).toContainText("Clear photos");
+  await expect(section.getByRole("heading", { name: "Turn what you already have into your next sale." })).toBeVisible();
+  const preview = section.locator(".hp-sellers-photo");
+  await expect(preview).toContainText("Illustrative image");
+  await expect(preview).toContainText("Put your products in view");
+  await expect(section).toContainText("Clear listings, quickly");
   await expect(preview).not.toContainText(/escrow|m-pesa|checkout|buy now/i);
   await expect(section.getByRole("link", { name: /Create a listing/ })).toHaveAttribute("href", "/sell");
 
-  const artwork = await preview.locator(".cn-seller-feature").evaluate((el) => getComputedStyle(el).backgroundImage);
-  expect(artwork).toContain("arts-crafts-1024.webp");
+  await expect(preview.locator("img")).toHaveAttribute("src", /seller-studio.webp/);
   const pageWidth = await page.evaluate(() => ({ viewport: document.documentElement.clientWidth, content: document.documentElement.scrollWidth }));
   expect(pageWidth.content, "seller showcase should not cause horizontal page scrolling").toBeLessThanOrEqual(pageWidth.viewport);
 });

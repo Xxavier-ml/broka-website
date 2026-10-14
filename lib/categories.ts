@@ -66,6 +66,20 @@ export function canonicalCategory(name: string | null | undefined): string | nul
 export const FEATURED_CATEGORIES = CATEGORIES.slice(0, 6);
 
 /**
+ * The optimised artwork for a category.
+ *
+ * The full-size category art is a 2560px JPEG (around 4MB each). The homepage
+ * grid needs a small tile, so it points at the pre-built WebP variants sitting
+ * beside them — the same picture at a fraction of the weight. Derived from the
+ * category's own art path so the two can never drift apart.
+ */
+export function categoryArtSmall(name: string | null | undefined, size: 320 | 640 | 1024 = 640): string {
+  const art = categoryVisual(name).backgroundArt ?? "/assets/category-backgrounds/services.jpg";
+  const file = art.split("/").pop()!.replace(/\.jpg$/, "");
+  return `/assets/category-backgrounds/webp/${file}-${size}.webp`;
+}
+
+/**
  * The URL slug for a category.
  *
  * Category names contain "&", which does not survive a trip through a path
