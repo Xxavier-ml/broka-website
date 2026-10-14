@@ -40,7 +40,7 @@ export function HomeHero() {
         <div className="cx-hero-copy">
           <p className="cx-kicker cx-reveal" style={{ ["--d" as string]: "0s" }}>
             <KenyaFlag />
-            <span>Built in Kenya</span>
+            <span>The future of intelligent commerce</span>
             <i aria-hidden="true" />
             <span>Designed for the next deal</span>
           </p>

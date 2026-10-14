@@ -50,6 +50,10 @@ test("legacy marketplace URLs open the current marketplace", async ({ page }) =>
 
 test("homepage offers real search and category routes instead of live product cards", async ({ page }) => {
   await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".hdr-status")).toHaveText("In development");
+  await expect(page.locator(".hdr-status")).toHaveAttribute("aria-label", "BROKA website is in development");
+  await expect(page.locator(".hdr-word-tag")).toHaveText("The future of intelligent commerce");
+  await expect(page.locator(".cx-kicker")).toContainText("The future of intelligent commerce");
   await expect(page.getByRole("combobox", { name: "Search the marketplace" })).toBeVisible();
   await expect(page.locator(".hp-cat")).toHaveCount(8);
   await expect(page.locator(".lcard-product")).toHaveCount(0);

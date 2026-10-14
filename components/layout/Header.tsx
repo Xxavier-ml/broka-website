@@ -96,12 +96,12 @@ export function Header() {
             <Image src="/assets/broka-mark.png" alt="" width={40} height={40} className="hdr-mark" priority />
             <span className="hdr-word" aria-hidden="true">
               <span className="hdr-word-name">BROKA</span>
-              <span className="hdr-word-tag">Intelligent Commerce</span>
+              <span className="hdr-word-tag">The future of intelligent commerce</span>
             </span>
           </Link>
-          <span className="hdr-status" aria-label="BROKA is built in Kenya">
+          <span className="hdr-status" aria-label="BROKA website is in development">
             <span className="hdr-status-dot" aria-hidden="true" />
-            <span>Built in Kenya</span>
+            <span>In development</span>
           </span>
           {/* Desktop nav */}
           <nav className="hdr-nav" aria-label="Primary navigation" ref={navRef}>
