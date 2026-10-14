@@ -1,8 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowRight, Bell, ChevronRight, Grid2X2, Heart, Inbox, MapPin, Menu, Mic, Plus, Search, Smartphone, Sparkles, Store } from "lucide-react";
+import { ArrowRight, ChevronRight, Grid2X2, Heart, Inbox, MapPin, Menu, Mic, Plus, Search, Sparkles } from "lucide-react";
 import { ListingDetailPreview } from "./ListingDetailPreview";
 
 const categories = [
@@ -14,7 +13,7 @@ const categories = [
 ];
 
 const listings = [
-  { title: "Airtel 5G router", price: "KES 1,500", place: "Juja, Kiambu", age: "1w ago", seller: "Clanix", image: "/assets/electronics-subcategories/networking.jpg", tag: "AI Showcase", tagStyle: "showcase" },
+  { title: "Airtel 5G router", price: "KES 1,500", place: "Juja, Kiambu", age: "1w ago", seller: "Clanix", image: "/assets/electronics-subcategories/networking.jpg", tag: "AI Showcase" },
   { title: "Airtel 5G router", price: "KES 1,500", place: "Juja, Kiambu", age: "1w ago", seller: "Clanix", image: "/assets/home-discovery/electronics.webp" },
   { title: "Smart home Wi-Fi", price: "KES 2,800", place: "Thika, Kiambu", age: "2d ago", seller: "Mumbi Tech", image: "/assets/category-backgrounds/electronics.jpg" },
   { title: "Dual-band router", price: "KES 3,200", place: "Nairobi", age: "3d ago", seller: "Tech Hub", image: "/assets/electronics-subcategories/networking.jpg" },
@@ -41,46 +40,26 @@ export function AppPreview() {
 
   return (
     <main className="app-preview-page">
-      <section className="ap-intro wrap">
-        <div className="ap-copy">
-          <span className="ap-kicker"><span className="ap-kicker-dot" /> THE BROKA APP / LIVE PREVIEW</span>
-          <h1>Good deals start<br /><em>with a little more context.</em></h1>
-          <p>Take a closer look at BROKA: a Kenya-first marketplace where you can browse real categories, compare listings and bring Zeno into your search.</p>
-          <div className="ap-intro-actions">
-            <a className="ap-primary" href="#phone-preview">Explore the preview <ArrowRight size={17} /></a>
-            <Link className="ap-secondary" href="/download">Get the app</Link>
-          </div>
-          <div className="ap-proof"><span><b>01</b> Discover categories</span><span><b>02</b> Compare listings</span><span><b>03</b> Ask Zeno</span></div>
+      <section className="ap-preview-header wrap" aria-labelledby="ap-preview-title">
+        <div className="ap-preview-header-copy">
+          <span className="ap-kicker"><span className="ap-kicker-dot" /> THE BROKA APP / PREVIEW</span>
+          <h1 id="ap-preview-title">See BROKA<br /><em>in action.</em></h1>
+          <p>Homescreen and listing details—side by side.</p>
         </div>
-        <div className="ap-art" aria-hidden="true">
-          <div className="ap-orbit ap-orbit-one" /><div className="ap-orbit ap-orbit-two" />
-          <div className="ap-art-glow" />
-          <img src="/assets/zeno-full.webp" alt="" />
-          <div className="ap-art-note"><span className="ap-live-dot" /> YOUR MARKET, WITH CONTEXT</div>
-          <span className="ap-float ap-float-one">21 categories</span><span className="ap-float ap-float-two">Made for Kenya <span>↗</span></span>
+        <div className="ap-preview-header-visual">
+          <div className="ap-preview-zeno-glow" />
+          <img src="/assets/zeno-full.webp" alt="Zeno, BROKA’s AI shopping assistant" />
+          <span className="ap-preview-zeno-tag"><span className="ap-live-dot" /> SMARTER SEARCH WITH ZENO</span>
         </div>
       </section>
 
-      <section className="ap-stage" id="phone-preview" aria-labelledby="ap-preview-title">
-        <div className="wrap ap-stage-grid">
-          <div className="ap-stage-copy">
-            <span className="ap-kicker">A closer look</span>
-            <h2 id="ap-preview-title">Two app screens,<br /><em>side by side.</em></h2>
-            <p>See BROKA the way you would preview an app before installing it: the marketplace homescreen beside a full listing, with seller standing, deal terms and Zeno Insight.</p>
-            <div className="ap-feature-list">
-              <div><span className="ap-feature-icon violet"><Search size={18} /></span><span><b>Find your next thing</b><small>Search across products, cars, property and more.</small></span></div>
-              <div><span className="ap-feature-icon cyan"><Sparkles size={18} /></span><span><b>Let Zeno help you look</b><small>Ask for a search that fits what you need.</small></span></div>
-              <div><span className="ap-feature-icon gold"><Store size={18} /></span><span><b>Connect directly</b><small>See seller and location context on each listing.</small></span></div>
-            </div>
-            <a className="ap-detail-entry" href="#ap-preview-gallery"><span><Smartphone size={18} /></span><span><strong>Compare the two screens</strong><small>Homescreen and listing details, shown together.</small></span><ArrowRight size={18} /></a>
-            <p className="ap-disclaimer"><span>ⓘ</span> Product and seller details are illustrative. Search, gallery, like/save, Zeno and negotiation actions are simulated; no account or seller is contacted.</p>
-          </div>
-
+      <section className="ap-stage ap-preview-stage" id="phone-preview" aria-labelledby="ap-preview-title">
+        <div className="wrap ap-preview-stage-inner">
           <div className="ap-preview-gallery" id="ap-preview-gallery" aria-label="BROKA app screen previews">
             <article className="ap-preview-card" id="ap-home-preview">
               <header className="ap-preview-card-heading">
                 <span>SCREEN 01 / DISCOVER</span>
-                <h3>Home screen</h3>
+                <h2>Home screen</h2>
                 <p>Browse categories, explore new listings and start with Zeno.</p>
               </header>
               <div className="ap-device-wrap">
@@ -128,7 +107,7 @@ export function AppPreview() {
             <article className="ap-preview-card" id="ap-listing-preview">
               <header className="ap-preview-card-heading">
                 <span>SCREEN 02 / LISTING</span>
-                <h3>Listing details</h3>
+                <h2>Listing details</h2>
                 <p>See the offer, delivery, seller metrics and Zeno’s listing insight.</p>
               </header>
               <div className="ap-device-wrap">
@@ -140,11 +119,10 @@ export function AppPreview() {
               </div>
             </article>
           </div>
+          <p className="ap-disclaimer"><span>ⓘ</span> Product and seller details are illustrative. Preview controls are simulated and won’t contact a real seller.</p>
+          <p className="ap-gallery-hint"><ChevronRight size={14} /> Swipe across to view both screens.</p>
         </div>
-        <p className="ap-gallery-hint wrap"><ChevronRight size={14} /> On smaller screens, swipe across the preview cards to compare both app screens.</p>
       </section>
-
-      <section className="ap-end wrap"><div><span className="ap-kicker">Your next find is closer</span><h2>See what the market<br /><em>has waiting for you.</em></h2></div><Link href="/download" className="ap-primary">Get the BROKA app <ArrowRight size={17} /></Link></section>
     </main>
   );
 }
