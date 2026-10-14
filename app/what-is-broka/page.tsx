@@ -38,8 +38,8 @@ export default function WhatIsBroka() {
               </p>
               <p className="t-body" style={{ marginBottom: 16 }}>
                 Both sides often lack the context they need to make good
-                decisions. The seller doesn't know what the buyer really values.
-                The buyer doesn't know what the seller will actually accept. And
+                decisions. The seller doesn&apos;t know what the buyer really values.
+                The buyer doesn&apos;t know what the seller will actually accept. And
                 trust has to be built from scratch every time.
               </p>
               <p className="t-body">

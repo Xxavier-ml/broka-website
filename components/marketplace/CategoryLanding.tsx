@@ -26,9 +26,6 @@ import {
   type MarketplaceSort,
 } from "@/lib/marketplace-filters";
 
-/** The app's sort labels, and its default ranking for the first entry. */
-const sortOptions: { key: MarketplaceSort; label: string }[] = MARKETPLACE_SORT_OPTIONS.map((option) => ({ key: option.key, label: option.label }));
-
 export function CategoryLanding({
   category,
   q,
