@@ -45,12 +45,12 @@ export function HomeHero() {
             <span>Designed for the next deal</span>
           </p>
           <h1 className="cx-hero-title cx-reveal" id="cx-hero-title" style={{ ["--d" as string]: "0.08s" }}>
-            <span>Find the signal</span>
-            <em>in the market.</em>
+            <span>Find what fits.</span>
+            <em>Deal with clarity.</em>
           </h1>
           <p className="cx-hero-sub cx-reveal" style={{ ["--d" as string]: "0.16s" }}>
-            Search listings from sellers across Kenya, compare price, condition and location,
-            then talk to the seller directly — with the details up front.
+            Search products and stores across Kenya. Compare price, condition and location
+            before you contact the seller directly.
           </p>
 
           {/* The fastest route to a result: search the real marketplace here. */}

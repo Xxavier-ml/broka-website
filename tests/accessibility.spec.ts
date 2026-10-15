@@ -263,3 +263,15 @@ test("contact enquiry category choices retain button and pressed-state semantics
   await choices.nth(1).click();
   await expect(choices.nth(1)).toHaveAttribute("aria-pressed", "true");
 });
+
+
+test("homepage mobile quick actions lead directly to browse and sell", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  const dock = page.getByRole("navigation", { name: "Quick actions" });
+  await expect(dock).toBeVisible();
+  await expect(dock.getByRole("link", { name: /Browse marketplace/ })).toHaveAttribute("href", "/browse");
+  await expect(dock.getByRole("link", { name: /^Sell/ })).toHaveAttribute("href", "/sell");
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await expect(dock).toBeHidden();
+});

@@ -658,3 +658,56 @@
   .tilt-inner { transform: none; }
   .kmap-ripple { opacity: .35; transform: scale(2.2); }
 }
+
+
+/* ================================================================
+   HOME POLISH — tighter conversion rhythm, clearer hierarchy, mobile actions
+   ================================================================ */
+.cx-hero { min-height: min(820px, 100svh); padding-top: calc(76px + clamp(22px, 4.2vw, 58px)); }
+.cx-hero-title { max-width: 11.5ch; font-size: clamp(50px, 6.1vw, 84px); line-height: .98; letter-spacing: -.06em; }
+.cx-hero-sub { max-width: 48ch; margin-top: 20px; }
+.cx-hero-grid { gap: clamp(26px, 4vw, 64px); }
+.cx-core-frame { min-height: 460px; }
+.cx-proof-strip { margin-top: 26px; }
+.home-mobile-dock { display: none; }
+/* Homepage sections belong to one journey; reduce dead air without changing the field. */
+body:has(.cx-hero) .sec { padding-block: clamp(62px, 6.5vw, 88px); }
+body:has(.cx-hero) .home-conversion { padding-bottom: clamp(64px, 7vw, 92px); }
+@media (max-width: 1080px) {
+  .cx-hero-title { font-size: clamp(48px, 6.6vw, 72px); }
+}
+@media (max-width: 900px) {
+  .cx-hero { min-height: auto; padding-top: calc(76px + 28px); }
+  .cx-core-frame { min-height: 430px; }
+}
+@media (max-width: 620px) {
+  .cx-hero { padding-top: calc(76px + 22px); }
+  .cx-hero-title { max-width: 13ch; font-size: clamp(42px, 11.2vw, 58px); }
+  .cx-core-frame { min-height: 360px; }
+  body:has(.cx-hero) .sec { padding-block: 58px; }
+  body:has(.cx-hero) .home-conversion { padding-bottom: 98px; }
+  .home-mobile-dock {
+    position: fixed;
+    z-index: 50;
+    right: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    left: 12px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 8px;
+    padding: 8px;
+    border: 1px solid rgba(195,202,226,.2);
+    border-radius: 18px;
+    background: rgba(6,8,20,.92);
+    box-shadow: 0 12px 40px rgba(0,0,0,.45), inset 0 1px rgba(255,255,255,.08);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+  .home-mobile-dock a { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 46px; padding: 0 16px; border-radius: 12px; font: 700 13px/1 var(--f-ui); }
+  .home-mobile-dock-browse { background: var(--grad-brand); color: #fff; }
+  .home-mobile-dock-sell { border: 1px solid rgba(195,202,226,.2); background: rgba(255,255,255,.04); color: #eeedfa; }
+  .home-mobile-dock a:focus-visible { outline-offset: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-mobile-dock a { scroll-behavior: auto; }
+}

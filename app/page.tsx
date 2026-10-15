@@ -52,6 +52,10 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <nav className="home-mobile-dock" aria-label="Quick actions">
+        <Link href="/browse" className="home-mobile-dock-browse"><Search size={17} aria-hidden="true" /> Browse marketplace</Link>
+        <Link href="/sell" className="home-mobile-dock-sell"><Store size={16} aria-hidden="true" /> Sell</Link>
+      </nav>
     </>
   );
 }

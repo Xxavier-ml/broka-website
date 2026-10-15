@@ -1,7 +1,7 @@
 "use client";
 
 import { motion, useReducedMotion, type Variants } from "framer-motion";
-import type { ReactNode, CSSProperties } from "react";
+import { useEffect, useState, type ReactNode, type CSSProperties } from "react";
 
 export function Reveal({
   children,
@@ -14,7 +14,13 @@ export function Reveal({
   className?: string;
   style?: CSSProperties;
 }) {
-  const reduceMotion = useReducedMotion() !== false;
+  // Framer Motion knows the media query only in the browser. Start with the
+  // same value on server and client, then apply the preference after hydration.
+  const prefersReducedMotion = useReducedMotion();
+  const [reduceMotion, setReduceMotion] = useState(true);
+  useEffect(() => {
+    setReduceMotion(prefersReducedMotion ?? false);
+  }, [prefersReducedMotion]);
   const variants: Variants = {
     hidden: {
       opacity: 0,
