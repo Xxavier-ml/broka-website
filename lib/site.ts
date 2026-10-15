@@ -22,8 +22,8 @@ export const CONTACT = {
 
 export const SOCIAL = {
   x: "https://x.com/brokaapp",
-  linkedin: "https://linkedin.com/company/brokaapp",
-  github: "https://github.com/Xxavier-ml/broka-website",
+  instagram: "https://www.instagram.com/real.broka/",
+  tiktok: "https://www.tiktok.com/@realbroka",
 } as const;
 
 /**

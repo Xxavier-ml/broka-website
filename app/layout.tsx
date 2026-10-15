@@ -73,7 +73,7 @@ const organization = {
       availableLanguage: ["English", "Swahili"],
     },
   ],
-  sameAs: [SOCIAL.x, SOCIAL.linkedin],
+  sameAs: [SOCIAL.x, SOCIAL.instagram, SOCIAL.tiktok],
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

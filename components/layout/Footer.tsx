@@ -14,8 +14,8 @@ export function Footer() {
   const year = new Date().getFullYear();
   const social = [
     { label: "X / Twitter", href: SOCIAL.x },
-    { label: "LinkedIn", href: SOCIAL.linkedin },
-    { label: "GitHub", href: SOCIAL.github },
+    { label: "Instagram", href: SOCIAL.instagram },
+    { label: "TikTok", href: SOCIAL.tiktok },
   ];
   return (
     <footer className="ftr" aria-label="Site footer">

@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { cn } from "@/lib/utils";
-import { CONTACT } from "@/lib/site";
+import { CONTACT, SOCIAL } from "@/lib/site";
 
 const CATEGORIES = [
   { title: "General enquiry", sub: "Questions about BROKA, Zeno or the platform." },
@@ -144,14 +144,14 @@ export function EarlyAccessPanel() {
             marginTop: 24,
           }}
         >
-          <a href="https://x.com/brokaapp" target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+          <a href={SOCIAL.x} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
             X / Twitter
           </a>
-          <a href="https://linkedin.com/company/brokaapp" target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-            LinkedIn
+          <a href={SOCIAL.instagram} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+            Instagram
           </a>
-          <a href="https://github.com/Xxavier-ml/broka-website" target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
-            GitHub
+          <a href={SOCIAL.tiktok} target="_blank" rel="noopener noreferrer" className="btn btn-ghost btn-sm">
+            TikTok
           </a>
         </div>
       </form>
