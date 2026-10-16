@@ -1,0 +1,369 @@
+/* ================================================================
+   BROKA · PREMIUM FUTURISTIC PASS
+   Generated with UI UX Pro Max (see design-system/broka/MASTER.md):
+   style — AI-Native UI + Glassmorphism; type — Space Grotesk / DM Sans;
+   accents — violet + cyan over the retained ink-navy network field.
+   Scope — homepage and marketing surfaces only. The marketplace
+   (browse, categories, listings, stores, search) is intentionally
+   untouched, and the shared header/footer keep the brand faces.
+   Reversible: remove the "./premium.css" import in app/layout.tsx.
+   ================================================================ */
+
+/* ─── 1 · Scoped tokens ───
+   Applied to <main> so the shared chrome never changes faces, and to
+   marketing pages only (the store directory and listing pages carry
+   .listing-page-hero and keep the current treatment). */
+body:has(.cx-hero) > main,
+body:has(.page-hero):not(:has(.listing-page-hero)) > main {
+  --f-display: var(--font-space-grotesk), "Space Grotesk", var(--font-montserrat, "Montserrat"), sans-serif;
+  --f-body: var(--font-dm-sans), "DM Sans", var(--font-inter, "Inter"), sans-serif;
+
+  --pr-edge: rgba(202, 209, 235, .16);
+  --pr-edge-hi: rgba(186, 172, 255, .48);
+  --pr-glow-violet: rgba(139, 117, 255, .42);
+  --pr-glow-cyan: rgba(84, 215, 233, .34);
+  --pr-inner-hi: inset 0 1px 0 rgba(255, 255, 255, .07);
+  --pr-ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+/* ─── 2 · Homepage hero: the Zeno core as the glass command surface ─── */
+body:has(.cx-hero) .cx-hero::before {
+  background:
+    radial-gradient(ellipse 52% 70% at 76% 38%, rgba(116, 91, 255, .18), transparent 72%),
+    radial-gradient(ellipse 42% 44% at 12% 74%, rgba(84, 215, 233, .08), transparent 70%),
+    linear-gradient(180deg, rgba(3, 5, 14, .16), rgba(3, 5, 14, .62));
+}
+
+body:has(.cx-hero) .cx-kicker {
+  background: linear-gradient(135deg, rgba(17, 19, 42, .74), rgba(8, 11, 25, .58));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--pr-inner-hi), 0 12px 32px -20px rgba(124, 92, 255, .9);
+}
+
+body:has(.cx-hero) .cx-hero-title em {
+  filter: drop-shadow(0 0 26px rgba(139, 117, 255, .38));
+}
+
+body:has(.cx-hero) .hp-hero-search { max-width: 640px; }
+body:has(.cx-hero) .hp-search {
+  border-color: rgba(172, 158, 255, .38);
+  background: linear-gradient(160deg, rgba(21, 25, 50, .78), rgba(7, 10, 24, .86));
+  box-shadow: 0 24px 60px -34px rgba(124, 92, 255, .95), var(--pr-inner-hi);
+  transition: border-color .2s var(--pr-ease), box-shadow .2s var(--pr-ease), transform .2s var(--pr-ease);
+}
+@media (hover: hover) and (pointer: fine) {
+  body:has(.cx-hero) .hp-search:hover { transform: translateY(-2px); border-color: rgba(186, 172, 255, .55); }
+}
+body:has(.cx-hero) .hp-search:focus-within {
+  border-color: rgba(198, 186, 255, .8);
+  box-shadow:
+    0 26px 62px -32px rgba(124, 92, 255, 1),
+    0 0 0 4px rgba(124, 92, 255, .18),
+    0 0 34px -12px rgba(84, 215, 233, .55),
+    var(--pr-inner-hi);
+}
+
+body:has(.cx-hero) .hp-chip {
+  background: linear-gradient(150deg, rgba(18, 21, 44, .7), rgba(9, 12, 26, .62));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+body:has(.cx-hero) .hp-chip:hover {
+  border-color: rgba(140, 236, 255, .55);
+  box-shadow: 0 10px 24px -14px rgba(84, 215, 233, .8), var(--pr-inner-hi);
+}
+
+body:has(.cx-hero) .cx-core-frame {
+  border-color: rgba(178, 164, 255, .3);
+  background:
+    radial-gradient(circle at 50% 42%, rgba(139, 117, 255, .26), transparent 34%),
+    radial-gradient(circle at 82% 80%, rgba(84, 215, 233, .12), transparent 42%),
+    linear-gradient(150deg, rgba(16, 20, 44, .78), rgba(5, 8, 20, .9));
+  box-shadow:
+    0 42px 96px -58px rgba(100, 80, 255, .95),
+    0 0 44px -22px rgba(84, 215, 233, .5),
+    var(--pr-inner-hi);
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+}
+body:has(.cx-hero) .cx-signal-label {
+  border-color: rgba(202, 209, 235, .2);
+  background: rgba(6, 9, 20, .62);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+body:has(.cx-hero) .cx-query-card {
+  border-color: rgba(198, 186, 255, .34);
+  background: linear-gradient(140deg, rgba(30, 31, 64, .92), rgba(8, 11, 24, .94));
+  box-shadow:
+    0 26px 52px -32px rgba(0, 0, 0, .95),
+    0 0 30px -14px rgba(139, 117, 255, .75),
+    var(--pr-inner-hi);
+}
+body:has(.cx-hero) .cx-proof-strip {
+  border-top-color: rgba(202, 209, 235, .18);
+  border-bottom-color: rgba(202, 209, 235, .12);
+  background: linear-gradient(180deg, rgba(10, 13, 28, .5), rgba(4, 6, 16, .34));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+/* ─── 3 · Homepage sections: aurora accents + one glass language ─── */
+body:has(.cx-hero) .hp-cats,
+body:has(.cx-hero) .hp-zeno,
+body:has(.cx-hero) .hp-trust { position: relative; }
+body:has(.cx-hero) .hp-cats > .wrap,
+body:has(.cx-hero) .hp-zeno > .wrap,
+body:has(.cx-hero) .hp-trust > .wrap { position: relative; z-index: 1; }
+body:has(.cx-hero) .hp-cats::before,
+body:has(.cx-hero) .hp-zeno::before,
+body:has(.cx-hero) .hp-trust::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: -8% 0;
+  pointer-events: none;
+}
+body:has(.cx-hero) .hp-cats::before {
+  background: radial-gradient(ellipse 34% 48% at 8% 24%, rgba(139, 117, 255, .1), transparent 70%);
+}
+body:has(.cx-hero) .hp-zeno::before {
+  background:
+    radial-gradient(ellipse 36% 52% at 92% 46%, rgba(84, 215, 233, .08), transparent 72%),
+    radial-gradient(ellipse 30% 44% at 10% 70%, rgba(139, 117, 255, .09), transparent 70%);
+}
+body:has(.cx-hero) .hp-trust::before {
+  background: radial-gradient(ellipse 42% 56% at 50% 20%, rgba(139, 117, 255, .09), transparent 72%);
+}
+
+body:has(.cx-hero) .hp-cat:hover {
+  border-color: rgba(186, 172, 255, .55);
+  box-shadow:
+    0 34px 64px -42px rgba(124, 92, 255, .95),
+    0 0 36px -16px rgba(84, 215, 233, .55),
+    var(--pr-inner-hi);
+}
+
+body:has(.cx-hero) .hp-step {
+  border-color: var(--pr-edge);
+  background: linear-gradient(160deg, rgba(17, 21, 44, .82), rgba(7, 10, 24, .9));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--pr-inner-hi), 0 20px 46px -40px rgba(0, 0, 0, .9);
+}
+body:has(.cx-hero) .hp-step:hover {
+  border-color: rgba(186, 172, 255, .45);
+  box-shadow: 0 26px 54px -38px rgba(124, 92, 255, .85), var(--pr-inner-hi);
+}
+body:has(.cx-hero) .hp-step-number {
+  border-color: rgba(186, 172, 255, .5);
+  box-shadow: 0 0 18px -6px rgba(139, 117, 255, .9);
+}
+
+body:has(.cx-hero) .hp-chat {
+  border-color: rgba(186, 172, 255, .24);
+  background:
+    radial-gradient(ellipse 70% 60% at 84% 0%, rgba(139, 117, 255, .22), transparent 70%),
+    radial-gradient(ellipse 52% 46% at 6% 96%, rgba(84, 215, 233, .1), transparent 72%),
+    linear-gradient(160deg, rgba(15, 19, 42, .84), rgba(5, 8, 20, .9));
+  backdrop-filter: blur(16px) saturate(125%);
+  -webkit-backdrop-filter: blur(16px) saturate(125%);
+  box-shadow: 0 48px 96px -64px rgba(124, 92, 255, .95), var(--pr-inner-hi);
+}
+body:has(.cx-hero) .hp-chat-results li {
+  transition: border-color .2s var(--pr-ease), background .2s var(--pr-ease);
+}
+body:has(.cx-hero) .hp-chat-results li:hover {
+  border-color: rgba(186, 172, 255, .3);
+  background: rgba(17, 21, 44, .72);
+}
+
+body:has(.cx-hero) .hp-sellers-photo {
+  border-color: rgba(186, 172, 255, .24);
+  box-shadow:
+    0 50px 96px -64px rgba(0, 0, 0, .95),
+    0 0 44px -26px rgba(139, 117, 255, .55),
+    var(--pr-inner-hi);
+}
+body:has(.cx-hero) .hp-sellers-badge {
+  border-color: rgba(186, 172, 255, .32);
+  background: linear-gradient(140deg, rgba(13, 16, 36, .86), rgba(7, 10, 24, .88));
+  box-shadow: var(--pr-inner-hi), 0 16px 40px -30px rgba(0, 0, 0, .9);
+}
+
+body:has(.cx-hero) .hp-app-panel {
+  border-color: rgba(186, 172, 255, .24);
+  background:
+    radial-gradient(ellipse 60% 70% at 12% 18%, rgba(139, 117, 255, .24), transparent 70%),
+    radial-gradient(ellipse 44% 56% at 92% 88%, rgba(84, 215, 233, .1), transparent 72%),
+    linear-gradient(140deg, rgba(15, 19, 42, .84), rgba(5, 8, 20, .9));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 34px 80px -58px rgba(124, 92, 255, .8), var(--pr-inner-hi);
+}
+
+body:has(.cx-hero) .hp-trust-card {
+  border-color: var(--pr-edge);
+  background: linear-gradient(160deg, rgba(15, 18, 38, .68), rgba(7, 10, 24, .74));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: var(--pr-inner-hi);
+}
+body:has(.cx-hero) .hp-trust-card:hover {
+  border-color: rgba(186, 172, 255, .4);
+  background: linear-gradient(160deg, rgba(21, 25, 50, .78), rgba(9, 12, 28, .82));
+  box-shadow: 0 22px 48px -36px rgba(124, 92, 255, .75), var(--pr-inner-hi);
+}
+
+body:has(.cx-hero) .home-conversion-card {
+  border-color: rgba(186, 172, 255, .28);
+  background:
+    radial-gradient(ellipse at 0% 0%, rgba(139, 117, 255, .24), transparent 52%),
+    radial-gradient(ellipse at 100% 100%, rgba(84, 215, 233, .12), transparent 48%),
+    rgba(7, 9, 24, .84);
+  box-shadow:
+    0 34px 96px -56px rgba(84, 67, 198, .95),
+    0 0 46px -24px rgba(84, 215, 233, .4),
+    inset 0 1px rgba(255, 255, 255, .09);
+}
+
+/* ─── 4 · Controls: gradient primary with a light sweep, glass ghost ─── */
+body:has(.cx-hero) main .btn-primary,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .btn-primary {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: linear-gradient(112deg, #a06cff 0%, #7b5cf5 52%, #5f8dff 100%);
+  box-shadow: 0 14px 36px -16px rgba(139, 117, 255, .95), var(--pr-inner-hi);
+}
+body:has(.cx-hero) main .btn-primary::after,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .btn-primary::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 32%, rgba(255, 255, 255, .3) 50%, transparent 68%);
+  transform: translateX(-130%);
+  transition: transform .6s var(--pr-ease);
+}
+body:has(.cx-hero) main .btn-primary:hover::after,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .btn-primary:hover::after {
+  transform: translateX(130%);
+}
+body:has(.cx-hero) main .btn-ghost,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .btn-ghost {
+  background: linear-gradient(150deg, rgba(16, 19, 40, .6), rgba(8, 11, 24, .55));
+  border-color: rgba(202, 209, 235, .2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+body:has(.cx-hero) main .btn-ghost:hover,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .btn-ghost:hover {
+  border-color: rgba(172, 164, 255, .6);
+  background: rgba(139, 117, 255, .16);
+  box-shadow: 0 14px 34px -22px rgba(139, 117, 255, .85), var(--pr-inner-hi);
+}
+
+/* ─── 5 · Marketing page heroes ─── */
+body:has(.page-hero):not(:has(.listing-page-hero)) main .page-hero::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 46% 74% at 82% 30%, rgba(139, 117, 255, .14), transparent 72%),
+    radial-gradient(ellipse 38% 52% at 8% 78%, rgba(84, 215, 233, .08), transparent 70%);
+}
+body:has(.page-hero):not(:has(.listing-page-hero)) main .page-hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  margin-bottom: 18px;
+  border: 1px solid rgba(139, 117, 255, .3);
+  border-radius: 999px;
+  background: linear-gradient(135deg, rgba(17, 19, 42, .7), rgba(8, 11, 25, .55));
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #c9beff;
+  box-shadow: 0 12px 30px -20px rgba(124, 92, 255, .9), var(--pr-inner-hi);
+}
+body:has(.page-hero):not(:has(.listing-page-hero)) main .page-hero-headline {
+  text-shadow: 0 0 60px rgba(139, 117, 255, .22);
+}
+body:has(.page-hero):not(:has(.listing-page-hero)) main .page-hero-system {
+  border-left-color: rgba(139, 117, 255, .35);
+}
+body:has(.page-hero):not(:has(.listing-page-hero)) main .page-hero-system-mark {
+  color: #c3b7ff;
+}
+
+body:has(.page-hero):not(:has(.listing-page-hero)) main .card,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .ccard,
+body:has(.page-hero):not(:has(.listing-page-hero)) main .dl-step {
+  border-color: rgba(202, 209, 235, .15);
+  box-shadow: var(--pr-inner-hi), 0 22px 52px -46px rgba(0, 0, 0, .9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+body:has(.page-hero):not(:has(.listing-page-hero)) main .card:hover,
+body:has(.page-hero):not(:has(.listing-page-hero)) main a.ccard:hover {
+  border-color: rgba(186, 172, 255, .38);
+  box-shadow: 0 26px 58px -44px rgba(124, 92, 255, .7), var(--pr-inner-hi);
+}
+
+/* ─── 6 · Shared chrome: one luminous hairline, deeper glass ─── */
+.hdr::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(139, 117, 255, .38) 20%, rgba(84, 215, 233, .3) 52%, rgba(139, 117, 255, .38) 80%, transparent);
+  opacity: .6;
+}
+.ftr {
+  background: rgba(2, 4, 14, .8);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+.ftr::before {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(139, 117, 255, .42) 22%, rgba(84, 215, 233, .3) 55%, rgba(139, 117, 255, .42) 78%, transparent);
+  opacity: .7;
+}
+
+/* ─── 7 · Motion: live pulses and sweeps, all optional ─── */
+@keyframes pr-pulse-dot {
+  0%, 100% { box-shadow: 0 0 8px rgba(113, 226, 194, .6); }
+  50% { box-shadow: 0 0 14px rgba(113, 226, 194, .95); }
+}
+body:has(.cx-hero) .hp-chat-status i,
+body:has(.cx-hero) .cx-live-dot {
+  animation: pr-pulse-dot 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body:has(.cx-hero) main .btn-primary::after,
+  body:has(.page-hero):not(:has(.listing-page-hero)) main .btn-primary::after { display: none; }
+  body:has(.cx-hero) .hp-chat-status i,
+  body:has(.cx-hero) .cx-live-dot { animation: none; }
+  body:has(.cx-hero) .hp-search,
+  body:has(.cx-hero) .hp-chip,
+  body:has(.cx-hero) .hp-step,
+  body:has(.cx-hero) .hp-cat,
+  body:has(.cx-hero) .hp-trust-card,
+  body:has(.cx-hero) .hp-chat-results li { transition: none; }
+  body:has(.cx-hero) .hp-search:hover { transform: none; }
+}
