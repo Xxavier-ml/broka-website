@@ -25,28 +25,18 @@ export function CategoryChips({
   const pointerStartXRef = useRef<number | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const [activeIndex, setActiveIndex] = useState(0);
-  const items = [
-    {
-      key: "all",
-      href: withQuery(basePath, keep),
-      label: "All products",
-      emoji: "✦",
-      image: undefined,
-      gradient: undefined,
-      active: !active,
-    },
-    ...CATEGORIES.map((category) => ({
-      key: category.name,
-      href: basePath === "/browse"
-        ? withQuery(`/browse/${categorySlug(category.name)}`, keep)
-        : withQuery(basePath, { ...keep, category: category.name }),
-      label: category.name,
-      emoji: category.emoji,
-      image: category.backgroundArt,
-      gradient: category.gradient,
-      active: active === category.name,
-    })),
-  ];
+  const items = CATEGORIES.map((category) => ({
+    key: category.name,
+    href: basePath === "/browse"
+      ? withQuery(`/browse/${categorySlug(category.name)}`, keep)
+      : withQuery(basePath, { ...keep, category: category.name }),
+    label: category.name,
+    emoji: category.emoji,
+    image: category.backgroundArt,
+    gradient: category.gradient,
+    active: active === category.name,
+  }));
+  const itemCount = items.length;
 
   useEffect(() => {
     const rail = railRef.current;
@@ -57,7 +47,7 @@ export function CategoryChips({
       const card = rail.querySelector<HTMLElement>(".category-card");
       if (!card || rail.scrollWidth <= rail.clientWidth) return;
       const gap = Number.parseFloat(getComputedStyle(rail).columnGap) || 0;
-      const nextIndex = activeIndexRef.current >= items.length - 1 ? 0 : activeIndexRef.current + 1;
+      const nextIndex = activeIndexRef.current >= itemCount - 1 ? 0 : activeIndexRef.current + 1;
       activeIndexRef.current = nextIndex;
       setActiveIndex(nextIndex);
       rail.scrollTo({ left: nextIndex * (card.offsetWidth + gap), behavior: "smooth" });
@@ -70,7 +60,7 @@ export function CategoryChips({
     };
     scheduleNext();
     return () => { if (timer) window.clearTimeout(timer); };
-  }, [autoScroll]);
+  }, [autoScroll, itemCount]);
 
   const moveByCard = (direction: -1 | 1) => {
     const rail = railRef.current;
