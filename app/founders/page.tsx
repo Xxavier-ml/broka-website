@@ -50,9 +50,6 @@ export default function Founders() {
                     {f.social.linkedin && (
                       <a href={`https://linkedin.com/in/${f.social.linkedin}`} target="_blank" rel="noopener noreferrer" className="founder-social-link" aria-label={`${f.name} on LinkedIn`}>in</a>
                     )}
-                    {f.social.github && (
-                      <a href={`https://github.com/${f.social.github}`} target="_blank" rel="noopener noreferrer" className="founder-social-link" aria-label={`${f.name} on GitHub`}>gh</a>
-                    )}
                   </div>
                 )}
               </article>

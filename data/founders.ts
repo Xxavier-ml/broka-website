@@ -7,7 +7,7 @@ export interface Founder {
   /** Their BROKA address, shown on the founders page and the contact page. */
   email: string;
   photo?: string;
-  social: { twitter?: string; linkedin?: string; github?: string };
+  social: { twitter?: string; linkedin?: string };
 }
 
 export const founders: Founder[] = [

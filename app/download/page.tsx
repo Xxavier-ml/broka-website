@@ -30,7 +30,7 @@ export default function DownloadPage() {
         atmosphere="atm-violet"
       >
         <div className="dl-hero-actions">
-          <a href={APP_DOWNLOAD_URL} className="btn btn-primary" rel="noopener noreferrer">
+          <a href={APP_DOWNLOAD_URL} download="broka-android.apk" className="btn btn-primary">
             <Download size={16} aria-hidden="true" /> Download for Android
           </a>
           <Link href="/app-preview" className="btn btn-ghost">
@@ -52,8 +52,8 @@ export default function DownloadPage() {
             <li className="dl-step">
               <h3>Download the app</h3>
               <p>
-                Tap <strong>Download for Android</strong> on this page. The file is BROKA&apos;s own build, published on
-                our GitHub releases.
+                Tap <strong>Download for Android</strong> on this page. The file is BROKA&apos;s own build, hosted on
+                this website.
               </p>
             </li>
             <li className="dl-step">
@@ -69,11 +69,7 @@ export default function DownloadPage() {
             </li>
           </ol>
           <p className="dl-note" style={{ margin: "22px auto 0", textAlign: "center" }}>
-            Only download BROKA from this website or from{" "}
-            <a href="https://github.com/Xxavier-ml/broka/releases" target="_blank" rel="noopener noreferrer" className="t-violet">
-              BROKA&apos;s GitHub releases
-            </a>
-            . Trouble installing? Email{" "}
+            Only download BROKA from this website. Trouble installing? Email{" "}
             <a href={mailto(CONTACT.adminEmail, "Help installing the BROKA app")} className="t-violet">
               {CONTACT.adminEmail}
             </a>

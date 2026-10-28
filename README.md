@@ -29,7 +29,7 @@ Open `http://localhost:3000`.
 | Online stores | `/stores`, `/stores/[slug]`, `/listings/[id]` | Store directory, a store's page and products, a product's details |
 | Store links | `/store/*` | Served by the web storefront, a separate deployment (below) |
 | Search | `/search` | Legacy search addresses route to `/browse` |
-| Get the app | `/download` | Android APK from the BROKA GitHub releases |
+| Get the app | `/download` | Android APK hosted by this website at `/downloads/app-arm64-v8a-release.apk` |
 | Contact | `/contact` | Email, phone, WhatsApp and the co-founders' addresses, plus an email form |
 | Legal | `/privacy`, `/terms` | Review with a lawyer before launch |
 

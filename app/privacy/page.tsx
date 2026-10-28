@@ -57,8 +57,8 @@ export default function Privacy() {
 
             <h2>Links to other sites</h2>
             <p>
-              Some links lead elsewhere, for example our social pages and the app download on GitHub. Those services have
-              their own privacy practices.
+              The app download is hosted on this website. Some links lead elsewhere, such as our social pages; those
+              services have their own privacy practices.
             </p>
 
             <h2>Your choices</h2>

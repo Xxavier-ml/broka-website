@@ -26,14 +26,8 @@ export const SOCIAL = {
   tiktok: "https://www.tiktok.com/@realbroka",
 } as const;
 
-/**
- * The Android app, built by the main BROKA repository's CI and published as
- * the latest GitHub release. Overridable so a Play Store link can replace it
- * without a code change.
- */
-export const APP_DOWNLOAD_URL =
-  (process.env.NEXT_PUBLIC_APP_DOWNLOAD_URL || "").trim() ||
-  "https://github.com/Xxavier-ml/broka/releases/latest/download/broka-release.apk";
+/** Android app package served directly from this website. */
+export const APP_DOWNLOAD_URL = "/downloads/app-arm64-v8a-release.apk";
 
 export const mailto = (address: string, subject?: string) =>
   `mailto:${address}${subject ? `?subject=${encodeURIComponent(subject)}` : ""}`;
