@@ -1638,7 +1638,7 @@ body { background-color: #05060d; }
   .browse-v0-category-rail .category-card.chip { min-height: 0; }
 }
 @media (max-width: 620px) {
-  .browse-v0-category-rail .category-card.chip { flex: 0 0 min(68vw, 250px); aspect-ratio: 1.65 / 1; min-height: 0; }
+  .browse-v0-category-rail .category-card.chip { flex: 0 0 min(64vw, 230px); aspect-ratio: 1.65 / 1; min-height: 0; }
 }
 /* ================================================================
    BROKA CONVERSION SYSTEM — signal-led homepage and marketplace proof
