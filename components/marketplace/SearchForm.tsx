@@ -27,7 +27,7 @@ function readRecentSearches() {
   }
 }
 
-/** A progressive GET search form with Railway autocomplete, local history, and popular searches. */
+/** A progressive GET search form with BROKA API autocomplete, local history, and popular searches. */
 export function SearchForm({
   action,
   value,

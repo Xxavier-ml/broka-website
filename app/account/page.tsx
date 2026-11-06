@@ -25,7 +25,7 @@ export default function AccountPage() {
             <span className="account-avatar"><UserRound size={25} /></span>
             <div>
               <h2 className="t-h3" id="account-options">Sign in to your BROKA account</h2>
-              <p className="t-body">Authentication and session refresh will use the Railway API. Your account hub is ready for saved listings, seller conversations and selling activity.</p>
+              <p className="t-body">Authentication and session refresh use the BROKA API shared with the mobile app. Your account hub is ready for saved listings, seller conversations and selling activity.</p>
             </div>
             <Link href="/download" className="btn btn-primary">Open the BROKA app <ArrowRight size={17} /></Link>
           </div>

@@ -8,13 +8,13 @@
 // the server, where the cache lives and the API's address is not exposed.
 
 /**
- * The BROKA API, deployed on Railway at api.broka.co.ke. Keep the URL
- * environment-driven so staging and local API instances can be swapped in
- * without changing the storefront code.
+ * The BROKA API used by the mobile app (`https://broka-a6vh.onrender.com`).
+ * Keep the URL environment-driven so staging and local API instances can be
+ * swapped in without changing the storefront code.
  */
 export const API_URL = (
   process.env.BROKA_API_URL?.trim() ||
-  "https://api.broka.co.ke"
+  "https://broka-a6vh.onrender.com"
 ).replace(/\/+$/, "");
 
 /** The API answered with an error, or did not answer at all. */
