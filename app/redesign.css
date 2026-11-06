@@ -1465,9 +1465,9 @@ body { background-color: #05060d; }
   .search-control-row.browse-search-filter-row .mobile-filter-trigger--icon { width: 56px; height: 56px; min-height: 56px; flex-basis: 56px; border-radius: 17px; }
 }
 .browse-route-kicker { display: block; margin-bottom: 16px; color: #b4a8ff; font: 700 9px/1 var(--f-ui); letter-spacing: .16em; }
-.browse-route-signal { position: absolute; right: 0; top: 8px; display: flex; align-items: center; gap: 10px; padding: 11px 13px; border: 1px solid rgba(113,226,194,.2); border-radius: 10px; background: rgba(7,13,23,.66); }
-.browse-route-signal-dot { width: 7px; height: 7px; border-radius: 50%; background: #71e2c2; box-shadow: 0 0 11px rgba(113,226,194,.85); }
-.browse-route-signal span:last-child { display: grid; gap: 4px; }.browse-route-signal b { color: #c8f3e7; font: 700 9px/1 var(--f-ui); letter-spacing: .1em; }.browse-route-signal small { color: #8090a9; font: 500 10px/1 var(--f-ui); }
+.browse-route-signal { position: absolute; right: 0; top: 8px; display: flex; align-items: center; gap: 8px; padding: 9px 11px; border: 1px solid rgba(113,226,194,.2); border-radius: 9px; background: rgba(7,13,23,.66); }
+.browse-route-signal-dot { width: 7px; height: 7px; border-radius: 50%; background: #71e2c1; box-shadow: 0 0 11px rgba(113,226,194,.85); }
+.browse-route-signal span:last-child { display: grid; gap: 3px; }.browse-route-signal b { color: #c8f3e7; font: 700 9px/1 var(--f-ui); letter-spacing: .1em; }.browse-route-signal small { color: #8090a9; font: 500 10px/1 var(--f-ui); }
 .browse-v0-results { padding-top: 4px; background: rgba(6,8,18,.36); }
 .browse-v0-toolbar { padding-top: 0; margin-bottom: 14px; }
 
@@ -1485,7 +1485,20 @@ body { background-color: #05060d; }
 .sell-route-flow { background: radial-gradient(ellipse 60% 80% at 16% 50%, rgba(84,215,233,.12), transparent 70%), rgba(7,11,21,.7); }.sell-route-flow-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 76px; align-items: center; }.sell-route-poster { position: relative; min-height: 420px; overflow: hidden; padding: 26px; border: 1px solid rgba(84,215,233,.22); border-radius: 22px; background: radial-gradient(ellipse 90% 60% at 15% 30%, rgba(84,215,233,.17), transparent 70%), linear-gradient(145deg, #0c212b, #07121d); }.sell-route-poster::before { content: ""; position: absolute; inset: 0; opacity: .45; background-image: linear-gradient(rgba(84,215,233,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(84,215,233,.08) 1px, transparent 1px); background-size: 42px 42px; mask-image: linear-gradient(135deg, black, transparent 75%); }.sell-route-poster > span { position: relative; color: #a9dbe2; font: 700 9px/1 var(--f-ui); letter-spacing: .13em; }.sell-route-poster > strong { position: absolute; top: 31%; left: 11%; color: #effafa; font: 800 clamp(48px, 7vw, 80px)/.82 var(--f-display); letter-spacing: -.07em; }.sell-route-poster em { color: #55d8e6; font-style: normal; }.sell-route-poster > small { position: absolute; left: 11%; bottom: 17%; max-width: 170px; color: #9ac0c8; font: 500 11px/1.45 var(--f-ui); }.sell-route-poster-bars { position: absolute; right: 12%; bottom: 12%; display: flex; align-items: end; gap: 7px; height: 120px; transform: skewY(-17deg); }.sell-route-poster-bars i { width: 11px; border-radius: 4px 4px 0 0; background: linear-gradient(#55d8e6, rgba(85,216,230,.05)); }.sell-route-poster-bars i:nth-child(1) { height: 30%; }.sell-route-poster-bars i:nth-child(2) { height: 54%; }.sell-route-poster-bars i:nth-child(3) { height: 72%; }.sell-route-poster-bars i:nth-child(4) { height: 100%; background: linear-gradient(#dbb75d, rgba(219,183,93,.05)); }.sell-route-flow-copy .t-body-lg { margin: 18px 0 26px; }.sell-route-checks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }.sell-route-checks span { padding: 8px 10px; border: 1px solid rgba(84,215,233,.18); border-radius: 8px; color: #b7d4da; font: 600 10px/1 var(--f-ui); }.sell-route-actions { display: flex; flex-wrap: wrap; gap: 12px; }
 
 @media (max-width: 900px) { .page-hero-wrap { grid-template-columns: 1fr; gap: 24px; }.page-hero-system { min-height: 0; padding: 18px 0 0; border-left: 0; border-top: 1px solid rgba(168,149,255,.2); }.browse-route-signal { position: static; width: fit-content; margin-top: 24px; }.zeno-route-positioning-grid, .sell-route-intro-grid, .sell-route-flow-grid { grid-template-columns: 1fr; gap: 40px; }.zeno-route-cap-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.zeno-route-principle-grid, .sell-route-path-grid { grid-template-columns: 1fr; }.sell-route-path { min-height: 230px; }.sell-route-flow-copy { order: 1; }.sell-route-poster { order: 2; max-width: 640px; width: 100%; margin: 0 auto; } }
-@media (max-width: 600px) { .page-hero-system { display: none; }.browse-route-signal { margin-top: 18px; }.zeno-route-statement { padding: 30px 22px 24px; }.zeno-route-cap-grid { grid-template-columns: 1fr; }.zeno-route-cap { min-height: 190px; }.zeno-route-principles-head { display: block; }.zeno-route-principles-head .t-h2 { margin-top: 8px; }.sell-route-poster { min-height: 360px; }.sell-route-poster > strong { font-size: clamp(46px, 16vw, 70px); } }
+@media (max-width: 600px) {
+  .page-hero-system { display: none; }
+  .browse-route-signal { gap: 7px; margin-top: 12px; padding: 6px 9px; }
+  .browse-route-signal-dot { width: 6px; height: 6px; }
+  .browse-route-signal b { font-size: 8px; letter-spacing: .08em; }
+  .browse-route-signal small { display: none; }
+  .zeno-route-statement { padding: 30px 22px 24px; }
+  .zeno-route-cap-grid { grid-template-columns: 1fr; }
+  .zeno-route-cap { min-height: 190px; }
+  .zeno-route-principles-head { display: block; }
+  .zeno-route-principles-head .t-h2 { margin-top: 8px; }
+  .sell-route-poster { min-height: 360px; }
+  .sell-route-poster > strong { font-size: clamp(46px, 16vw, 70px); }
+}
 
 
 /* ================================================================
@@ -1625,7 +1638,7 @@ body { background-color: #05060d; }
   .browse-v0-category-rail .category-card.chip { min-height: 0; }
 }
 @media (max-width: 620px) {
-  .browse-v0-category-rail .category-card.chip { flex: 0 0 min(78vw, 300px); aspect-ratio: 1.55 / 1; min-height: 0; }
+  .browse-v0-category-rail .category-card.chip { flex: 0 0 min(68vw, 250px); aspect-ratio: 1.65 / 1; min-height: 0; }
 }
 /* ================================================================
    BROKA CONVERSION SYSTEM — signal-led homepage and marketplace proof
