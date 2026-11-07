@@ -8,8 +8,15 @@ export interface StoreQuery {
   search?: string;
   category?: string;
   county?: string;
+  subcounty?: string;
+  lat?: number;
+  lng?: number;
+  maxDistanceKm?: number;
+  nearestFirst?: boolean;
   offset?: number;
   limit?: number;
+  /** Set to zero for viewer-specific location requests; do not share their cache. */
+  revalidate?: number;
 }
 
 export interface StorePage {
@@ -27,7 +34,15 @@ export async function listStores(query: StoreQuery = {}): Promise<StorePage> {
   if (query.search) params.set("search", query.search.slice(0, 100));
   if (query.category) params.set("category", query.category);
   if (query.county) params.set("county", query.county);
-  const page = await apiGet<StorePage | Store[]>(`/stores?${params}`);
+  if (query.subcounty) params.set("subcounty", query.subcounty);
+  if (query.lat != null) params.set("lat", String(query.lat));
+  if (query.lng != null) params.set("lng", String(query.lng));
+  if (query.maxDistanceKm != null) params.set("max_distance_km", String(query.maxDistanceKm));
+  if (query.nearestFirst) params.set("nearest_first", "true");
+  const page = await apiGet<StorePage | Store[]>(
+    `/stores?${params}`,
+    query.revalidate === undefined ? undefined : { revalidate: query.revalidate },
+  );
   if (!page) return { items: [], total: 0 };
   // Tolerate an older API that answers with a bare list.
   return Array.isArray(page) ? { items: page, total: page.length } : page;

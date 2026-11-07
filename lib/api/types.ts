@@ -76,6 +76,8 @@ export interface StoreOwner {
   rating: number | null;
   completed_deals: number;
   member_since: string | null;
+  online?: boolean;
+  last_active?: string | null;
 }
 
 export interface Store {
@@ -85,6 +87,7 @@ export interface Store {
   /** The store's public link, e.g. https://broka.co.ke/store/clanix. */
   url: string;
   category: string | null;
+  categories?: string[];
   description: string | null;
   country: string;
   county: string | null;
@@ -103,6 +106,16 @@ export interface Store {
   is_active: boolean;
   listing_count: number;
   created_at: string | null;
+  store_type?: "physical" | "virtual" | null;
+  service_areas?: string[];
+  rating?: number | null;
+  review_count?: number;
+  distance_km?: number | null;
+  distance_label?: string | null;
+  distance_approximate?: boolean;
+  approx_lat?: number | null;
+  approx_lng?: number | null;
+  has_location?: boolean;
 }
 
 export interface StoreCategory {
