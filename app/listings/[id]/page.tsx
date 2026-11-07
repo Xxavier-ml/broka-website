@@ -6,7 +6,7 @@ import { getListing } from "@/lib/api/listings";
 import { coverImage, galleryImages } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
 import { clip, conditionLabel, formatUnitPrice, placeLine } from "@/lib/format";
-import { SITE_URL } from "@/lib/site";
+import { SITE_URL, storeWebsiteUrl } from "@/lib/site";
 import { AppCta } from "@/components/marketplace/AppCta";
 import { AttributeTable, Breadcrumbs, Description, Facts, SellerCard } from "@/components/marketplace/DetailParts";
 import { Gallery } from "@/components/marketplace/Gallery";
@@ -85,7 +85,7 @@ export default async function ListingPage({ params }: Props) {
           <Breadcrumbs
             items={[
               { label: "Browse", href: "/browse" },
-              ...(l.store_name && l.store_slug ? [{ label: l.store_name, href: `/stores/${l.store_slug}` }] : []),
+              ...(l.store_name && l.store_slug ? [{ label: l.store_name, href: storeWebsiteUrl(l.store_slug) }] : []),
               { label: l.name },
             ]}
           />

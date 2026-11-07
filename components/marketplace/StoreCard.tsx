@@ -1,9 +1,9 @@
-import Link from "next/link";
 import { MapPin, BadgeCheck, Star } from "lucide-react";
 import type { Store } from "@/lib/api/types";
 import { resolveLegacy, resolveSizes } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
 import { placeLine, plural } from "@/lib/format";
+import { storeWebsiteUrl } from "@/lib/site";
 import { RemoteImage } from "@/components/ui/RemoteImage";
 
 export function storeCover(store: Store) {
@@ -20,7 +20,7 @@ export function StoreCard({ store }: { store: Store }) {
   const place = placeLine(store.subcounty, store.county);
 
   return (
-    <Link href={`/stores/${store.slug}`} className="lcard scard" prefetch={false}>
+    <a href={store.url || storeWebsiteUrl(store.slug)} className="lcard scard">
       <div
         className="lcard-media scard-cover"
         style={cover ? undefined : { background: `linear-gradient(135deg, ${v.gradient[0]}55, ${v.gradient[1]}55)` }}
@@ -65,6 +65,6 @@ export function StoreCard({ store }: { store: Store }) {
           </p>
         )}
       </div>
-    </Link>
+    </a>
   );
 }

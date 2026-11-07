@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { BadgeCheck, ChevronRight, Clock3, Star, Store as StoreIcon } from "lucide-react";
 import { attributeText, humanizeKey, plural } from "@/lib/format";
+import { storeWebsiteUrl } from "@/lib/site";
 
 export function Breadcrumbs({ items }: { items: { label: string; href?: string }[] }) {
   return (
@@ -101,7 +102,7 @@ export function SellerCard({
       </div>
       <p className="seller-standing-note">Marketplace seller and conversation context. Any sale and payment are arranged directly between buyer and seller.</p>
       {store && (
-        <Link href={`/stores/${store.slug}`} className="seller-store">
+        <Link href={storeWebsiteUrl(store.slug)} className="seller-store">
           <StoreIcon size={15} aria-hidden="true" /> Visit {store.name}
         </Link>
       )}

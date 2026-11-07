@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // without network access) the sitemap simply lists the fixed pages.
   const { data: stores } = await orFallback(() => listStores({ limit: 100 }), { items: [], total: 0 });
   for (const s of stores.items) {
-    entries.push({ url: `${SITE_URL}/stores/${s.slug}`, lastModified: now, changeFrequency: "daily", priority: 0.7 });
+    entries.push({ url: s.url || `${SITE_URL}/store/${encodeURIComponent(s.slug)}`, lastModified: now, changeFrequency: "daily", priority: 0.7 });
   }
   return entries;
 }

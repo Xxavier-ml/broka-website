@@ -7,6 +7,9 @@
 export const SITE_URL = "https://www.broka.co.ke";
 export const SITE_NAME = "BROKA";
 
+/** The per-store storefront is served by BROKA's singular /store route. */
+export const storeWebsiteUrl = (slug: string) => `${SITE_URL}/store/${encodeURIComponent(slug)}`;
+
 /** Public contact details. Shown on the Contact page, the footer and in structured data. */
 export const CONTACT = {
   adminEmail: "admin@broka.co.ke",

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { BadgeCheck, Mail, MapPin, Star, PauseCircle } from "lucide-react";
 import { AppCta } from "@/components/marketplace/AppCta";
 import { Breadcrumbs } from "@/components/marketplace/DetailParts";
@@ -24,6 +24,7 @@ import { categoryVisual, canonicalCategory } from "@/lib/categories";
 import { clip, monthYearOf, placeLine, plural } from "@/lib/format";
 import { firstParam, withQuery, type SearchParams } from "@/lib/params";
 import { SITE_URL, mailto } from "@/lib/site";
+import { STOREFRONT_URL } from "@/lib/storefront";
 import type { SortKey, StoreCategory } from "@/lib/api/types";
 
 type Props = { params: Promise<{ slug: string }>; searchParams: SearchParams };
@@ -67,6 +68,9 @@ export default async function StorePage({ params, searchParams }: Props) {
   const sp = await searchParams;
   const store = await getStoreBySlug(slug);
   if (!store) notFound();
+  // The plural profile is only a legacy fallback; in the multi-zone deployment
+  // the store's own singular URL is the authoritative storefront.
+  if (STOREFRONT_URL) permanentRedirect(store.url);
 
   const q = firstParam(sp.q);
   const category = canonicalCategory(firstParam(sp.category));
