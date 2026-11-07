@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent, type ReactNode } from "react";
-import { ArrowLeft, ArrowRight, Bot, ChevronDown, MapPin, Mic, Navigation, Search, Store as StoreIcon } from "lucide-react";
+import { ArrowLeft, ArrowRight, ChevronDown, MapPin, Navigation, Search, Store as StoreIcon } from "lucide-react";
 import type { Store } from "@/lib/api/types";
 import { categoryArtSmall, categoryVisual } from "@/lib/categories";
 import { StoreDirectoryCard } from "./StoreDirectoryCard";
@@ -159,10 +159,12 @@ export function StoreDirectoryExperience({
   const locationStatus = nearbyState === "asking"
     ? "Waiting for location permission…"
     : nearbyState === "loading"
-      ? `Finding stores within ${radius} km…`
+      ? `Searching within ${radius} km…`
       : nearbyState === "ready"
-        ? `${nearbyTotal} ${nearbyTotal === 1 ? "store" : "stores"} within ${radius} km of you`
-        : "Use your location to find nearby stores";
+        ? `${nearbyTotal} within ${radius} km of you`
+        : nearbyState === "error"
+          ? "Location search unavailable"
+          : "Tap to find nearby stores";
 
   return (
     <div className={styles.directory}>
@@ -188,10 +190,6 @@ export function StoreDirectoryExperience({
               maxLength={100}
             />
           </form>
-          <span className={styles.zenoOrb} role="img" aria-label="Zeno assistant">
-            <span className={styles.zenoCore}><Bot size={28} aria-hidden="true" /></span>
-            <span className={styles.zenoMic}><Mic size={13} aria-hidden="true" /></span>
-          </span>
         </div>
       </section>
 
@@ -307,14 +305,8 @@ export function StoreDirectoryExperience({
             {nearby.map((store) => <StoreDirectoryCard key={store.id} store={store} />)}
           </div>
         ) : nearbyState === "ready" ? (
-          <p className={styles.nearbyEmpty}>No stores were found within {radius} km. Try a wider distance or browse all stores below.</p>
-        ) : (
-          <button className={styles.locationPrompt} type="button" onClick={() => findNearby()} disabled={nearbyState === "asking" || nearbyState === "loading"}>
-            <span className={styles.locationPromptIcon}><MapPin size={19} aria-hidden="true" /></span>
-            <span><strong>Find stores close to you</strong><small>Your browser asks for permission only after you tap. Your location is used for this search and is not saved to your profile.</small></span>
-            <ArrowRight size={17} aria-hidden="true" />
-          </button>
-        )}
+          <p className={styles.nearbyEmpty}>No stores within {radius} km. Try a wider distance.</p>
+        ) : null}
       </section>
 
       <section className={styles.allSection} aria-labelledby="all-stores-title">

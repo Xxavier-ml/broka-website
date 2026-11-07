@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import { BadgeCheck, ArrowRight, Info, Map, MapPin, Package, Star } from "lucide-react";
+import { useState } from "react";
 import type { Store } from "@/lib/api/types";
 import { resolveLegacy, resolveSizes } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
@@ -9,6 +11,7 @@ import { storeWebsiteUrl } from "@/lib/site";
 import styles from "./StoreDirectory.module.css";
 
 export function StoreDirectoryCard({ store }: { store: Store }) {
+  const [logoFailed, setLogoFailed] = useState(false);
   const cover = resolveSizes(store.cover) ?? resolveSizes(store.photo_images?.[0]) ?? resolveLegacy(store.photos?.[0]);
   const logo = resolveSizes(store.logo) ?? resolveLegacy(store.logo_url);
   const visual = categoryVisual(store.category);
@@ -42,10 +45,12 @@ export function StoreDirectoryCard({ store }: { store: Store }) {
         <span className={styles.photoShade} aria-hidden="true" />
         {presence && <span className={styles.presence}><i aria-hidden="true" />{presence}</span>}
         <span className={styles.storeLogo} aria-hidden="true">
-          {logo ? (
+          {logo && !logoFailed ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={logo.medium} srcSet={logo.srcSet} sizes="48px" alt="" loading="lazy" decoding="async" />
-          ) : <span>B</span>}
+            <img src={logo.medium} srcSet={logo.srcSet} sizes="46px" alt="" loading="lazy" decoding="async" onError={() => setLogoFailed(true)} />
+          ) : (
+            <Image src="/assets/broka-mark.png" alt="" fill sizes="46px" loading="lazy" />
+          )}
         </span>
       </div>
 
