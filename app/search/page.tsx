@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { firstParam, withQuery, type SearchParams } from "@/lib/params";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Search",
-  description: "Search the BROKA marketplace.",
-  robots: { index: false, follow: true },
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Search the BROKA marketplace",
+  description: "Search products and stores across the BROKA marketplace in Kenya.",
+  path: "/search",
+  noIndex: true,
+});
 
 /** Keep old shared links working while consolidating discovery in /browse. */
 export default async function SearchPage({ searchParams }: { searchParams: SearchParams }) {

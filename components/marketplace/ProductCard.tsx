@@ -32,7 +32,12 @@ export function ProductCard({ listing: l, headingLevel = 2 }: { listing: Listing
   return (
     <Link href={`/listings/${l.id}`} className={`lcard lcard-product${isAgriculture ? " lcard-agriculture" : ""}`} prefetch={false}>
       <div className="lcard-media">
-        <Media image={coverImage(l)} category={l.category} alt={l.name} />
+        <Media
+          image={coverImage(l)}
+          category={l.category}
+          alt={l.name}
+          sizes="(max-width: 640px) 50vw, (max-width: 900px) 33vw, (max-width: 1280px) 25vw, 300px"
+        />
         {condition && <span className="lbadge lbadge-corner-left">{condition}</span>}
         {l.cover?.kind === "showcase" && (
           <span className="lcard-showcase">

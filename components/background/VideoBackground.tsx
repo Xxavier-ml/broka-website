@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { usePrefersReducedMotion } from "@/hooks/useDeviceCapability";
 
 type Particle = {
@@ -22,6 +23,7 @@ type Particle = {
  */
 export function VideoBackground() {
   const reduced = usePrefersReducedMotion();
+  const isHome = usePathname() === "/";
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -165,25 +167,26 @@ export function VideoBackground() {
 
   return (
     <div className="netbg" aria-hidden="true">
-      <video
-        className="netbg-video"
-        autoPlay={!reduced}
-        loop
-        muted
-        playsInline
-        preload="none"
-        poster="/broka-bg-mobile-poster.webp"
-      >
-        <source media="(min-width: 760px)" src="/broka-bg-desktop.mp4" type="video/mp4" />
-        <source src="/broka-bg-mobile.mp4" type="video/mp4" />
-      </video>
-      <canvas ref={canvasRef} className="netbg-particles" />
-      {reduced && (
+      {isHome && !reduced ? (
+        <video
+          className="netbg-video"
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="none"
+          poster="/broka-bg-mobile-poster.webp"
+        >
+          <source media="(min-width: 760px)" src="/broka-bg-desktop.mp4" type="video/mp4" />
+          <source src="/broka-bg-mobile.mp4" type="video/mp4" />
+        </video>
+      ) : (
         <picture className="netbg-poster">
           <source media="(min-width: 760px)" srcSet="/broka-bg-desktop-poster.webp" />
           <img src="/broka-bg-mobile-poster.webp" alt="" />
         </picture>
       )}
+      <canvas ref={canvasRef} className="netbg-particles" />
     </div>
   );
 }

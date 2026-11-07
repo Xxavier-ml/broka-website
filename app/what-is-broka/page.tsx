@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "What is BROKA",
+export const metadata: Metadata = pageMetadata({
+  title: "What is BROKA? Intelligent commerce in Kenya",
   description: "BROKA helps buyers discover listings, compare seller context and connect directly. Buyers and sellers arrange purchases and payments themselves.",
-};
+  path: "/what-is-broka",
+});
 
 export default function WhatIsBroka() {
   return (

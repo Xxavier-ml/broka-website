@@ -8,6 +8,7 @@ import { automobileSubcategorySlug } from "@/lib/automobiles";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
+import { hasSearchParams, pageMetadata } from "@/lib/seo";
 import {
   attributesFromParams,
   parseMarketplaceCondition,
@@ -24,12 +25,22 @@ async function resolveAutomobilePage(rawSlug: string) {
   return { zoneResponse, subcategory };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { subcategory: raw } = await params;
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ subcategory: raw }, sp] = await Promise.all([params, searchParams]);
   const resolved = await resolveAutomobilePage(raw);
   return resolved
-    ? { title: `${resolved.subcategory.name} | Automobiles | BROKA`, description: `Browse ${resolved.subcategory.name} listings on BROKA.` }
-    : { title: "Automobile subcategory not found" };
+    ? pageMetadata({
+        title: `${resolved.subcategory.name} listings in Kenya`,
+        description: `Browse ${resolved.subcategory.name} listings from Kenyan sellers on BROKA. Compare details and contact sellers directly.`,
+        path: `/browse/automobiles/${automobileSubcategorySlug(resolved.subcategory.name)}`,
+        noIndex: hasSearchParams(sp),
+      })
+    : pageMetadata({
+        title: "BROKA automobile subcategory not found",
+        description: "This BROKA automobile subcategory could not be found.",
+        path: `/browse/automobiles/${encodeURIComponent(raw)}`,
+        noIndex: true,
+      });
 }
 
 export default async function AutomobileSubcategoryPage({ params, searchParams }: Props) {

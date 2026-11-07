@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { ArrowLeft } from "lucide-react";
 import type { ListingPage } from "@/lib/api/listings";
 import { categoryPageContent } from "@/lib/category-pages";
-import { categorySlug, categoryVisual } from "@/lib/categories";
+import { categoryArtSmall, categorySlug, categoryVisual } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import { ApiNotice, EmptyState } from "./StateMessage";
 import { ProductCard } from "./ProductCard";
@@ -71,7 +71,7 @@ export function CategoryLanding({
   const theme = {
     "--category-start": visual.gradient[0],
     "--category-end": visual.gradient[1],
-    "--category-art": heroArt || visual.backgroundArt ? `url(${heroArt ?? visual.backgroundArt})` : "none",
+    "--category-art": `url(${heroArt ?? categoryArtSmall(content.category, 1024)})`,
   } as CSSProperties;
   const preserved = {
     q,

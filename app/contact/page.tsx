@@ -6,11 +6,13 @@ import { JsonLd } from "@/components/ui/JsonLd";
 import { Mail, MapPin, MessageCircle, Phone, User } from "lucide-react";
 import { founders } from "@/data/founders";
 import { CONTACT, SITE_URL, mailto } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: "Get in touch with the BROKA team — whether you are a potential user, partner, investor or just curious about intelligent commerce. Email admin@broka.co.ke or call +254 706 462 869.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Contact the BROKA team",
+  description: "Contact BROKA about the marketplace, partnerships, press or support. Email admin@broka.co.ke or call +254 706 462 869.",
+  path: "/contact",
+});
 
 export default function Contact() {
   return (

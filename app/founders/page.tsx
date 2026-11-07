@@ -5,11 +5,13 @@ import { PageHero } from "@/components/sections/PageHero";
 import { Mail } from "lucide-react";
 import { founders } from "@/data/founders";
 import { mailto } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Founders",
+export const metadata: Metadata = pageMetadata({
+  title: "BROKA founders and leadership",
   description: "BROKA was founded by Xavier and Arnold Ochieng — two founders who observed the friction and opacity in informal commerce first-hand.",
-};
+  path: "/founders",
+});
 
 export default function Founders() {
   return (

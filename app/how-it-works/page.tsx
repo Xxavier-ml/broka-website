@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "How it Works",
+export const metadata: Metadata = pageMetadata({
+  title: "How BROKA's marketplace works",
   description: "See how BROKA helps people discover listings, compare seller context and contact sellers directly. Buyers and sellers arrange purchases and payments themselves.",
-};
+  path: "/how-it-works",
+});
 
 const steps = [
   { num: "01", title: "Discover", status: "current", badge: "Live",

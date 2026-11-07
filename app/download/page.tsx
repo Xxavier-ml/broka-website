@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Download, Handshake, MessageCircle, Search, Sparkles, Store, Smartphone } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
 import { APP_DOWNLOAD_URL, CONTACT, mailto } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Get the BROKA app",
+export const metadata: Metadata = pageMetadata({
+  title: "Download the BROKA Android app",
   description:
     "Download the BROKA app for Android to explore listings, connect with sellers, use Zeno for context, and manage your own store.",
-  alternates: { canonical: "https://www.broka.co.ke/download" },
-};
+  path: "/download",
+});
 
 const FEATURES = [
   { icon: Search, title: "Explore products", body: "Browse marketplace categories and compare useful seller and product context." },

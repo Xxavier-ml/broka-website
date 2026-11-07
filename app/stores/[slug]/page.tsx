@@ -23,7 +23,8 @@ import { orFallback } from "@/lib/api/client";
 import { categoryVisual, canonicalCategory } from "@/lib/categories";
 import { clip, monthYearOf, placeLine, plural } from "@/lib/format";
 import { firstParam, withQuery, type SearchParams } from "@/lib/params";
-import { SITE_URL, mailto } from "@/lib/site";
+import { mailto, storeWebsiteUrl } from "@/lib/site";
+import { hasSearchParams, pageMetadata } from "@/lib/seo";
 import { STOREFRONT_URL } from "@/lib/storefront";
 import type { SortKey, StoreCategory } from "@/lib/api/types";
 
@@ -41,26 +42,31 @@ const SORTS: { key: SortKey; label: string }[] = [
   { key: "price_high", label: "Price: high to low" },
 ];
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ slug }, sp] = await Promise.all([params, searchParams]);
   const store = await getStoreBySlug(slug).catch(() => null);
-  if (!store) return { title: "Store" };
+  if (!store) {
+    return pageMetadata({
+      title: "BROKA store not found",
+      description: "This BROKA store could not be found or may no longer be available.",
+      path: `/stores/${encodeURIComponent(slug)}`,
+      noIndex: true,
+    });
+  }
   const image = storeCover(store)?.large;
+  const sourceDescription = store.description || `${store.name} is an online store on BROKA${store.county ? ` in ${store.county}` : ""}.`;
   const description = clip(
-    store.description || `${store.name} is an online store on BROKA${store.county ? ` in ${store.county}` : ""}.`,
+    sourceDescription.length < 50
+      ? `${sourceDescription.replace(/[.!?\s]+$/, "")}. Browse ${store.name}'s products and contact the seller directly on BROKA.`
+      : sourceDescription,
   );
-  return {
-    title: `${store.name} — online store`,
+  return pageMetadata({
+    title: `${store.name} — online store in Kenya`,
     description,
-    alternates: { canonical: `${SITE_URL}/stores/${store.slug}` },
-    openGraph: {
-      title: store.name,
-      description,
-      url: `${SITE_URL}/stores/${store.slug}`,
-      type: "website",
-      ...(image && /^https?:/.test(image) ? { images: [{ url: image }] } : {}),
-    },
-  };
+    path: `/store/${encodeURIComponent(store.slug)}`,
+    image,
+    noIndex: hasSearchParams(sp),
+  });
 }
 
 export default async function StorePage({ params, searchParams }: Props) {
@@ -70,7 +76,7 @@ export default async function StorePage({ params, searchParams }: Props) {
   if (!store) notFound();
   // The plural profile is only a legacy fallback; in the multi-zone deployment
   // the store's own singular URL is the authoritative storefront.
-  if (STOREFRONT_URL) permanentRedirect(store.url);
+  if (STOREFRONT_URL) permanentRedirect(storeWebsiteUrl(store.slug));
 
   const q = firstParam(sp.q);
   const category = canonicalCategory(firstParam(sp.category));
@@ -128,7 +134,7 @@ export default async function StorePage({ params, searchParams }: Props) {
           "@context": "https://schema.org",
           "@type": "Store",
           name: store.name,
-          url: `${SITE_URL}${base}`,
+          url: storeWebsiteUrl(store.slug),
           description: store.description ?? undefined,
           image: cover && /^https?:/.test(cover.large) ? cover.large : undefined,
           email: store.business_email && PLAIN_EMAIL.test(store.business_email) ? store.business_email : undefined,

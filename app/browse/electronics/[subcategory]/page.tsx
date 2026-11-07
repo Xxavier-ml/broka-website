@@ -7,6 +7,7 @@ import { filtersForSubcategory } from "@/lib/category-filters";
 import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
+import { hasSearchParams, pageMetadata } from "@/lib/seo";
 import {
   attributesFromParams,
   parseMarketplaceCondition,
@@ -25,12 +26,22 @@ async function resolvePhonePage(rawSlug: string) {
   return { config, zoneResponse, subcategory };
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { subcategory: raw } = await params;
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ subcategory: raw }, sp] = await Promise.all([params, searchParams]);
   const resolved = await resolvePhonePage(raw);
   return resolved
-    ? { title: `${resolved.config.name} | Electronics | BROKA`, description: `${resolved.config.description} Browse Electronics listings on BROKA.` }
-    : { title: "Electronics subcategory not found" };
+    ? pageMetadata({
+        title: `${resolved.config.name} listings in Kenya`,
+        description: `Browse ${resolved.config.name} listings from Kenyan sellers on BROKA. Compare product details and prices, then contact the seller directly.`,
+        path: `/browse/electronics/${resolved.config.slug}`,
+        noIndex: hasSearchParams(sp),
+      })
+    : pageMetadata({
+        title: "BROKA electronics subcategory not found",
+        description: "This BROKA electronics subcategory could not be found.",
+        path: `/browse/electronics/${encodeURIComponent(raw)}`,
+        noIndex: true,
+      });
 }
 
 export default async function ElectronicsSubcategoryPage({ params, searchParams }: Props) {

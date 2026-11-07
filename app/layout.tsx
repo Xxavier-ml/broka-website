@@ -28,7 +28,7 @@ const futureDisplay = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600",
 const futureBody = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-dm-sans", display: "swap" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.broka.co.ke"),
+  metadataBase: new URL(SITE_URL),
   title: { default: "BROKA — The Future of Intelligent Commerce", template: "%s | BROKA" },
   description: "Discover marketplace products and stores in Kenya, compare seller context, and use Zeno for clearer decisions.",
   keywords: ["BROKA","intelligent commerce","AI","marketplace","Kenya","East Africa","Zeno","seller context"],
@@ -36,16 +36,21 @@ export const metadata: Metadata = {
   openGraph: {
     title: "BROKA — The Future of Intelligent Commerce",
     description: "BROKA helps people discover marketplace listings, compare seller context and connect directly with sellers in Kenya.",
-    url: "https://www.broka.co.ke/",
+    url: SITE_URL,
     siteName: "BROKA",
     type: "website",
     locale: "en_KE",
+    images: [{ url: `${SITE_URL}/opengraph-image`, alt: "BROKA — The Future of Intelligent Commerce" }],
   },
-  twitter: { card: "summary_large_image", title: "BROKA — The Future of Intelligent Commerce", description: "Discover listings, compare seller context and connect directly with sellers in Kenya." },
+  twitter: {
+    card: "summary_large_image",
+    title: "BROKA — The Future of Intelligent Commerce",
+    description: "Discover listings, compare seller context and connect directly with sellers in Kenya.",
+    images: [`${SITE_URL}/opengraph-image`],
+  },
   // "./" resolves to each page's own address. A fixed home-page URL here was inherited by
   // every page, telling search engines that all of them are duplicates of the home page.
   alternates: { canonical: "./" },
-  robots: { index: true, follow: true },
 };
 
 export const viewport: Viewport = {

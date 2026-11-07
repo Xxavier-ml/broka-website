@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
 import { ArchitectureViz } from "@/components/visuals/ArchitectureViz";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Technology",
+export const metadata: Metadata = pageMetadata({
+  title: "BROKA marketplace technology",
   description: "BROKA's platform combines AI-assisted discovery, marketplace infrastructure, seller context and real-time communication.",
-};
+  path: "/technology",
+});
 
 const pillars = [
   {

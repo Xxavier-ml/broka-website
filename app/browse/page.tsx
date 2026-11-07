@@ -4,18 +4,18 @@ import { listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { categoryPageContent } from "@/lib/category-pages";
 import { firstParam, type SearchParams } from "@/lib/params";
+import { hasSearchParams, pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
   const sp = await searchParams;
   const category = parseBrowseCategory(firstParam(sp.category));
   const content = category ? categoryPageContent(category) : null;
-  if (content) {
-    return { title: content.title, description: content.description };
-  }
-  return {
-    title: "Browse the marketplace",
-    description: "Discover marketplace listings and stores, and compare useful seller context on BROKA.",
-  };
+  return pageMetadata({
+    title: content ? `${content.category} listings in Kenya` : "Browse the marketplace",
+    description: content?.description ?? "Discover marketplace listings and stores, and compare useful seller context on BROKA.",
+    path: "/browse",
+    noIndex: hasSearchParams(sp),
+  });
 }
 
 export default async function BrowsePage({ searchParams }: { searchParams: SearchParams }) {

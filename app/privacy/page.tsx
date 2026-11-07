@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { PageHero } from "@/components/sections/PageHero";
 import { CONTACT, mailto } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Privacy Policy",
+export const metadata: Metadata = pageMetadata({
+  title: "BROKA website privacy policy",
   description: "How the BROKA website handles your information: what it collects, what it doesn't, and how to reach us.",
-  alternates: { canonical: "https://www.broka.co.ke/privacy" },
-};
+  path: "/privacy",
+});
 
 export default function Privacy() {
   return (

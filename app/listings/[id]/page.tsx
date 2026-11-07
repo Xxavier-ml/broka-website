@@ -7,6 +7,7 @@ import { coverImage, galleryImages } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
 import { clip, conditionLabel, formatUnitPrice, placeLine } from "@/lib/format";
 import { SITE_URL, storeWebsiteUrl } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 import { AppCta } from "@/components/marketplace/AppCta";
 import { AttributeTable, Breadcrumbs, Description, Facts, SellerCard } from "@/components/marketplace/DetailParts";
 import { Gallery } from "@/components/marketplace/Gallery";
@@ -24,23 +25,24 @@ async function load(id: string) {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const l = await load(id).catch(() => null);
-  if (!l) return { title: "Listing" };
+  if (!l) {
+    return pageMetadata({
+      title: "BROKA marketplace listing not found",
+      description: "This BROKA listing is unavailable or may have been removed.",
+      path: `/listings/${encodeURIComponent(id)}`,
+      noIndex: true,
+    });
+  }
   const image = coverImage(l)?.large;
   const description = clip(
     `${l.name} — ${formatUnitPrice(l.price, l.price_unit)}${l.store_name ? ` from ${l.store_name}` : ""}. ${l.description ?? ""}`,
   );
-  return {
-    title: `${l.name}${l.store_name ? ` — ${l.store_name}` : ""}`,
+  return pageMetadata({
+    title: `${l.name} — ${l.category} in Kenya`,
     description,
-    alternates: { canonical: `${SITE_URL}/listings/${l.id}` },
-    openGraph: {
-      title: l.name,
-      description,
-      url: `${SITE_URL}/listings/${l.id}`,
-      type: "website",
-      ...(image && /^https?:/.test(image) ? { images: [{ url: image }] } : {}),
-    },
-  };
+    path: `/listings/${l.id}`,
+    image,
+  });
 }
 
 export default async function ListingPage({ params }: Props) {

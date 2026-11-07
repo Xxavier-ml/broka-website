@@ -7,6 +7,7 @@ import { categoryPageContent } from "@/lib/category-pages";
 import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
 import { orFallback } from "@/lib/api/client";
 import { firstParam, type SearchParams } from "@/lib/params";
+import { hasSearchParams, pageMetadata } from "@/lib/seo";
 import { filtersForCategory, filtersForSubcategory } from "@/lib/category-filters";
 import {
   attributesFromParams,
@@ -17,11 +18,23 @@ import {
 
 type Props = { params: Promise<{ category: string }>; searchParams: SearchParams };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { category: raw } = await params;
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
+  const [{ category: raw }, sp] = await Promise.all([params, searchParams]);
   const category = categoryFromSlug(raw);
   const content = category ? categoryPageContent(category) : null;
-  return content ? { title: content.title, description: content.description } : { title: "Category not found" };
+  return content
+    ? pageMetadata({
+        title: `${content.category} listings in Kenya`,
+        description: content.description,
+        path: `/browse/${categorySlug(content.category)}`,
+        noIndex: hasSearchParams(sp),
+      })
+    : pageMetadata({
+        title: "BROKA category not found",
+        description: "This BROKA marketplace category could not be found.",
+        path: `/browse/${encodeURIComponent(raw)}`,
+        noIndex: true,
+      });
 }
 
 export default async function CategoryBrowsePage({ params, searchParams }: Props) {

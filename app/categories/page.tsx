@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CategoryDirectory } from "@/components/marketplace/CategoryDirectory";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "All categories",
-  description: "Explore every BROKA marketplace category.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Explore BROKA marketplace categories",
+  description: "Browse BROKA's 21 Kenyan marketplace categories, including cars, property, electronics, fashion and more.",
+  path: "/categories",
+});
 
 export default function CategoriesPage() {
   return (

@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Handshake, ShieldCheck, Store } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Sell on BROKA",
+export const metadata: Metadata = pageMetadata({
+  title: "Sell products online with BROKA",
   description: "Present your products clearly, reach more buyers and discuss any sale directly with them.",
-};
+  path: "/sell",
+});
 
 const paths = [
   { index: "01", icon: Store, title: "Open your storefront", body: "Build a clear presence for your products and let buyers discover your business in one place.", href: "/sell/listing", label: "Create a listing" },

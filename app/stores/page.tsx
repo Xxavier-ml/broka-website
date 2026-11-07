@@ -11,13 +11,17 @@ import { STORES_PAGE_SIZE, listStores } from "@/lib/api/stores";
 import { canonicalCategory } from "@/lib/categories";
 import { plural } from "@/lib/format";
 import { firstParam, withQuery, type SearchParams } from "@/lib/params";
+import { hasSearchParams, pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Online stores in Kenya",
-  description:
-    "Discover online stores from Kenyan sellers. Browse their listings, contact sellers directly, and arrange any purchase and payment with them.",
-  alternates: { canonical: "https://www.broka.co.ke/stores" },
-};
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const sp = await searchParams;
+  return pageMetadata({
+    title: "Online stores across Kenya",
+    description: "Discover online stores from Kenyan sellers. Browse their listings, contact sellers directly, and arrange purchases and payment with them.",
+    path: "/stores",
+    noIndex: hasSearchParams(sp),
+  });
+}
 
 export default async function StoresPage({ searchParams }: { searchParams: SearchParams }) {
   const sp = await searchParams;

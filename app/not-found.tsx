@@ -1,4 +1,15 @@
+import type { Metadata } from "next";
 import Link from "next/link";
+
+const description = "The BROKA page you requested could not be found. Browse the marketplace or return to the homepage.";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+  description,
+  alternates: null,
+  openGraph: null,
+  twitter: null,
+};
 
 export default function NotFound() {
   return (

@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
 import { roadmap } from "@/data/roadmap";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Roadmap",
+export const metadata: Metadata = pageMetadata({
+  title: "BROKA product roadmap and plans",
   description: "BROKA's product roadmap — what is live today, what we are actively building, and what we are exploring for the longer term.",
-};
+  path: "/roadmap",
+});
 
 export default function Roadmap() {
   return (

@@ -6,6 +6,7 @@ import { SubcategoryDirectory } from "@/components/marketplace/SubcategoryDirect
 import { getCategoryZone } from "@/lib/api/categories";
 import { categoryFromSlug, categorySlug, categoryVisual } from "@/lib/categories";
 import { orFallback } from "@/lib/api/client";
+import { pageMetadata } from "@/lib/seo";
 
 type Props = { params: Promise<{ category: string }> };
 
@@ -13,8 +14,17 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { category: raw } = await params;
   const category = categoryFromSlug(raw);
   return category
-    ? { title: `${category} subcategories`, description: `Explore all ${category.toLowerCase()} subcategories on BROKA.` }
-    : { title: "Subcategories not found" };
+    ? pageMetadata({
+        title: `${category} subcategories in Kenya`,
+        description: `Explore ${category.toLowerCase()} subcategories and browse matching listings from Kenyan sellers on BROKA.`,
+        path: `/browse/subcategories/${categorySlug(category)}`,
+      })
+    : pageMetadata({
+        title: "BROKA subcategories not found",
+        description: "This BROKA category directory could not be found.",
+        path: `/browse/subcategories/${encodeURIComponent(raw)}`,
+        noIndex: true,
+      });
 }
 
 export default async function SubcategoriesPage({ params }: Props) {

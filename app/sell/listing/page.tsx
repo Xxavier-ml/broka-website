@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, Camera, FileText, Tag } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Create a listing",
-  description: "Choose how you want to list an item on BROKA.",
-};
+export const metadata: Metadata = pageMetadata({
+  title: "Create a marketplace listing",
+  description: "Choose a listing type, prepare your product details and continue to your BROKA seller account to publish.",
+  path: "/sell/listing",
+});
 
 export default function CreateListingPage() {
   return (

@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Vision",
+export const metadata: Metadata = pageMetadata({
+  title: "BROKA's vision for Kenyan commerce",
   description: "BROKA's long-term vision: intelligent commerce accessible to everyone in East Africa and beyond — multilingual, mobile-first, and built for informal markets.",
-};
+  path: "/vision",
+});
 
 const principles = [
   { icon: "📱", title: "Mobile-first by design", body: "Commerce in East Africa moves through mobile. BROKA is built around that reality — not retrofitted to it after the fact." },

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import Lenis from "lenis";
 import { usePrefersReducedMotion } from "@/hooks/useDeviceCapability";
 
 /**
@@ -15,18 +14,26 @@ export function SmoothScroll() {
   useEffect(() => {
     if (reduced) return;
 
-    const lenis = new Lenis({ lerp: 0.09 });
     let frame = 0;
+    let destroy: (() => void) | null = null;
+    let cancelled = false;
 
-    const raf = (time: number) => {
-      lenis.raf(time);
+    void import("lenis").then(({ default: Lenis }) => {
+      if (cancelled) return;
+      const lenis = new Lenis({ lerp: 0.09 });
+      destroy = () => lenis.destroy();
+
+      const raf = (time: number) => {
+        lenis.raf(time);
+        frame = requestAnimationFrame(raf);
+      };
       frame = requestAnimationFrame(raf);
-    };
-    frame = requestAnimationFrame(raf);
+    }).catch(() => undefined);
 
     return () => {
+      cancelled = true;
       cancelAnimationFrame(frame);
-      lenis.destroy();
+      destroy?.();
     };
   }, [reduced]);
 

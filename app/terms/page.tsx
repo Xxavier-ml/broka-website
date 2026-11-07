@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
 import { CONTACT, mailto } from "@/lib/site";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Terms of Use",
+export const metadata: Metadata = pageMetadata({
+  title: "BROKA website terms of use",
   description: "The terms for using the BROKA website: what it shows, what happens in the app, and the limits of what we promise.",
-  alternates: { canonical: "https://www.broka.co.ke/terms" },
-};
+  path: "/terms",
+});
 
 export default function Terms() {
   return (

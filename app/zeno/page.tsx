@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
 import { ZenoInterface } from "@/components/zeno/ZenoInterface";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Zeno — BROKA AI",
+export const metadata: Metadata = pageMetadata({
+  title: "Zeno AI for marketplace discovery",
   description: "Zeno helps people clarify what they are looking for, compare marketplace context and decide whether to contact a seller.",
-};
+  path: "/zeno",
+});
 
 const capabilities = [
   { index: "01", title: "Understands intent", body: "What you need, at what price and in what condition — without requiring a structured form.", status: "Live" },

@@ -3,11 +3,13 @@ import Link from "next/link";
 import { PageHero } from "@/components/sections/PageHero";
 import { Accordion } from "@/components/ui/Accordion";
 import { faqs } from "@/data/faq";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "FAQ",
+export const metadata: Metadata = pageMetadata({
+  title: "Frequently asked questions about BROKA",
   description: "Common questions about BROKA — what it is, how it works, what Zeno does, and what the long-term vision is.",
-};
+  path: "/faq",
+});
 
 export default function FAQ() {
   return (

@@ -20,7 +20,7 @@ export function StoreCard({ store }: { store: Store }) {
   const place = placeLine(store.subcounty, store.county);
 
   return (
-    <a href={store.url || storeWebsiteUrl(store.slug)} className="lcard scard">
+    <a href={storeWebsiteUrl(store.slug)} className="lcard scard">
       <div
         className="lcard-media scard-cover"
         style={cover ? undefined : { background: `linear-gradient(135deg, ${v.gradient[0]}55, ${v.gradient[1]}55)` }}

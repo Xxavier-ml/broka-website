@@ -2,11 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, Heart, MessageCircle, Search, Store, UserRound } from "lucide-react";
 import { PageHero } from "@/components/sections/PageHero";
+import { pageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = {
-  title: "Your BROKA account",
+export const metadata: Metadata = pageMetadata({
+  title: "Manage your BROKA account",
   description: "Manage saved listings, seller conversations and selling activity on BROKA.",
-};
+  path: "/account",
+  noIndex: true,
+});
 
 const areas = [
   { icon: Heart, title: "Saved products", body: "Keep the listings you want to compare later in one place." },
