@@ -78,7 +78,7 @@ export function BrowseView({
           </div>
           <div className="browse-v0-controls">
             <div className="browse-category-discovery-head">
-              <span>Explore categories</span>
+              <span>Shop by category</span>
               <Link href="/categories" className="browse-see-all-categories">See all categories <span aria-hidden="true">↗</span></Link>
             </div>
             <CategoryChips

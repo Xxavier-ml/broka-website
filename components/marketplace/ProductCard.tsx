@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight, MapPin, Sparkles } from "lucide-react";
 import type { Listing } from "@/lib/api/types";
-import { coverImage } from "@/lib/api/images";
+import { coverImage, resolveLegacy } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
 import { conditionLabel, formatUnitPrice, placeLine } from "@/lib/format";
 import { Media } from "./Media";
@@ -9,6 +9,15 @@ import { Media } from "./Media";
 export function ProductCard({ listing: l, headingLevel = 2 }: { listing: Listing; headingLevel?: 2 | 3 }) {
   const condition = conditionLabel(l.condition);
   const place = placeLine(l.location_name, l.location_county);
+  const sellerName = l.store_name?.trim() || l.seller_name?.trim() || null;
+  const sellerPhoto = resolveLegacy(l.seller_avatar_url) ?? resolveLegacy(l.seller_profile_photo);
+  const sellerRating = l.store_name
+    ? l.store_rating ?? l.seller_standing?.overall_rating ?? l.seller_rating
+    : l.seller_standing?.overall_rating ?? l.seller_rating;
+  const sellerRatingLabel = typeof sellerRating === "number" && Number.isFinite(sellerRating)
+    ? `${sellerRating.toFixed(1)}/10`
+    : null;
+  const sellerInitial = sellerName?.charAt(0).toUpperCase() || "?";
   const isAgriculture = l.category.toLowerCase() === "agriculture";
   const agricultureAttributes = l.attributes ?? {};
   const agricultureCue = isAgriculture
@@ -54,6 +63,20 @@ export function ProductCard({ listing: l, headingLevel = 2 }: { listing: Listing
           <p className="lcard-place">
             <MapPin size={13} aria-hidden="true" /> {place}
           </p>
+        )}
+        {(sellerName || sellerPhoto || sellerRatingLabel) && (
+          <div className="lcard-seller">
+            <span className="lcard-seller-avatar" aria-hidden="true">
+              <span className="lcard-seller-initial">{sellerInitial}</span>
+              {sellerPhoto && <Media image={sellerPhoto} category={null} alt="" sizes="24px" />}
+            </span>
+            {sellerName && <span className="lcard-seller-name">{sellerName}</span>}
+            {sellerRatingLabel && (
+              <span className="lcard-seller-rating" role="img" aria-label={`Seller rating ${sellerRatingLabel}`}>
+                <span aria-hidden="true">★</span>{sellerRatingLabel}
+              </span>
+            )}
+          </div>
         )}
       </div>
     </Link>

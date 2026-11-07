@@ -44,6 +44,10 @@ export interface Listing {
   seller_verified: boolean;
   seller_rating: number | null;
   seller_completed_deals: number;
+  /** Public small seller-profile thumbnail URL from the listing-card API. */
+  seller_avatar_url?: string | null;
+  /** Legacy public seller selfie field for rows not converted to media assets. */
+  seller_profile_photo?: string | null;
   /** Buyer-facing snapshot from the public listing-detail response. */
   seller_standing?: {
     overall_rating?: number | null;
@@ -62,6 +66,8 @@ export interface Listing {
   store_id: string | null;
   store_name: string | null;
   store_slug: string | null;
+  /** Composite store score out of 10 when this listing belongs to a store. */
+  store_rating?: number | null;
 }
 
 export interface StoreOwner {
