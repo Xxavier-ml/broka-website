@@ -48,9 +48,12 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
   const minPrice = parsePriceKes(firstParam(sp.min_price));
   const maxPrice = parsePriceKes(firstParam(sp.max_price));
   const location = firstParam(sp.location) ?? firstParam(sp.county);
-  const subcategoryId = firstParam(sp.subcategory_id);
   const zoneResponse = await orFallback(() => getCategoryZone(category), { category: null, subcategories: [], filters: [] });
-  const selectedSubcategory = zoneResponse.data.subcategories.find((item) => item.id === subcategoryId);
+  // Only a subcategory of this category narrows the page. Any other id would
+  // fill this category's page with another category's listings (or none).
+  const requestedSubcategoryId = firstParam(sp.subcategory_id);
+  const selectedSubcategory = zoneResponse.data.subcategories.find((item) => item.id === requestedSubcategoryId);
+  const subcategoryId = selectedSubcategory?.id;
   const childFilters = selectedSubcategory
     ? await orFallback(() => getCategoryFilters(selectedSubcategory.id), [])
     : { data: zoneResponse.data.filters, failed: false };

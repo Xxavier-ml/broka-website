@@ -64,5 +64,5 @@ export default async function AutomobileSubcategoryPage({ params, searchParams }
     () => listListings({ search: q, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, location, limit: 20 }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${raw}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
+  return <CategoryLanding category="Automobiles" routeOverride={`/browse/automobiles/${automobileSubcategorySlug(subcategory.name)}`} heroArt={heroArt} subcategoryName={subcategory.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
 }
