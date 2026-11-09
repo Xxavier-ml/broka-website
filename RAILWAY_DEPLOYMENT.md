@@ -3,4 +3,6 @@
 
 The storefront records only normalized submitted search phrases—never user IDs, IP addresses, or full browsing sessions. `/api/search-analytics` aggregates counts in the running web process and `/api/search-trending` ranks those phrases with the curated fallback list until enough activity exists. Analytics failures are intentionally ignored so search never breaks.
 
+Because trending phrases are shown to every visitor, a phrase is only listed after it has been searched at least three times, and phrases that look like an email address or phone number are never recorded. At most 500 phrases are kept in memory; when the list is full, the least searched one is dropped.
+
 For durable cross-instance analytics in production, connect these two routes to a Railway-backed collector or analytics store. The current adapter is deliberately safe as a zero-configuration fallback, but its in-memory counts reset when the web process restarts or scales to a new instance.
