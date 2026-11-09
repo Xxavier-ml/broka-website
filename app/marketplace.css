@@ -444,7 +444,10 @@
 .views { display: inline-flex; align-items: center; gap: 6px; }
 
 .gallery { display: grid; gap: 12px; }
-.gallery-main { position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: var(--c-bg-3); border: 1px solid var(--c-rule); outline: none; cursor: zoom-in; touch-action: none; }
+/* A vertical swipe over the photo scrolls the page (two-finger pinches still
+   reach the gallery); once zoomed in, or fullscreen, one finger pans the photo. */
+.gallery-main { position: relative; aspect-ratio: 4 / 3; border-radius: 22px; overflow: hidden; background: var(--c-bg-3); border: 1px solid var(--c-rule); outline: none; cursor: zoom-in; touch-action: pan-y; }
+.gallery-main.is-zoomed, .gallery-fullscreen .gallery-main { touch-action: none; }
 .gallery-main:focus-visible { border-color: var(--c-v-light); box-shadow: 0 0 0 3px var(--c-v-dim); }
 .gallery-main img { width: 100%; height: 100%; object-fit: cover; transform-origin: center center; transition: transform .16s ease-out; user-select: none; will-change: transform; }
 .gallery-main:has(img[style*="scale(1)"]) { cursor: zoom-in; }
