@@ -197,11 +197,14 @@ export function Header() {
         </div>
       </header>
       {/* Mobile nav: the same groups as the desktop menu, labelled. */}
+      {/* data-lenis-prevent: the menu scrolls on its own (site.css), and the smooth-scroll
+          layer would otherwise turn wheel scrolling over it into scrolling the page behind. */}
       <nav
         id="mobile-nav"
         className={`mobile-nav${menuOpen ? " open" : ""}`}
         aria-label="Mobile navigation"
         aria-hidden={!menuOpen}
+        data-lenis-prevent=""
       >
         {navLinks.map((item) =>
           item.children?.length ? (
