@@ -1,5 +1,5 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 
 const routes = [
   { name: "home", path: "/" },
@@ -7,7 +7,6 @@ const routes = [
   { name: "stores", path: "/stores" },
   { name: "contact", path: "/contact" },
   { name: "Zeno", path: "/zeno" },
-  { name: "listing detail", path: "/listings/fbea38cd-1c50-45e9-a637-f7b86e36b4b2" },
 ];
 
 const viewports = [
@@ -16,30 +15,60 @@ const viewports = [
   { name: "desktop", width: 1280, height: 900 },
 ];
 
+async function expectNoAxeViolations(page: Page, path: string, viewport: { width: number; height: number }) {
+  await page.setViewportSize({ width: viewport.width, height: viewport.height });
+  const response = await page.goto(path, { waitUntil: "domcontentloaded" });
+
+  expect(response?.status(), `${path} should respond successfully`).toBe(200);
+  await expect(page.locator("#main")).toBeVisible();
+  await page.waitForLoadState("networkidle", { timeout: 12_000 }).catch(() => undefined);
+
+  const { violations } = await new AxeBuilder({ page })
+    .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
+    .analyze();
+
+  expect(
+    violations.map(({ id, impact, help, nodes }) => ({
+      id,
+      impact,
+      help,
+      affected: nodes.map(({ target }) => target),
+    })),
+  ).toEqual([]);
+}
+
+/**
+ * A listing page that exists right now. Listings are live API data, so a fixed
+ * id stops working as soon as that listing is sold or removed (the previous
+ * fixture started answering 404 and failed every run). This takes the listing
+ * links /browse renders and returns the first one that opens.
+ */
+async function liveListingPath(request: APIRequestContext): Promise<string | null> {
+  const browse = await request.get("/browse");
+  if (!browse.ok()) return null;
+  const html = await browse.text();
+  const ids = [...new Set([...html.matchAll(/href="\/listings\/([A-Za-z0-9-]{1,64})"/g)].map((match) => match[1]))];
+  for (const id of ids.slice(0, 8)) {
+    const path = `/listings/${id}`;
+    if ((await request.get(path)).status() === 200) return path;
+  }
+  return null;
+}
+
 for (const route of routes) {
   for (const viewport of viewports) {
     test(`${route.name} has no axe violations at ${viewport.name}`, async ({ page }) => {
-      await page.setViewportSize({ width: viewport.width, height: viewport.height });
-      const response = await page.goto(route.path, { waitUntil: "domcontentloaded" });
-
-      expect(response?.status(), `${route.path} should respond successfully`).toBe(200);
-      await expect(page.locator("#main")).toBeVisible();
-      await page.waitForLoadState("networkidle", { timeout: 12_000 }).catch(() => undefined);
-
-      const { violations } = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "best-practice"])
-        .analyze();
-
-      expect(
-        violations.map(({ id, impact, help, nodes }) => ({
-          id,
-          impact,
-          help,
-          affected: nodes.map(({ target }) => target),
-        })),
-      ).toEqual([]);
+      await expectNoAxeViolations(page, route.path, viewport);
     });
   }
+}
+
+for (const viewport of viewports) {
+  test(`listing detail has no axe violations at ${viewport.name}`, async ({ page, request }) => {
+    const path = await liveListingPath(request);
+    test.skip(!path, "The BROKA API returned no listing to open");
+    await expectNoAxeViolations(page, path!, viewport);
+  });
 }
 
 test("legacy marketplace URLs open the current marketplace", async ({ page }) => {
@@ -94,31 +123,31 @@ test("mobile marketplace category artwork uses moderate landscape cards", async 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/browse", { waitUntil: "domcontentloaded" });
 
+  // Phone cards are min(64vw, 230px) wide at 1.65:1 (app/redesign.css, "Slightly
+  // reduce mobile category cards"): about 61% of a 375px screen, 139px tall.
   const card = page.locator(".browse-category-rail .category-card").nth(1);
   await expect(card).toBeVisible();
   const box = await card.boundingBox();
   expect(box, "category card should have a measurable box").not.toBeNull();
-  expect(box!.width, "category artwork card should remain large enough to browse").toBeGreaterThan(viewportWidth * 0.72);
-  expect(box!.width, "category artwork card should leave a visible neighboring-card peek").toBeLessThan(viewportWidth * 0.85);
-  expect(box!.height, "category artwork card should keep a comfortable landscape height").toBeGreaterThan(160);
-  expect(box!.height, "category artwork card should avoid dominating the viewport").toBeLessThan(210);
+  expect(box!.width, "category artwork card should remain large enough to browse").toBeGreaterThan(viewportWidth * 0.55);
+  expect(box!.width, "category artwork card should leave a visible neighboring-card peek").toBeLessThan(viewportWidth * 0.7);
+  expect(box!.height, "category artwork card should keep a comfortable landscape height").toBeGreaterThan(120);
+  expect(box!.height, "category artwork card should avoid dominating the viewport").toBeLessThan(170);
   expect(box!.width / box!.height, "category artwork card should be clearly rectangular").toBeGreaterThan(1.4);
 
-  const previous = await page.locator(".category-card-nav-prev").boundingBox();
+  // On phones the rail is swiped; only the "next" arrow is shown.
+  await expect(page.locator(".category-card-nav-prev")).toBeHidden();
   const next = await page.locator(".category-card-nav-next").boundingBox();
   const visibleCard = page.locator(".browse-category-rail .category-card").first();
   const icon = await visibleCard.locator(".category-card-icon").boundingBox();
   const label = await visibleCard.locator(".category-card-name").boundingBox();
-  expect(previous, "previous arrow should have a measurable box").not.toBeNull();
   expect(next, "next arrow should have a measurable box").not.toBeNull();
   expect(icon, "category icon should have a measurable box").not.toBeNull();
   expect(label, "category label should have a measurable box").not.toBeNull();
   const overlaps = (a: { x: number; y: number; width: number; height: number }, b: { x: number; y: number; width: number; height: number }) =>
     a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
-  for (const arrow of [previous!, next!]) {
-    expect(overlaps(arrow, icon!), "carousel arrows should not cover the category icon").toBe(false);
-    expect(overlaps(arrow, label!), "carousel arrows should not cover the category label").toBe(false);
-  }
+  expect(overlaps(next!, icon!), "the carousel arrow should not cover the category icon").toBe(false);
+  expect(overlaps(next!, label!), "the carousel arrow should not cover the category label").toBe(false);
 });
 
 test("homepage explains the Discover–Compare–Connect flow", async ({ page }) => {

@@ -58,7 +58,9 @@ export function BrowseView({
       <section className="browse-hero browse-hero-v0" aria-label="Browse marketplace">
         <div className="wrap">
           <div className="browse-v0-intro">
-            <span className="t-eyebrow" id="browse-page-title">Broka Marketplace</span>
+            {/* The page's only h1: styled as the compact eyebrow, but the page
+                still needs a top-level heading for screen readers and search. */}
+            <h1 className="t-eyebrow" id="browse-page-title">Broka Marketplace</h1>
           </div>
           <div className="browse-v0-search-slot">
             <SearchForm
