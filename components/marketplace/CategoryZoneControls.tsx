@@ -6,7 +6,6 @@ import {
   MARKETPLACE_CONDITIONS,
   PRICE_MAX_KES,
   PRICE_MIN_KES,
-  PRICE_STEP_KES,
   attributeParam,
   facetRowLabel,
   fieldLabel,
@@ -233,12 +232,13 @@ export function CategoryZoneControls({
           {sortParam(sort) && <input type="hidden" name="sort" value={sortParam(sort)} />}
           {condition && <input type="hidden" name="condition" value={condition} />}
           {hiddenAttributes.map(([name, value]) => <input key={name} type="hidden" name={attributeParam(name)} value={value as string} />)}
-          {/* The app's price filter is a 0 - 5,000,000 KES range ("Price range (KES)"); both ends go on the wire as min_price / max_price. */}
+          {/* The app's price filter is a 0 - 5,000,000 KES range ("Price range (KES)"); both ends go on the wire as min_price / max_price.
+              Typed prices take any amount: the slider's 100,000 KES step made the browser refuse to submit a price like 15,000. */}
           <label>Price range (KES) from
-            <input name="min_price" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} placeholder={String(PRICE_MIN_KES)} defaultValue={minPrice ?? ""} />
+            <input name="min_price" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step="any" placeholder={String(PRICE_MIN_KES)} defaultValue={minPrice ?? ""} />
           </label>
           <label>to
-            <input name="max_price" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} placeholder={String(PRICE_MAX_KES)} defaultValue={maxPrice ?? ""} />
+            <input name="max_price" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step="any" placeholder={String(PRICE_MAX_KES)} defaultValue={maxPrice ?? ""} />
           </label>
           <label>Location<input name="location" placeholder="e.g. Nairobi, Kisumu" defaultValue={location ?? ""} /></label>
           {inputFields.map((field) => {
