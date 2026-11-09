@@ -1,10 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useReducedMotion } from "framer-motion";
 
 export function ArchitectureViz() {
   const reduceMotion = useReducedMotion();
-  const showSignals = reduceMotion === false;
+  // useReducedMotion() is null on the server and true or false in the browser,
+  // so rendering the moving signals straight from it gave the server and the
+  // first browser render different markup: a hydration error on /technology.
+  // They are added after mount instead, as OrbitComet does.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  const showSignals = mounted && reduceMotion === false;
 
   return (
     <div className="tech-arch-wrap">

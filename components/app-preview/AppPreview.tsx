@@ -39,7 +39,8 @@ export function AppPreview() {
   ];
 
   return (
-    <main className="app-preview-page">
+    // A div: the root layout already wraps every page in <main id="main">, and a second main inside it is invalid HTML.
+    <div className="app-preview-page">
       <section className="ap-preview-header wrap" aria-labelledby="ap-preview-title">
         <div className="ap-preview-header-copy">
           <span className="ap-kicker"><span className="ap-kicker-dot" /> THE BROKA APP / PREVIEW</span>
@@ -123,6 +124,6 @@ export function AppPreview() {
           <p className="ap-gallery-hint"><ChevronRight size={14} /> Swipe across to view both screens.</p>
         </div>
       </section>
-    </main>
+    </div>
   );
 }
