@@ -42,10 +42,13 @@ export interface ListingPage {
   total: number;
 }
 
+/** Listings per marketplace page: 20, like the app (`listings_repository.dart`). */
+export const LISTINGS_PAGE_SIZE = 20;
+
 /** Public listings in the marketplace feed, 20 to a page like the app. */
 export async function listListings(query: ListingQuery = {}): Promise<ListingPage> {
   const params = new URLSearchParams({
-    limit: String(query.limit ?? 20),
+    limit: String(query.limit ?? LISTINGS_PAGE_SIZE),
     offset: String(query.offset ?? 0),
     with_total: "true",
   });

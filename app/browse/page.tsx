@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import { BrowseView, parseBrowseCategory, parseBrowseCondition, parseBrowsePrice, parseBrowseSort } from "@/components/marketplace/BrowseView";
-import { listListings } from "@/lib/api/listings";
+import { LISTINGS_PAGE_SIZE, listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
 import { categoryPageContent } from "@/lib/category-pages";
-import { firstParam, type SearchParams } from "@/lib/params";
+import { firstParam, parsePage, type SearchParams } from "@/lib/params";
 import { hasSearchParams, pageMetadata } from "@/lib/seo";
 
 export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
@@ -30,7 +30,8 @@ export default async function BrowsePage({ searchParams }: { searchParams: Searc
   // `county` is what this page sent before it matched the app: the API has no
   // such parameter, so the old links are folded into the working one.
   const location = firstParam(sp.location) ?? firstParam(sp.county);
+  const page = parsePage(sp.page);
   // 20 to a page, like the app (`listings_repository.dart`).
-  const response = await orFallback(() => listListings({ search: q, category: category ?? undefined, sort, condition, minPrice, maxPrice, location, limit: 20 }), { items: [], total: 0 });
-  return <BrowseView q={q} category={category ?? undefined} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed} />;
+  const response = await orFallback(() => listListings({ search: q, category: category ?? undefined, sort, condition, minPrice, maxPrice, location, limit: LISTINGS_PAGE_SIZE, offset: (page - 1) * LISTINGS_PAGE_SIZE }), { items: [], total: 0 });
+  return <BrowseView q={q} category={category ?? undefined} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} page={page} result={response.data} failed={response.failed} />;
 }

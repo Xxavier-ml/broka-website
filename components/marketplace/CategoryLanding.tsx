@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ArrowLeft } from "lucide-react";
-import type { ListingPage } from "@/lib/api/listings";
+import { LISTINGS_PAGE_SIZE, type ListingPage } from "@/lib/api/listings";
 import { categoryPageContent } from "@/lib/category-pages";
 import { categoryArtSmall, categorySlug, categoryVisual } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import { ApiNotice, EmptyState } from "./StateMessage";
+import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { CategoryZoneControls } from "./CategoryZoneControls";
@@ -34,6 +35,7 @@ export function CategoryLanding({
   minPrice,
   maxPrice,
   location,
+  page = 1,
   result,
   failed,
   categoryNode,
@@ -52,6 +54,8 @@ export function CategoryLanding({
   minPrice?: number;
   maxPrice?: number;
   location?: string;
+  /** 1-based page of `LISTINGS_PAGE_SIZE` listings. */
+  page?: number;
   result: ListingPage;
   failed: boolean;
   categoryNode?: CategoryNode | null;
@@ -107,7 +111,9 @@ export function CategoryLanding({
     if (value.min != null) attributeQuery[`${attributeParam(name)}_min`] = String(value.min);
     if (value.max != null) attributeQuery[`${attributeParam(name)}_max`] = String(value.max);
   }
-  const retryHref = withQuery(route, { ...preserved, ...activeFilters, ...attributeQuery });
+  const pageCount = Math.max(1, Math.ceil(result.total / LISTINGS_PAGE_SIZE));
+  const pageHref = (target: number) => withQuery(route, { ...preserved, ...attributeQuery, page: target > 1 ? target : undefined });
+  const retryHref = pageHref(page);
   const facet = leadingFacetField(filters ?? []);
   const facetValue = facet ? scalarAttribute(attributes?.[facet.field_name]) : "";
   const noun = (subcategoryName ?? content.category).toLowerCase();
@@ -171,6 +177,10 @@ export function CategoryLanding({
 
           {failed ? (
             <ApiNotice retryHref={retryHref} />
+          ) : result.items.length === 0 && page > 1 && result.total > 0 ? (
+            <EmptyState emoji={visual.emoji} title="This page is past the last listing" actions={[{ label: "Go to the first page", href: pageHref(1), primary: true }]}>
+              {`There ${pageCount === 1 ? "is 1 page" : `are ${pageCount} pages`} of ${noun} listings for this search.`}
+            </EmptyState>
           ) : result.items.length === 0 ? (
             facetValue && facet ? (
               <EmptyState
@@ -195,9 +205,12 @@ export function CategoryLanding({
               </EmptyState>
             )
           ) : (
-            <div className="lgrid browse-grid category-grid">
-              {result.items.map((listing) => <ProductCard key={listing.id} listing={listing} />)}
-            </div>
+            <>
+              <div className="lgrid browse-grid category-grid">
+                {result.items.map((listing) => <ProductCard key={listing.id} listing={listing} />)}
+              </div>
+              <Pagination page={page} pageCount={pageCount} hrefFor={pageHref} />
+            </>
           )}
         </div>
       </section>
