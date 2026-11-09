@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { ArrowLeft, ArrowRight, ChevronDown, MapPin, Navigation, Search, Store as StoreIcon } from "lucide-react";
 import type { Store } from "@/lib/api/types";
 import { categoryArtSmall, categoryVisual } from "@/lib/categories";
@@ -69,6 +69,9 @@ export function StoreDirectoryExperience({
 }: Props) {
   const router = useRouter();
   const [search, setSearch] = useState(q);
+  // Follow the address: after "Browse all" or Back the box kept the old
+  // query, and the category tiles (built from it) put it back in the URL.
+  useEffect(() => setSearch(q), [q]);
   const [radius, setRadius] = useState("25");
   const [position, setPosition] = useState<Coordinates | null>(null);
   const [nearby, setNearby] = useState<Store[]>([]);

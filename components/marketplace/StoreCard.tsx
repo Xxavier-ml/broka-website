@@ -7,7 +7,9 @@ import { storeWebsiteUrl } from "@/lib/site";
 import { RemoteImage } from "@/components/ui/RemoteImage";
 
 export function storeCover(store: Store) {
-  return resolveSizes(store.cover) ?? resolveSizes(store.photo_images[0]) ?? resolveLegacy(store.photos[0]);
+  // Optional chaining as in StoreDirectoryCard: a store row without the photo
+  // arrays must not take the whole store page down.
+  return resolveSizes(store.cover) ?? resolveSizes(store.photo_images?.[0]) ?? resolveLegacy(store.photos?.[0]);
 }
 export function storeLogo(store: Store) {
   return resolveSizes(store.logo) ?? resolveLegacy(store.logo_url);

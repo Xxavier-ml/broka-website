@@ -57,8 +57,10 @@ export async function getStoreBySlug(name: string): Promise<Store | null> {
   return apiGet<Store>(`/stores/slug/${slug}`, { tags: [`store:${slug}`] });
 }
 
+// Store ids come from the API's own responses; they are still encoded before
+// going into a path, so an odd id cannot point the request at another route.
 export async function getStoreCategories(storeId: string): Promise<StoreCategory[]> {
-  return (await apiGet<StoreCategory[]>(`/stores/${storeId}/categories`, { tags: [`store-id:${storeId}`] })) ?? [];
+  return (await apiGet<StoreCategory[]>(`/stores/${encodeURIComponent(storeId)}/categories`, { tags: [`store-id:${storeId}`] })) ?? [];
 }
 
 export interface CatalogueQuery {
@@ -84,7 +86,7 @@ export async function getStoreListings(storeId: string, query: CatalogueQuery = 
   if (query.search) params.set("search", query.search.slice(0, 100));
   if (query.category) params.set("category", query.category);
   if (query.sort && query.sort !== "featured") params.set("sort", query.sort);
-  const page = await apiGet<ListingPage | Listing[]>(`/stores/${storeId}/listings?${params}`, {
+  const page = await apiGet<ListingPage | Listing[]>(`/stores/${encodeURIComponent(storeId)}/listings?${params}`, {
     tags: [`store-id:${storeId}`],
   });
   if (!page) return { items: [], total: 0 };

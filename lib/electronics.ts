@@ -1,4 +1,5 @@
 import type { CategoryNode } from "@/lib/api/categories";
+import { safeDecode } from "@/lib/params";
 
 export interface ElectronicsSubcategoryConfig {
   slug: string;
@@ -28,7 +29,7 @@ export const ELECTRONICS_SUBCATEGORIES: ElectronicsSubcategoryConfig[] = [
 ];
 
 export function electronicsSubcategoryFromSlug(slug: string) {
-  const normalized = decodeURIComponent(slug).toLowerCase();
+  const normalized = safeDecode(slug).toLowerCase();
   return ELECTRONICS_SUBCATEGORIES.find((item) => item.slug === normalized || item.legacySlugs?.includes(normalized)) ?? null;
 }
 

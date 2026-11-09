@@ -1,6 +1,7 @@
 // BROKA's 21 top-level categories with the emoji and colours the app uses for
 // them (flutter_app/lib/features/categories/domain/category_visual.dart in the
 // main repository), in the order the backend serves them.
+import { safeDecode } from "./params";
 
 export interface CategoryVisual {
   name: string;
@@ -96,6 +97,6 @@ export function categorySlug(name: string): string {
 
 /** The canonical category a slug refers to, or null if it is not one. */
 export function categoryFromSlug(slug: string): string | null {
-  const decoded = decodeURIComponent(slug).replace(/-and-/g, " & ").replace(/-/g, " ");
+  const decoded = safeDecode(slug).replace(/-and-/g, " & ").replace(/-/g, " ");
   return canonicalCategory(decoded);
 }

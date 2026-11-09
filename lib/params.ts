@@ -1,3 +1,16 @@
+/**
+ * decodeURIComponent for a route segment that never throws: a malformed or
+ * already-decoded escape ("100%") comes back unchanged, so the page answers
+ * 404 for it instead of failing with a server error.
+ */
+export function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 /** The first value of a query parameter (Next gives an array when it repeats), trimmed and capped. */
 export function firstParam(v: string | string[] | undefined, max = 100): string | undefined {
   const s = (Array.isArray(v) ? v[0] : v)?.trim();
