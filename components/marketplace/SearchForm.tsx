@@ -3,6 +3,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import { ArrowRight, Clock3, MapPin, Search, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { formatUnitPrice } from "@/lib/format";
 import { MobileFilterDrawer, type MobileFilterDrawerProps } from "./MobileFilterDrawer";
 
 interface Suggestion {
@@ -56,6 +57,10 @@ export function SearchForm({
   const inputId = useId();
   const shellRef = useRef<HTMLDivElement>(null);
   const requestRef = useRef<AbortController | null>(null);
+  // Suggestions are fetched only for text the visitor typed. A query that
+  // came with the page, or one just picked from the menu, used to fetch them
+  // too and force the menu open over the results.
+  const typedRef = useRef(false);
   const [query, setQuery] = useState(value ?? "");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [trendingSearches, setTrendingSearches] = useState<string[]>(DEFAULT_TRENDING_SEARCHES);
@@ -75,6 +80,7 @@ export function SearchForm({
       : [];
 
   useEffect(() => {
+    typedRef.current = false;
     setQuery(value ?? "");
   }, [value]);
 
@@ -89,7 +95,7 @@ export function SearchForm({
   useEffect(() => {
     const trimmed = query.trim();
     requestRef.current?.abort();
-    if (trimmed.length < 2) {
+    if (trimmed.length < 2 || !typedRef.current) {
       setSuggestions([]);
       setActiveIndex(-1);
       return;
@@ -101,10 +107,11 @@ export function SearchForm({
         const response = await fetch(`/api/search-suggestions?q=${encodeURIComponent(trimmed)}`, { signal: controller.signal, headers: { Accept: "application/json" } });
         if (!response.ok) return;
         const data = (await response.json()) as { items?: Suggestion[] };
+        // Typing already opened the menu; an answer that arrives after Escape
+        // or a click elsewhere must not reopen it.
         if (!controller.signal.aborted) {
           setSuggestions(data.items ?? []);
           setActiveIndex(-1);
-          setOpen(true);
         }
       } catch {
         if (!controller.signal.aborted) setSuggestions([]);
@@ -119,7 +126,10 @@ export function SearchForm({
   const recordSearch = (term: string) => {
     const cleaned = term.trim();
     if (!cleaned) return;
-    const next = [cleaned, ...recentSearches.filter((item) => item.toLowerCase() !== cleaned.toLowerCase())].slice(0, MAX_RECENT_SEARCHES);
+    // Start from what is stored, not from state: the state is only loaded when
+    // the empty-box menu opens, so searching before that (on the homepage, or
+    // after editing a query that came with the page) overwrote the history.
+    const next = [cleaned, ...readRecentSearches().filter((item) => item.toLowerCase() !== cleaned.toLowerCase())].slice(0, MAX_RECENT_SEARCHES);
     setRecentSearches(next);
     try { window.localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(next)); } catch { /* storage can be unavailable in private browsing */ }
     void fetch("/api/search-analytics", {
@@ -134,6 +144,7 @@ export function SearchForm({
     const params = new URLSearchParams({ q: term });
     Object.entries(hidden).forEach(([key, item]) => { if (item) params.set(key, item); });
     recordSearch(term);
+    typedRef.current = false;
     setQuery(term);
     setOpen(false);
     router.push(`${action}?${params.toString()}`);
@@ -150,7 +161,11 @@ export function SearchForm({
   };
 
   const onKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "ArrowDown" && activeOptions.length) {
+    if (event.key === "ArrowDown" && !menuOpen) {
+      // A closed menu (after Escape, say) opens again on Down, as a combobox should.
+      event.preventDefault();
+      openFocusMenu();
+    } else if (event.key === "ArrowDown" && activeOptions.length) {
       event.preventDefault();
       setOpen(true);
       setActiveIndex((current) => (current + 1) % activeOptions.length);
@@ -161,23 +176,31 @@ export function SearchForm({
       event.preventDefault();
       navigateTo(activeOptions[activeIndex]!);
     } else if (event.key === "Escape") {
+      // With the menu open, Escape only closes it. Left alone, the browser
+      // also cleared the search box, and clearing it reopened the menu.
+      if (menuOpen) event.preventDefault();
       setOpen(false);
       setActiveIndex(-1);
     }
   };
 
-  const openFocusMenu = () => {
-    if (!query.trim()) {
-      if (!showSuggestionsOnEmptyFocus) return;
-      setRecentSearches(readRecentSearches());
-      setOpen(true);
-      void fetch("/api/search-trending", { headers: { Accept: "application/json" } })
-        .then((response) => response.ok ? response.json() as Promise<{ items?: string[] }> : null)
-        .then((data) => { if (data?.items?.length) setTrendingSearches(data.items); })
-        .catch(() => undefined);
-    } else if (suggestions.length) {
-      setOpen(true);
+  /** The empty-box menu: this device's recent searches, then what is popular. */
+  const openEmptyMenu = () => {
+    if (!showSuggestionsOnEmptyFocus) {
+      setOpen(false);
+      return;
     }
+    setRecentSearches(readRecentSearches());
+    setOpen(true);
+    void fetch("/api/search-trending", { headers: { Accept: "application/json" } })
+      .then((response) => response.ok ? response.json() as Promise<{ items?: string[] }> : null)
+      .then((data) => { if (data?.items?.length) setTrendingSearches(data.items); })
+      .catch(() => undefined);
+  };
+
+  const openFocusMenu = () => {
+    if (!query.trim()) openEmptyMenu();
+    else if (suggestions.length) setOpen(true);
   };
 
   const clearRecent = () => {
@@ -201,7 +224,14 @@ export function SearchForm({
           name="q"
           type="search"
           value={query}
-          onChange={(event) => { const next = event.target.value; setQuery(next); setOpen(next.trim().length === 0 || next.trim().length >= 2); }}
+          onChange={(event) => {
+            const next = event.target.value;
+            typedRef.current = true;
+            setQuery(next);
+            // Emptying the box shows the recent and popular searches again.
+            if (!next.trim()) openEmptyMenu();
+            else setOpen(next.trim().length >= 2);
+          }}
           onFocus={openFocusMenu}
           onKeyDown={onKeyDown}
           placeholder={placeholder}
@@ -248,7 +278,7 @@ export function SearchForm({
                 >
                   <span className="sform-suggestion-icon" aria-hidden="true"><Search size={15} /></span>
                   <span className="sform-suggestion-copy"><strong>{suggestion.name}</strong><small>{suggestion.category ?? "Marketplace listing"}{suggestion.location ? <><span aria-hidden="true"> · </span><MapPin size={11} /> {suggestion.location}</> : null}</small></span>
-                  {suggestion.price != null && <span className="sform-suggestion-price">KSh {suggestion.price.toLocaleString("en-KE")}</span>}
+                  {suggestion.price != null && <span className="sform-suggestion-price">{formatUnitPrice(suggestion.price, suggestion.priceUnit)}</span>}
                 </button>
               ))}
               <div className="sform-suggestions-hint" role="presentation">Use ↑ ↓ to navigate · Enter to search</div>
