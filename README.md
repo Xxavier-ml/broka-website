@@ -20,6 +20,11 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+Checks: `npm run lint` (ESLint), and `npm run build` followed by
+`npm run test:a11y` (Playwright with axe, the same run as the GitHub
+Actions workflow; install the browser once with
+`npx playwright install chromium`).
+
 ## What is on the site
 
 | Section | Routes | Notes |
@@ -104,7 +109,6 @@ download URL), and the founders' addresses in `data/founders.ts`.
 ## Not covered yet
 
 - Authentication, messaging, payments or a database. Those stay in the app.
-- ESLint is not installed in this repository (`npm run lint` needs it).
 - Link-preview images for shared products and stores use the API's image URL
   as is. The main repository's storefront converts them to JPEG for WhatsApp,
   which this site does not yet.

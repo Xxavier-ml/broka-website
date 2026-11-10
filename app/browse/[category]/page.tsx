@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CategoryLanding } from "@/components/marketplace/CategoryLanding";
-import { listListings } from "@/lib/api/listings";
+import { LISTINGS_PAGE_SIZE, listListings } from "@/lib/api/listings";
 import { categoryFromSlug, categorySlug } from "@/lib/categories";
 import { categoryPageContent } from "@/lib/category-pages";
 import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
 import { orFallback } from "@/lib/api/client";
-import { firstParam, type SearchParams } from "@/lib/params";
+import { firstParam, parsePage, type SearchParams } from "@/lib/params";
 import { hasSearchParams, pageMetadata } from "@/lib/seo";
 import { filtersForCategory, filtersForSubcategory } from "@/lib/category-filters";
 import {
@@ -48,9 +48,13 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
   const minPrice = parsePriceKes(firstParam(sp.min_price));
   const maxPrice = parsePriceKes(firstParam(sp.max_price));
   const location = firstParam(sp.location) ?? firstParam(sp.county);
-  const subcategoryId = firstParam(sp.subcategory_id);
+  const page = parsePage(sp.page);
   const zoneResponse = await orFallback(() => getCategoryZone(category), { category: null, subcategories: [], filters: [] });
-  const selectedSubcategory = zoneResponse.data.subcategories.find((item) => item.id === subcategoryId);
+  // Only a subcategory of this category narrows the page. Any other id would
+  // fill this category's page with another category's listings (or none).
+  const requestedSubcategoryId = firstParam(sp.subcategory_id);
+  const selectedSubcategory = zoneResponse.data.subcategories.find((item) => item.id === requestedSubcategoryId);
+  const subcategoryId = selectedSubcategory?.id;
   const childFilters = selectedSubcategory
     ? await orFallback(() => getCategoryFilters(selectedSubcategory.id), [])
     : { data: zoneResponse.data.filters, failed: false };
@@ -76,9 +80,10 @@ export default async function CategoryBrowsePage({ params, searchParams }: Props
       minPrice,
       maxPrice,
       location,
-      limit: 20,
+      limit: LISTINGS_PAGE_SIZE,
+      offset: (page - 1) * LISTINGS_PAGE_SIZE,
     }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category={category} subcategoryName={selectedSubcategory?.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategoryId} attributes={attributes} />;
+  return <CategoryLanding category={category} subcategoryName={selectedSubcategory?.name} page={page} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategoryId} attributes={attributes} />;
 }

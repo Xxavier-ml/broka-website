@@ -1,3 +1,16 @@
+/**
+ * decodeURIComponent for a route segment that never throws: a malformed or
+ * already-decoded escape ("100%") comes back unchanged, so the page answers
+ * 404 for it instead of failing with a server error.
+ */
+export function safeDecode(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
 /** The first value of a query parameter (Next gives an array when it repeats), trimmed and capped. */
 export function firstParam(v: string | string[] | undefined, max = 100): string | undefined {
   const s = (Array.isArray(v) ? v[0] : v)?.trim();
@@ -5,6 +18,11 @@ export function firstParam(v: string | string[] | undefined, max = 100): string 
 }
 
 export type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+/** A 1-based page number from a URL (capped at `max`); anything unusable is page 1. */
+export function parsePage(v: string | string[] | undefined, max = 500): number {
+  return Math.max(1, Math.min(max, Number.parseInt(firstParam(v, 6) ?? "1", 10) || 1));
+}
 
 /** "/path?a=1&b=2" from the values that are set. */
 export function withQuery(path: string, query: Record<string, string | number | undefined>): string {

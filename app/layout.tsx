@@ -88,7 +88,9 @@ const organization = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${display.variable} ${serif.variable} ${inter.variable} ${futureDisplay.variable} ${futureBody.variable}`}>
+    // data-scroll-behavior: globals.css makes html scroll smoothly; this keeps Next.js jumping
+    // (not gliding) to the top on navigation once it stops doing so by default (Next 16).
+    <html lang="en" data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${inter.variable} ${futureDisplay.variable} ${futureBody.variable}`}>
       <body>
         <a href="#main" className="skip-link">
           Skip to content

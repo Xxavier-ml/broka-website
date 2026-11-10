@@ -1,11 +1,12 @@
 import Link from "next/link";
 import type { CSSProperties } from "react";
 import { ArrowLeft } from "lucide-react";
-import type { ListingPage } from "@/lib/api/listings";
+import { LISTINGS_PAGE_SIZE, type ListingPage } from "@/lib/api/listings";
 import { categoryPageContent } from "@/lib/category-pages";
 import { categoryArtSmall, categorySlug, categoryVisual } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import { ApiNotice, EmptyState } from "./StateMessage";
+import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { CategoryZoneControls } from "./CategoryZoneControls";
@@ -34,6 +35,7 @@ export function CategoryLanding({
   minPrice,
   maxPrice,
   location,
+  page = 1,
   result,
   failed,
   categoryNode,
@@ -52,6 +54,8 @@ export function CategoryLanding({
   minPrice?: number;
   maxPrice?: number;
   location?: string;
+  /** 1-based page of `LISTINGS_PAGE_SIZE` listings. */
+  page?: number;
   result: ListingPage;
   failed: boolean;
   categoryNode?: CategoryNode | null;
@@ -73,6 +77,12 @@ export function CategoryLanding({
     "--category-end": visual.gradient[1],
     "--category-art": `url(${heroArt ?? categoryArtSmall(content.category, 1024)})`,
   } as CSSProperties;
+  // A subcategory chosen with ?subcategory_id= (every category except the
+  // subcategories with paths of their own, like /browse/electronics/phones)
+  // is part of the page's scope. It rides along on the sort, search, filter
+  // and retry links; without it, using any of them quietly widened the
+  // results back to the whole category.
+  const scopedSubcategoryId = subcategoryName && !routeOverride ? subcategoryId : undefined;
   const preserved = {
     q,
     condition,
@@ -80,6 +90,7 @@ export function CategoryLanding({
     max_price: maxPrice?.toString(),
     location,
     sort: sortParam(sort),
+    subcategory_id: scopedSubcategoryId,
   };
   const activeFilters = {
     condition,
@@ -87,6 +98,7 @@ export function CategoryLanding({
     max_price: maxPrice?.toString(),
     location,
     sort: sortParam(sort),
+    subcategory_id: scopedSubcategoryId,
   };
   // Changing the sort, or searching, must not throw the filters away, so the
   // attribute parameters ride along on the sort links and the search form too.
@@ -99,7 +111,9 @@ export function CategoryLanding({
     if (value.min != null) attributeQuery[`${attributeParam(name)}_min`] = String(value.min);
     if (value.max != null) attributeQuery[`${attributeParam(name)}_max`] = String(value.max);
   }
-  const retryHref = withQuery(route, { ...preserved, ...activeFilters, ...attributeQuery });
+  const pageCount = Math.max(1, Math.ceil(result.total / LISTINGS_PAGE_SIZE));
+  const pageHref = (target: number) => withQuery(route, { ...preserved, ...attributeQuery, page: target > 1 ? target : undefined });
+  const retryHref = pageHref(page);
   const facet = leadingFacetField(filters ?? []);
   const facetValue = facet ? scalarAttribute(attributes?.[facet.field_name]) : "";
   const noun = (subcategoryName ?? content.category).toLowerCase();
@@ -143,7 +157,7 @@ export function CategoryLanding({
               // The sheet carries the subcategory's own fields (storage, RAM...), minus the brand row.
               fields: sheetFields(filters ?? [], subcategoryName ? facet : null),
               attributes,
-              subcategoryId: subcategoryName ? undefined : subcategoryId,
+              subcategoryId: scopedSubcategoryId,
             }}
             filterRowClassName="category-search-filter-row"
           />
@@ -153,7 +167,7 @@ export function CategoryLanding({
       <section className={`category-results browse-section category-results-${categorySlug(content.category)}`} aria-label={`${content.category} listings`}>
         <div className="wrap">
           {!subcategoryName && <CategorySubcategoryGrid category={content.category} route={route} subcategories={subcategories ?? []} keep={preserved} />}
-          {(subcategoryName || !(subcategories?.length) || showAgricultureQuickFilters) && <CategoryZoneControls facetOnly={Boolean(subcategoryName)} route={route} category={categoryNode ?? null} subcategories={quickSubcategories} showSubcategories={showAgricultureQuickFilters} filters={filters ?? []} q={q} subcategoryId={subcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} sort={sort} attributes={attributes ?? {}} />}
+          {(subcategoryName || !(subcategories?.length) || showAgricultureQuickFilters) && <CategoryZoneControls facetOnly={Boolean(subcategoryName)} route={route} category={categoryNode ?? null} subcategories={quickSubcategories} showSubcategories={showAgricultureQuickFilters} filters={filters ?? []} q={q} subcategoryId={scopedSubcategoryId} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} sort={sort} attributes={attributes ?? {}} />}
           <div className="listing-v0-toolbar category-results-toolbar">
             <p className="browse-count" role="status">
               {failed ? "Listings unavailable" : `${result.total.toLocaleString("en-KE")} ${result.total === 1 ? "result" : "results"}`}
@@ -163,6 +177,10 @@ export function CategoryLanding({
 
           {failed ? (
             <ApiNotice retryHref={retryHref} />
+          ) : result.items.length === 0 && page > 1 && result.total > 0 ? (
+            <EmptyState emoji={visual.emoji} title="This page is past the last listing" actions={[{ label: "Go to the first page", href: pageHref(1), primary: true }]}>
+              {`There ${pageCount === 1 ? "is 1 page" : `are ${pageCount} pages`} of ${noun} listings for this search.`}
+            </EmptyState>
           ) : result.items.length === 0 ? (
             facetValue && facet ? (
               <EmptyState
@@ -177,7 +195,7 @@ export function CategoryLanding({
                 emoji={visual.emoji}
                 title={q ? `No ${noun} listings for “${q}”` : `No ${subcategoryName ?? content.category} listings yet`}
                 actions={[
-                  { label: "Clear filters", href: route, primary: true },
+                  { label: "Clear filters", href: withQuery(route, { subcategory_id: scopedSubcategoryId }), primary: true },
                   { label: "Browse all categories", href: "/browse" },
                 ]}
               >
@@ -187,9 +205,12 @@ export function CategoryLanding({
               </EmptyState>
             )
           ) : (
-            <div className="lgrid browse-grid category-grid">
-              {result.items.map((listing) => <ProductCard key={listing.id} listing={listing} />)}
-            </div>
+            <>
+              <div className="lgrid browse-grid category-grid">
+                {result.items.map((listing) => <ProductCard key={listing.id} listing={listing} />)}
+              </div>
+              <Pagination page={page} pageCount={pageCount} hrefFor={pageHref} />
+            </>
           )}
         </div>
       </section>

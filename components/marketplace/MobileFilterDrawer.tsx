@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { SlidersHorizontal, X, RotateCcw, Check } from "lucide-react";
 import { createPortal } from "react-dom";
 import { usePathname, useRouter } from "next/navigation";
@@ -86,6 +86,8 @@ export function MobileFilterDrawer({
 }: MobileFilterDrawerProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const initial: FilterState = {
@@ -115,15 +117,43 @@ export function MobileFilterDrawer({
     setAttrs(JSON.parse(attrKey) as Record<string, AttributeValue>);
   }, [condition, minPrice, maxPrice, location, sort, attrKey]);
 
+  // A modal sheet, as the WAI-ARIA dialog pattern has it: focus moves into it,
+  // Tab stays inside it, and closing it puts focus back on the Filters button.
+  // Focus used to stay behind the sheet, so keyboard users tabbed through the
+  // whole page underneath before reaching it.
   useEffect(() => {
     if (!open) return;
-    const onKeyDown = (event: KeyboardEvent) => event.key === "Escape" && setOpen(false);
+    const dialog = dialogRef.current;
+    const trigger = triggerRef.current;
+    dialog?.querySelector<HTMLElement>(".mobile-filter-close")?.focus();
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOpen(false);
+        return;
+      }
+      if (event.key !== "Tab" || !dialog) return;
+      const focusable = Array.from(dialog.querySelectorAll<HTMLElement>("button:not(:disabled), input:not(:disabled), select:not(:disabled), textarea:not(:disabled), a[href]"));
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (!first || !last) return;
+      if (!dialog.contains(document.activeElement)) {
+        event.preventDefault();
+        first.focus();
+      } else if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     window.addEventListener("keydown", onKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       window.removeEventListener("keydown", onKeyDown);
+      trigger?.focus();
     };
   }, [open]);
 
@@ -177,6 +207,7 @@ export function MobileFilterDrawer({
   return (
     <>
       <button
+        ref={triggerRef}
         type="button"
         className={`mobile-filter-trigger${iconOnly ? " mobile-filter-trigger--icon" : ""}`}
         onClick={() => setOpen(true)}
@@ -189,8 +220,10 @@ export function MobileFilterDrawer({
         {activeCount > 0 && <span className="mobile-filter-count">{activeCount}</span>}
       </button>
       {open && createPortal(
-        <div className="mobile-filter-layer" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-          <section className="mobile-filter-drawer" role="dialog" aria-modal="true" aria-labelledby="mobile-filter-title">
+        // data-lenis-prevent: the smooth-scroll layer (SmoothScroll.tsx) takes every wheel event for
+        // the page, so the sheet could not be scrolled with a mouse or trackpad while the page behind it moved.
+        <div className="mobile-filter-layer" role="presentation" data-lenis-prevent="" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+          <section ref={dialogRef} className="mobile-filter-drawer" role="dialog" aria-modal="true" aria-labelledby="mobile-filter-title">
             <header className="mobile-filter-header">
               <div><span className="t-eyebrow">Refine results</span><h2 id="mobile-filter-title">Filters & sort</h2></div>
               <button type="button" className="mobile-filter-close" onClick={() => setOpen(false)} aria-label="Close filters"><X size={19} /></button>
@@ -220,11 +253,13 @@ export function MobileFilterDrawer({
               <fieldset className="mobile-filter-field">
                 <legend>Price range (KES)</legend>
                 <div className="mobile-filter-price">
+                  {/* Typed fields apply with "View results", like Location. Applying the price on every
+                      keystroke reloaded the listings once per digit and could reset the field while typing. */}
                   <label>From
-                    <input value={local.minPrice} onChange={(event) => update("minPrice", event.target.value)} placeholder={String(PRICE_MIN_KES)} inputMode="numeric" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} />
+                    <input value={local.minPrice} onChange={(event) => setLocal((current) => ({ ...current, minPrice: event.target.value }))} placeholder={String(PRICE_MIN_KES)} inputMode="numeric" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} />
                   </label>
                   <label>To
-                    <input value={local.maxPrice} onChange={(event) => update("maxPrice", event.target.value)} placeholder={String(PRICE_MAX_KES)} inputMode="numeric" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} />
+                    <input value={local.maxPrice} onChange={(event) => setLocal((current) => ({ ...current, maxPrice: event.target.value }))} placeholder={String(PRICE_MAX_KES)} inputMode="numeric" type="number" min={PRICE_MIN_KES} max={PRICE_MAX_KES} step={PRICE_STEP_KES} />
                   </label>
                 </div>
               </fieldset>

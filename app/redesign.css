@@ -588,13 +588,9 @@ body { background-color: #05060d; }
 }
 .browse-v0-search-slot .browse-search { margin-top: 0; }
 .browse-v0-search-slot .browse-search-filter-row { max-width: none; margin-top: 0; }
-.browse-v0-intro h1 {
-  max-width: 24ch;
-  margin: 0;
-  font-size: clamp(32px, 4vw, 44px);
-  line-height: 1.08;
-  letter-spacing: -.04em;
-}
+/* The marketplace h1 is the compact eyebrow, not a headline: undo the
+   .browse-hero h1 headline sizing and keep the line box of the span it replaced. */
+.browse-v0-intro h1.t-eyebrow { max-width: none; font-size: 11px; line-height: inherit; }
 .browse-v0-support {
   max-width: 56ch;
   margin: 5px 0 0;
@@ -714,7 +710,6 @@ body { background-color: #05060d; }
 }
 @media (max-width: 700px) {
   .browse-hero-v0 { padding: calc(68px + 18px) 0 5px; }
-  .browse-v0-intro h1 { font-size: clamp(30px, 8vw, 38px); }
   .browse-v0-support { margin-top: 4px; font-size: 13px; }
   .browse-v0-controls { margin-top: 11px; }
   .browse-v0-category-rail {
@@ -738,7 +733,6 @@ body { background-color: #05060d; }
   .browse-v0-toolbar .mobile-filter-trigger { display: inline-flex; min-height: 44px; padding: 0 11px; font-size: 12px; }
 }
 @media (max-width: 380px) {
-  .browse-v0-intro h1 { font-size: 30px; }
   .browse-v0-support { font-size: 12.5px; }
   .browse-v0-category-rail .chip { padding-inline: 10px; }
   .browse-search-v0 .sform-btn { min-width: 76px; padding-inline: 12px; }

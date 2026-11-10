@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { CategoryChips } from "./CategoryChips";
+import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { ApiNotice, EmptyState } from "./StateMessage";
 import { canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
-import type { ListingPage } from "@/lib/api/listings";
+import { LISTINGS_PAGE_SIZE, type ListingPage } from "@/lib/api/listings";
 import { CategoryLanding } from "./CategoryLanding";
 import {
   MARKETPLACE_SORT_OPTIONS,
@@ -32,6 +33,7 @@ export function BrowseView({
   minPrice,
   maxPrice,
   location,
+  page = 1,
   result,
   failed,
 }: {
@@ -43,22 +45,28 @@ export function BrowseView({
   maxPrice?: number;
   /** Free text matched against the listing's location, as the app's filter sends it. */
   location?: string;
+  /** 1-based page of `LISTINGS_PAGE_SIZE` listings. */
+  page?: number;
   result: ListingPage;
   failed: boolean;
 }) {
   const canonical = canonicalCategory(category);
   if (canonical) {
-    return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={result} failed={failed} />;
+    return <CategoryLanding category={canonical} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} page={page} result={result} failed={failed} />;
   }
 
   const query = { q, category, sort: sortParam(sort), condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), location };
+  const pageCount = Math.max(1, Math.ceil(result.total / LISTINGS_PAGE_SIZE));
+  const pageHref = (target: number) => withQuery("/browse", { ...query, page: target > 1 ? target : undefined });
 
   return (
     <>
       <section className="browse-hero browse-hero-v0" aria-label="Browse marketplace">
         <div className="wrap">
           <div className="browse-v0-intro">
-            <span className="t-eyebrow" id="browse-page-title">Broka Marketplace</span>
+            {/* The page's only h1: styled as the compact eyebrow, but the page
+                still needs a top-level heading for screen readers and search. */}
+            <h1 className="t-eyebrow" id="browse-page-title">Broka Marketplace</h1>
           </div>
           <div className="browse-v0-search-slot">
             <SearchForm
@@ -110,15 +118,22 @@ export function BrowseView({
             </nav>
           </div>
           {failed ? (
-            <ApiNotice retryHref={withQuery("/browse", query)} />
+            <ApiNotice retryHref={pageHref(page)} />
+          ) : result.items.length === 0 && page > 1 && result.total > 0 ? (
+            <EmptyState emoji="🔎" title="This page is past the last listing" actions={[{ label: "Go to the first page", href: pageHref(1), primary: true }]}>
+              {`There ${pageCount === 1 ? "is 1 page" : `are ${pageCount} pages`} of listings for this search.`}
+            </EmptyState>
           ) : result.items.length === 0 ? (
             <EmptyState emoji="🔎" title="Nothing matches yet">
               Try another search or browse a different category. New products appear on BROKA every day.
             </EmptyState>
           ) : (
-            <div className="lgrid browse-grid">
-              {result.items.map((listing) => <ProductCard key={listing.id} listing={listing} />)}
-            </div>
+            <>
+              <div className="lgrid browse-grid">
+                {result.items.map((listing) => <ProductCard key={listing.id} listing={listing} />)}
+              </div>
+              <Pagination page={page} pageCount={pageCount} hrefFor={pageHref} />
+            </>
           )}
         </div>
       </section>

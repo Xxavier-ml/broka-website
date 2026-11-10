@@ -4,9 +4,9 @@ import { CategoryLanding } from "@/components/marketplace/CategoryLanding";
 import { electronicsSubcategoryFromSlug, matchElectronicsSubcategory } from "@/lib/electronics";
 import { getCategoryFilters, getCategoryZone } from "@/lib/api/categories";
 import { filtersForSubcategory } from "@/lib/category-filters";
-import { listListings } from "@/lib/api/listings";
+import { LISTINGS_PAGE_SIZE, listListings } from "@/lib/api/listings";
 import { orFallback } from "@/lib/api/client";
-import { firstParam, type SearchParams } from "@/lib/params";
+import { firstParam, parsePage, type SearchParams } from "@/lib/params";
 import { hasSearchParams, pageMetadata } from "@/lib/seo";
 import {
   attributesFromParams,
@@ -56,14 +56,15 @@ export default async function ElectronicsSubcategoryPage({ params, searchParams 
   const minPrice = parsePriceKes(firstParam(sp.min_price));
   const maxPrice = parsePriceKes(firstParam(sp.max_price));
   const location = firstParam(sp.location) ?? firstParam(sp.county);
+  const page = parsePage(sp.page);
   const childFilters = await orFallback(() => getCategoryFilters(subcategory.id), []);
   const filters = filtersForSubcategory("Electronics", config.slug, childFilters.data);
   const attributes = attributesFromParams(sp, filters);
   const response = await orFallback(
     // A subcategory stands alone, as it does on the app's subcategory screen
     // (`subcategory_screen.dart` sends `subcategory_id` and nothing else).
-    () => listListings({ search: q, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, location, limit: 20 }),
+    () => listListings({ search: q, subcategoryId: subcategory.id, attributes, sort, condition, minPrice, maxPrice, location, limit: LISTINGS_PAGE_SIZE, offset: (page - 1) * LISTINGS_PAGE_SIZE }),
     { items: [], total: 0 },
   );
-  return <CategoryLanding category="Electronics" routeOverride={`/browse/electronics/${config.slug}`} heroArt={config.image} subcategoryName={config.name} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
+  return <CategoryLanding category="Electronics" routeOverride={`/browse/electronics/${config.slug}`} heroArt={config.image} subcategoryName={config.name} page={page} q={q} sort={sort} condition={condition} minPrice={minPrice} maxPrice={maxPrice} location={location} result={response.data} failed={response.failed || zoneResponse.failed || childFilters.failed} categoryNode={zoneResponse.data.category} subcategories={zoneResponse.data.subcategories} filters={filters} subcategoryId={subcategory.id} attributes={attributes} />;
 }
