@@ -5,7 +5,35 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "framer-motion";
 import { navLinks, navUtility } from "@/data/navigation";
-import { Menu, X, ChevronDown, Search } from "lucide-react";
+import {
+  ArrowUpRight,
+  ChevronDown,
+  Compass,
+  Cpu,
+  Download,
+  LayoutGrid,
+  Menu,
+  Milestone,
+  Route,
+  Search,
+  Store,
+  Telescope,
+  Users,
+  X,
+  type LucideIcon,
+} from "lucide-react";
+
+/** The icon beside each item in the desktop menus, by destination. */
+const MENU_ICONS: Record<string, LucideIcon> = {
+  "/browse": LayoutGrid,
+  "/stores": Store,
+  "/what-is-broka": Compass,
+  "/how-it-works": Route,
+  "/technology": Cpu,
+  "/vision": Telescope,
+  "/founders": Users,
+  "/roadmap": Milestone,
+};
 
 /**
  * The site header.
@@ -143,17 +171,27 @@ export function Header() {
                     <ChevronDown className="hdr-dropdown-chevron" size={14} aria-hidden="true" />
                   </Link>
                   <div id={`nav-${item.label.toLowerCase().replace(/\s+/g, "-")}-links`} className={`hdr-dropdown-menu${openGroup === item.label ? " open" : ""}`}>
-                    {item.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className={isActive(child.href) ? "active" : ""}
-                        aria-current={isActive(child.href) ? "page" : undefined}
-                      >
-                        <span className="hdr-menu-label">{child.label}</span>
-                        {child.description && <span className="hdr-menu-desc">{child.description}</span>}
-                      </Link>
-                    ))}
+                    {item.children.map((child) => {
+                      const Icon = MENU_ICONS[child.href];
+                      return (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className={isActive(child.href) ? "active" : ""}
+                          aria-current={isActive(child.href) ? "page" : undefined}
+                        >
+                          {Icon && (
+                            <span className="hdr-menu-icon" aria-hidden="true">
+                              <Icon size={17} />
+                            </span>
+                          )}
+                          <span className="hdr-menu-text">
+                            <span className="hdr-menu-label">{child.label}</span>
+                            {child.description && <span className="hdr-menu-desc">{child.description}</span>}
+                          </span>
+                        </Link>
+                      );
+                    })}
                   </div>
                 </div>
               ) : (
@@ -175,7 +213,7 @@ export function Header() {
               <span className="hdr-search-text">Search</span>
             </Link>
             <Link href="/download" className="hdr-cta">
-              Get the app
+              <Download size={16} aria-hidden="true" /> Get the app
             </Link>
             <button
               className="hdr-burger"
@@ -245,8 +283,9 @@ export function Header() {
         </div>
         <div className="mobile-nav-cta">
           <Link href="/download" className="btn btn-primary" onClick={closeMenu}>
-            Get the BROKA app
+            <Download size={17} aria-hidden="true" /> Get the BROKA app <ArrowUpRight size={16} aria-hidden="true" />
           </Link>
+          <p className="mobile-nav-note">Android — available now · iPhone — coming later</p>
         </div>
       </nav>
     </>

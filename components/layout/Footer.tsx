@@ -1,14 +1,18 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, Download, Mail, MessageCircle, Phone, Search } from "lucide-react";
 import { footerNav, navLegal } from "@/data/navigation";
-import { CONTACT, SOCIAL, mailto } from "@/lib/site";
+import { CONTACT, SITE_URL, SOCIAL, mailto } from "@/lib/site";
+import { QrCode } from "@/components/ui/QrCode";
 
 /**
  * The footer reads from the same taxonomy as the header (data/navigation.ts).
  * Its columns are the same four groups, so nothing here can drift out of step
  * with the top bar, and the social links no longer take a whole column of
  * their own away from the pages people are actually looking for.
+ *
+ * Above the columns sits one last way into the app (hidden on the homepage,
+ * which closes on its own call to action), and under them the wordmark.
  */
 export function Footer() {
   const year = new Date().getFullYear();
@@ -20,6 +24,25 @@ export function Footer() {
   return (
     <footer className="ftr" aria-label="Site footer">
       <div className="wrap">
+        <section className="ftr-cta" aria-labelledby="ftr-cta-title">
+          <div className="ftr-cta-copy">
+            <p className="ftr-cta-kicker"><i aria-hidden="true" /> BROKA for Android</p>
+            <h2 className="ftr-cta-title" id="ftr-cta-title">Your next deal is one tap away.</h2>
+            <div className="ftr-cta-actions">
+              <Link href="/download" className="btn btn-primary">
+                <Download size={17} aria-hidden="true" /> Get the app
+              </Link>
+              <Link href="/browse" className="btn btn-ghost">
+                <Search size={16} aria-hidden="true" /> Browse the marketplace
+              </Link>
+            </div>
+          </div>
+          <div className="ftr-cta-qr">
+            <QrCode value={`${SITE_URL}/download`} title="QR code linking to the BROKA download page" className="ftr-qr" />
+            <p>Scan with your phone to open the download page.</p>
+          </div>
+        </section>
+
         <div className="ftr-grid">
           <div className="ftr-brand-col">
             <div className="ftr-brand">
@@ -45,7 +68,7 @@ export function Footer() {
             <nav className="ftr-social" aria-label="Social links">
               {social.map((s) => (
                 <a key={s.href} href={s.href} target="_blank" rel="noopener noreferrer">
-                  {s.label}
+                  {s.label} <ArrowUpRight size={12} aria-hidden="true" />
                 </a>
               ))}
             </nav>
@@ -75,6 +98,7 @@ export function Footer() {
           <p className="ftr-built">Built in <em>Kenya.</em> Designed for a global market.</p>
         </div>
       </div>
+      <div className="ftr-wordmark" aria-hidden="true">BROKA</div>
     </footer>
   );
 }
