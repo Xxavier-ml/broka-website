@@ -1,5 +1,6 @@
 "use client";
 
+import "@/app/app-preview/listing-detail/listing-detail.css";
 import { useState } from "react";
 import {
   Bookmark,

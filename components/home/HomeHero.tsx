@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArrowUpRight, Check, Download, Store } from "lucide-react";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { HeroSearch } from "./HeroSearch";
-import { HeroStage } from "./HeroStage";
+import { HeroAppPreview } from "./HeroAppPreview";
 
 /** Kenya's flag, drawn: the emoji shows as the letters "KE" on Windows. */
 function KenyaFlag() {
@@ -35,7 +35,8 @@ const POPULAR = ["Phones", "Laptops", "Cars", "Apartments", "Land", "Furniture"]
  * marketplace search sits right under the promise, with the most common
  * searches one tap away. The primary action installs the app, where the
  * conversations happen; selling and Zeno are the two other doors. The product
- * stage below shows what the app does with a request instead of describing it.
+ * stage below is the app itself (its home screen and a listing, playable)
+ * instead of a description of it.
  */
 export function HomeHero() {
   return (
@@ -101,7 +102,7 @@ export function HomeHero() {
       </div>
 
       <div className="hp-hero-stage">
-        <HeroStage />
+        <HeroAppPreview />
       </div>
     </section>
   );

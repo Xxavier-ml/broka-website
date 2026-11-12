@@ -1,0 +1,112 @@
+/* The home page hero's product stage: the app's own screens (components/home/HeroAppPreview.tsx).
+   The screens are styled by app/app-preview/*.css; this file only sizes and frames them. */
+
+.hx {
+  /* Colours the app screens read (defined for the preview page on .app-preview-page). */
+  --ap-v: #9478ff;
+  --ap-c: #56d9ff;
+  --ap-g: #31d2a3;
+  --ap-muted: #aaa6c5;
+  /* The screens are drawn at 365 x 700; --s shrinks them on narrower screens. */
+  --s: 1;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: min(560px, 100%);
+  margin: 0 auto;
+  padding-bottom: 8px;
+  isolation: isolate;
+}
+
+.hx-glow {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 38%;
+  width: min(760px, 140%);
+  aspect-ratio: 1.3;
+  translate: -50% -50%;
+  background: radial-gradient(closest-side, rgba(124, 92, 255, .24), rgba(91, 63, 224, .08) 55%, transparent 76%);
+  pointer-events: none;
+}
+
+.hx-switch {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 26px;
+  padding: 5px;
+  border: 1px solid rgba(160, 176, 255, .18);
+  border-radius: 999px;
+  background: rgba(9, 11, 27, .78);
+  backdrop-filter: blur(12px);
+}
+.hx-switch-btn {
+  min-height: 42px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #bdb9d3;
+  font: 600 14px/1 var(--f-ui);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease, box-shadow .2s ease;
+}
+.hx-switch-btn:hover { color: #fff; background: rgba(148, 120, 255, .14); }
+.hx-switch-btn[aria-pressed="true"] {
+  color: #fff;
+  background: linear-gradient(130deg, #7b55f5, #4f66ee);
+  box-shadow: 0 6px 20px rgba(98, 76, 238, .4);
+}
+.hx-switch-btn:focus-visible { outline: 2px solid #62d6ff; outline-offset: 2px; }
+
+/* The box takes the scaled size so the page lays out around it; the device
+   inside is scaled from its top-left corner to fill the box. */
+.hx-frame {
+  position: relative;
+  width: calc(365px * var(--s));
+  height: calc(700px * var(--s));
+  margin: 8px 0 30px;
+}
+.hx .ap-device.hx-device {
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 365px;
+  height: 700px;
+  min-height: 0;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+}
+.hx .ap-device.hx-device[hidden] { display: none; }
+
+.hx-foot { display: grid; justify-items: center; gap: 14px; text-align: center; }
+.hx-foot p { margin: 0; max-width: 34ch; color: #aeaac6; font: 13px/1.5 var(--f-ui); }
+.hx-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 20px;
+  border: 1px solid rgba(169, 147, 255, .4);
+  border-radius: 999px;
+  background: rgba(124, 92, 255, .12);
+  color: #ece8ff;
+  font: 600 15px/1 var(--f-ui);
+  text-decoration: none;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+.hx-all:hover { background: rgba(124, 92, 255, .24); border-color: rgba(190, 172, 255, .7); }
+.hx-all:focus-visible { outline: 2px solid #62d6ff; outline-offset: 3px; }
+
+@media (max-width: 760px) {
+  .hx { --s: .88; }
+  .hx-switch { width: min(100%, 360px); }
+  .hx-switch-btn { flex: 1; padding: 0 10px; }
+}
+@media (max-width: 420px) { .hx { --s: .82; } }
+@media (max-width: 370px) { .hx { --s: .74; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .hx-switch-btn, .hx-all { transition: none; }
+}

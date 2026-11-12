@@ -102,8 +102,9 @@ gradient on `.netbg` shows instead.
 
 **The home page** (`components/home/`, styles in `app/home.css`): a centred
 promise over the real marketplace search (with a typed hint), then a product
-stage: a phone playing a sample Zeno conversation (`HeroStage.tsx`, labelled
-"Sample", paused off screen) with an orbit passing behind and in front of it.
+stage: the app's own screens (`HeroAppPreview.tsx`, the same home screen and
+listing screen as `/app-preview`, playable, with a switch between them and a
+"See all app previews" link).
 Below: rails of all categories, an eight-category bento of the editorial art,
 the three steps, Zeno in his orbit with one worked example, the seller story,
 the app panel with a QR code for visitors on a computer (`components/ui/QrCode.tsx`,
