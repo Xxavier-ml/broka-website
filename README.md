@@ -81,9 +81,15 @@ storefront back to `/` are plain `<a>` tags, since they cross to this site.
 
 ## Look and feel
 
-Built to the BROKA mockup: the app's near-black navy, Montserrat for headlines and numbers,
-Noto Serif for reading text, Inter for small UI labels, violet-to-blue
-gradient pill buttons. Tokens are at the top of `app/globals.css`.
+The app's near-black navy (`#05060d`) and its living network, with BROKA violet
+into electric blue and a cyan edge. One type system for every page: Space
+Grotesk for headlines and prices, DM Sans for reading text, Inter for dense UI,
+JetBrains Mono for small instrument labels; Montserrat only draws the wordmark.
+Base tokens are at the top of `app/globals.css`; the site-wide look (glass
+surfaces with lit edges, pill buttons, the floating header, the footer and the
+page heroes) is `app/experience.css`, loaded last. Text never animates through
+opacity (axe would read it mid-fade): entrances use transform, blur and
+clip-path, and everything holds still under `prefers-reduced-motion`.
 
 **The 3D background** (`components/background/NetworkBackground.tsx`) is raw
 WebGL, no library: glowing nodes at real depths in front of a perspective
@@ -94,12 +100,18 @@ counts scale with the screen, it pauses in hidden tabs, and with
 `prefers-reduced-motion` it draws one still frame. Without WebGL the CSS
 gradient on `.netbg` shows instead.
 
-**The home page** (`components/home/`): Zeno (`public/assets/zeno-full.webp`,
-from the app's assets) in a glowing ring with an orbit passing behind and in
-front of him, a dotted Kenya map with a Nairobi beacon, and three generated
-category images that link into the marketplace. The category art is illustrative;
-live products are shown on `/browse`. The hero scene tilts toward the mouse in
-3D and sways gently on touch screens.
+**The home page** (`components/home/`, styles in `app/home.css`): a centred
+promise over the real marketplace search (with a typed hint), then a product
+stage: a phone playing a sample Zeno conversation (`HeroStage.tsx`, labelled
+"Sample", paused off screen) with an orbit passing behind and in front of it.
+Below: rails of all categories, an eight-category bento of the editorial art,
+the three steps, Zeno in his orbit with one worked example, the seller story,
+the app panel with a QR code for visitors on a computer (`components/ui/QrCode.tsx`,
+drawn on the server by `lib/qrcode.ts`), the trust answers with the dotted Kenya
+map, four FAQ answers from `data/faq.ts`, and the closing call to action. Phones
+get a dock for browse, sell and the app. Category art and chat content are
+illustrative; live products are shown on `/browse`. Sections rise in on CSS
+scroll timelines where the browser supports them.
 
 ## Contact details
 
