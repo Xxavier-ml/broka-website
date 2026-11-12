@@ -248,6 +248,11 @@
   border-color: rgba(206, 198, 255, .5);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, .1), 0 34px 80px -34px rgba(76, 52, 210, 1), 0 0 0 5px rgba(139, 117, 255, .18);
 }
+/* The pill shows focus itself (the glow above). Without this the site-wide focus outline
+   also draws a second, square box around the input inside it. */
+.hp-hero-search .sform-input:focus,
+.hp-hero-search .sform-input:focus-visible { outline: none; box-shadow: none; }
+.hp-hero-search .sform-input { min-width: 0; text-overflow: ellipsis; }
 .hp-hero-search .sform-icon { width: 21px; height: 21px; color: #bcb0ff; }
 .hp-hero-search .sform-input { height: 100%; padding: 0; color: #fff; font: 400 17px/1 var(--x-body); }
 .hp-hero-search .sform-input::placeholder { color: #9ea6c0; }

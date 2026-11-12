@@ -92,7 +92,7 @@ export function HeroSearch() {
     <div className="hp-hero-search">
       <SearchForm
         action="/search"
-        placeholder="Search phones, cars, apartments, land…"
+        placeholder="Search phones, cars, land…"
         className="hp-search"
         iconSubmit
         showSuggestionsOnEmptyFocus={false}

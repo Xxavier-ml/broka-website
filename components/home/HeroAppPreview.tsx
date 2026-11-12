@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowUpRight, Images } from "lucide-react";
 import { HomeScreenPreview } from "@/components/app-preview/HomeScreenPreview";
 import { ListingDetailPreview } from "@/components/app-preview/ListingDetailPreview";
+import { PREVIEW_LISTINGS } from "@/components/app-preview/previewListings";
 
 type Screen = "home" | "listing";
 
@@ -24,6 +25,8 @@ const SCREENS: { id: Screen; label: string }[] = [
  */
 export function HeroAppPreview() {
   const [screen, setScreen] = useState<Screen>("home");
+  const [listingId, setListingId] = useState(PREVIEW_LISTINGS[0]!.id);
+  const listing = PREVIEW_LISTINGS.find((item) => item.id === listingId) ?? PREVIEW_LISTINGS[0]!;
 
   return (
     <div className="hx">
@@ -39,10 +42,10 @@ export function HeroAppPreview() {
 
       <div className="hx-frame">
         <div className="ap-device hx-device" role="group" aria-label="BROKA home screen preview" hidden={screen !== "home"}>
-          <HomeScreenPreview onOpenListing={() => setScreen("listing")} />
+          <HomeScreenPreview onOpenListing={(id) => { setListingId(id); setScreen("listing"); }} />
         </div>
         <div className="ap-device ap-device-detail hx-device" role="group" aria-label="BROKA listing details preview" hidden={screen !== "listing"}>
-          <ListingDetailPreview onBack={() => setScreen("home")} />
+          <ListingDetailPreview key={listing.id} listing={listing} onBack={() => setScreen("home")} />
         </div>
       </div>
 
