@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Inter, Space_Grotesk, DM_Sans, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import "./marketplace.css";
 import "./site.css";
@@ -21,14 +21,59 @@ import { CONTACT, SITE_URL, SOCIAL } from "@/lib/site";
 // Space Grotesk for headlines, prices and numbers, DM Sans for reading text,
 // Inter for dense UI (inputs, badges, tabs). Montserrat is kept only for the
 // BROKA wordmark, which is drawn in it.
-const display = Montserrat({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-montserrat", display: "swap" });
-const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
-const futureDisplay = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-space-grotesk", display: "swap" });
-const futureBody = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-dm-sans", display: "swap" });
+//
+// The fonts are self-hosted (app/fonts, latin subset, SIL OFL) rather than
+// loaded with next/font/google. That loader downloads from Google at build
+// time and fails the whole build when Google answers with a font URL it cannot
+// parse (vercel/next.js#99114), which made deployments fail at random. With
+// local files the build needs no network access for fonts.
+const display = localFont({
+  src: [
+    { path: "./fonts/montserrat-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "./fonts/montserrat-latin-800-normal.woff2", weight: "800", style: "normal" },
+  ],
+  variable: "--font-montserrat",
+  display: "swap",
+});
+const inter = localFont({
+  src: [
+    { path: "./fonts/inter-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/inter-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/inter-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-inter",
+  display: "swap",
+});
+const futureDisplay = localFont({
+  src: [
+    { path: "./fonts/space-grotesk-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/space-grotesk-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "./fonts/space-grotesk-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
+  variable: "--font-space-grotesk",
+  display: "swap",
+});
+const futureBody = localFont({
+  src: [
+    { path: "./fonts/dm-sans-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/dm-sans-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "./fonts/dm-sans-latin-600-normal.woff2", weight: "600", style: "normal" },
+  ],
+  variable: "--font-dm-sans",
+  display: "swap",
+});
 // Instrument labels (indexes, coordinates, status tags) in app/experience.css
 // and app/home.css. Small and never the largest text on screen, so it is not
 // preloaded: it must not compete with the headline fonts for the first paint.
-const futureMono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains-mono", display: "swap", preload: false });
+const futureMono = localFont({
+  src: [
+    { path: "./fonts/jetbrains-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/jetbrains-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
+  ],
+  variable: "--font-jetbrains-mono",
+  display: "swap",
+  preload: false,
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
