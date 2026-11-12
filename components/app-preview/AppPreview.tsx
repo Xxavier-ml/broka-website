@@ -1,127 +1,169 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { ArrowRight, ChevronRight, Grid2X2, Heart, Inbox, MapPin, Menu, Mic, Plus, Search, Sparkles } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { ArrowUpRight, Check, Download, Heart, Home, Info, LayoutPanelLeft, Search, ShieldCheck, Sparkles } from "lucide-react";
+import { HomeScreenPreview } from "./HomeScreenPreview";
 import { ListingDetailPreview } from "./ListingDetailPreview";
 
-const categories = [
-  { name: "Automobiles", emoji: "🚘", image: "/assets/category-backgrounds/automobiles.jpg", tone: "rose" },
-  { name: "Property", emoji: "🏠", image: "/assets/category-backgrounds/property.jpg", tone: "blue" },
-  { name: "Land", emoji: "🏞️", image: "/assets/category-backgrounds/land.jpg", tone: "gold" },
-  { name: "Electronics", emoji: "⌁", image: "/assets/category-backgrounds/electronics.jpg", tone: "violet" },
-  { name: "Fashion", emoji: "✳", image: "/assets/category-backgrounds/fashion.jpg", tone: "rose" },
+type Screen = "home" | "listing";
+type View = "both" | Screen;
+
+const SCREENS: { id: Screen; step: string; kicker: string; title: string; lead: string; points: { icon: typeof Search; text: string }[] }[] = [
+  {
+    id: "home",
+    step: "01",
+    kicker: "DISCOVER",
+    title: "Home screen",
+    lead: "Where every visit starts.",
+    points: [
+      { icon: Search, text: "Search by typing or by voice" },
+      { icon: Home, text: "Shop by category, then scroll the fresh listings" },
+      { icon: Sparkles, text: "Hand the search to Zeno in one tap" },
+    ],
+  },
+  {
+    id: "listing",
+    step: "02",
+    kicker: "DECIDE",
+    title: "Listing details",
+    lead: "Everything you need before you message the seller.",
+    points: [
+      { icon: Heart, text: "Photos, price, condition and location together" },
+      { icon: ShieldCheck, text: "Seller rating and reply time, measured by BROKA" },
+      { icon: Sparkles, text: "Zeno’s read on the listing" },
+    ],
+  },
 ];
 
-const listings = [
-  { title: "Airtel 5G router", price: "KES 1,500", place: "Juja, Kiambu", age: "1w ago", seller: "Clanix", image: "/assets/electronics-subcategories/networking.jpg", tag: "AI Showcase" },
-  { title: "Airtel 5G router", price: "KES 1,500", place: "Juja, Kiambu", age: "1w ago", seller: "Clanix", image: "/assets/home-discovery/electronics.webp" },
-  { title: "Smart home Wi-Fi", price: "KES 2,800", place: "Thika, Kiambu", age: "2d ago", seller: "Mumbi Tech", image: "/assets/category-backgrounds/electronics.jpg" },
-  { title: "Dual-band router", price: "KES 3,200", place: "Nairobi", age: "3d ago", seller: "Tech Hub", image: "/assets/electronics-subcategories/networking.jpg" },
+const VIEWS: { id: View; label: string }[] = [
+  { id: "both", label: "Side by side" },
+  { id: "home", label: "Home screen" },
+  { id: "listing", label: "Listing details" },
 ];
 
-function scrollToPreview(id: string) {
-  document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "nearest", inline: "center" });
+const cardId = (screen: Screen) => `ap-${screen}-preview`;
+
+function smoothOrAuto(): ScrollBehavior {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 }
 
 export function AppPreview() {
-  const [query, setQuery] = useState("");
-  const [categoryOffset, setCategoryOffset] = useState(0);
-  const [activeTab, setActiveTab] = useState("Home");
-  const [zenoOpen, setZenoOpen] = useState(false);
-  const [saved, setSaved] = useState<number[]>([]);
-  const visibleListings = useMemo(() => listings.filter((item) => `${item.title} ${item.place}`.toLowerCase().includes(query.toLowerCase())), [query]);
-  const nav = [
-    { label: "Home", icon: Grid2X2 },
-    { label: "Inbox", icon: Inbox },
-    { label: "Sell", icon: Plus },
-    { label: "Zeno", icon: Sparkles },
-    { label: "Menu", icon: Menu },
-  ];
+  const [view, setView] = useState<View>("both");
+
+  // One screen at a time on phones: two side by side don't fit, and a sideways
+  // swipe strip hides the second screen. The server renders both; a phone
+  // visitor lands on the home screen.
+  useEffect(() => {
+    if (!window.matchMedia("(max-width: 760px)").matches) return;
+    // /app-preview/listing-detail redirects to #ap-listing-preview.
+    setView(window.location.hash === `#${cardId("listing")}` ? "listing" : "home");
+  }, []);
+
+  // Used by the screens themselves (a listing was tapped, or "back").
+  const openScreen = useCallback((screen: Screen) => {
+    setView((current) => (current === "both" ? current : screen));
+    requestAnimationFrame(() => {
+      document.getElementById(cardId(screen))?.scrollIntoView({ behavior: smoothOrAuto(), block: "nearest", inline: "center" });
+    });
+  }, []);
 
   return (
     // A div: the root layout already wraps every page in <main id="main">, and a second main inside it is invalid HTML.
-    <div className="app-preview-page">
-      <section className="ap-preview-header wrap" aria-labelledby="ap-preview-title">
-        <div className="ap-preview-header-copy">
+    <div className="app-preview-page apx">
+      <section className="apx-hero wrap" aria-labelledby="ap-preview-title">
+        <div className="apx-hero-copy">
           <span className="ap-kicker"><span className="ap-kicker-dot" /> THE BROKA APP / PREVIEW</span>
           <h1 id="ap-preview-title">See BROKA<br /><em>in action.</em></h1>
-          <p>Homescreen and listing details—side by side.</p>
+          <p>Two screens from the app, working as they do on your phone. Search, scroll, save and tap through.</p>
+          <div className="apx-hero-actions">
+            <Link href="/download" className="btn btn-primary btn-lg hp-beam">
+              <Download size={18} aria-hidden="true" /> Get the BROKA app
+            </Link>
+            <Link href="/browse" className="btn btn-ghost btn-lg">
+              Browse the marketplace <ArrowUpRight size={16} aria-hidden="true" className="btn-arrow" />
+            </Link>
+          </div>
+          <ul className="apx-hero-facts">
+            <li><Check size={13} aria-hidden="true" /> Interactive</li>
+            <li><Check size={13} aria-hidden="true" /> Sample data</li>
+            <li><Check size={13} aria-hidden="true" /> Contacts no one</li>
+          </ul>
         </div>
-        <div className="ap-preview-header-visual">
-          <div className="ap-preview-zeno-glow" />
-          <img src="/assets/zeno-full.webp" alt="Zeno, BROKA’s AI shopping assistant" />
-          <span className="ap-preview-zeno-tag"><span className="ap-live-dot" /> SMARTER SEARCH WITH ZENO</span>
+        <div className="apx-hero-visual" aria-hidden="true">
+          <span className="apx-hero-glow" />
+          <img src="/assets/zeno-full.webp" alt="" width={220} height={220} />
+          <span className="apx-hero-tag"><span className="ap-live-dot" /> SMARTER SEARCH WITH ZENO</span>
         </div>
       </section>
 
-      <section className="ap-stage ap-preview-stage" id="phone-preview" aria-labelledby="ap-preview-title">
-        <div className="wrap ap-preview-stage-inner">
-          <div className="ap-preview-gallery" id="ap-preview-gallery" aria-label="BROKA app screen previews">
-            <article className="ap-preview-card" id="ap-home-preview">
-              <header className="ap-preview-card-heading">
-                <span>SCREEN 01 / DISCOVER</span>
-                <h2>Home screen</h2>
-                <p>Browse categories, explore new listings and start with Zeno.</p>
-              </header>
-              <div className="ap-device-wrap">
-                <div className="ap-device-halo" />
-                <div id="ap-home-device" className="ap-device" role="application" aria-label="BROKA homescreen app preview">
-                  <div className="ap-status"><span>00:51 <span className="ap-status-symbol">◉ ◉</span></span><span>▮▮ ▰ ᯤ <b>66</b></span></div>
-                  <div className="ap-screen-scroll">
-                    <header className="ap-app-header">
-                      <div className="ap-brand"><img src="/assets/broka-mark.png" alt="" /><span><b>BROKA</b><small>INTELLIGENT COMMERCE</small></span></div>
-                      <div className="ap-greeting"><i /> <b>Good morning, Xavier <span>👋</span></b></div>
-                      <p className="ap-tagline">Better deals. Smarter choices.</p>
-                      <label className="ap-search"><Search size={19} /><input aria-label="Search sample listings" placeholder="Search listings - phones, cars, land..." value={query} onChange={(event) => setQuery(event.target.value)} /><button aria-label="Voice search" onClick={() => setZenoOpen(true)}><Mic size={17} /></button></label>
-                    </header>
-
-                    <div className="ap-section-head"><b>Shop by category</b><button onClick={() => setCategoryOffset((categoryOffset + 2) % categories.length)}>See all <span>›</span></button></div>
-                    <div className="ap-category-window"><div className="ap-category-track" style={{ transform: `translateX(-${categoryOffset * 34}%)` }}>
-                      {categories.map((category) => <button className={`ap-category ${category.tone}`} key={category.name} style={{ backgroundImage: `linear-gradient(0deg, rgba(3,5,14,.88), transparent 76%), url(${category.image})` }} onClick={() => setQuery(category.name === "Electronics" ? "router" : category.name)}><span className="ap-category-emoji">{category.emoji}</span><b>{category.name}</b></button>)}
-                    </div><button className="ap-category-next" aria-label="More categories" onClick={() => setCategoryOffset((categoryOffset + 1) % categories.length)}><ChevronRight size={22} /></button></div>
-
-                    <button className="ap-zeno-cta" onClick={() => setZenoOpen(!zenoOpen)}><img src="/assets/zeno-icon.png" alt="" /><span><b>{zenoOpen ? "Hi Xavier, what do you need?" : "Let me search for you"}</b><small>Ask Zeno to find it and pick the best deal</small></span><i><ArrowRight size={18} /></i></button>
-                    {zenoOpen && <div className="ap-zeno-reply"><span className="ap-live-dot" /> Zeno is ready. Try searching for a phone, router or car.</div>}
-
-                    <div className="ap-feed-title"><span>🔥</span><b>Fresh on Broka</b><i /></div>
-                    {visibleListings.length ? <div className="ap-listing-grid">{visibleListings.map((item) => {
-                      const originalIndex = listings.indexOf(item);
-                      const isSaved = saved.includes(originalIndex);
-                      return <article className="ap-listing" key={`${item.title}-${originalIndex}`}>
-                        <div className="ap-listing-photo" style={{ backgroundImage: `url(${item.image})` }}>
-                          <button type="button" className="ap-listing-photo-open" onClick={() => scrollToPreview("ap-listing-preview")} aria-label={`View ${item.title} in the listing preview`} />
-                          <span className="ap-new"><i /> New</span>
-                          <button className={`ap-save ${isSaved ? "saved" : ""}`} aria-label={isSaved ? "Remove from saved" : "Save listing"} onClick={() => setSaved(isSaved ? saved.filter((n) => n !== originalIndex) : [...saved, originalIndex])}><Heart size={15} fill={isSaved ? "currentColor" : "none"} /></button>
-                          {item.tag && <span className="ap-showcase">✦ {item.tag}</span>}
-                        </div>
-                        <div className="ap-listing-info"><button type="button" onClick={() => scrollToPreview("ap-listing-preview")} className="ap-listing-name ap-listing-detail-link">{item.title}</button><div className="ap-listing-price"><strong>{item.price}</strong><button type="button" className="ap-detail-arrow" onClick={() => scrollToPreview("ap-listing-preview")} aria-label={`View ${item.title} preview details`}><ArrowRight size={17} /></button></div><div className="ap-listing-meta"><span><MapPin size={13} />{item.place}</span><span>{item.age}</span></div><div className="ap-seller"><span className="ap-seller-avatar">{item.seller.charAt(0)}</span><b>▣ {item.seller} <span>›</span></b></div></div>
-                      </article>;
-                    })}</div> : <div className="ap-empty">No sample listings match “{query}”. Try “router”.</div>}
-                  </div>
-                  <nav className="ap-bottom-nav" aria-label="App preview navigation">{nav.map(({ label, icon: Icon }) => <button className={activeTab === label ? "active" : ""} key={label} onClick={() => { setActiveTab(label); if (label === "Zeno") setZenoOpen(true); }}><span>{label === "Zeno" ? <img src="/assets/zeno-icon.png" alt="" /> : <Icon size={22} strokeWidth={2.3} />}</span><small>{label}</small></button>)}</nav>
-                  <div className="ap-gesture"><i /></div>
-                </div>
-                <div className="ap-device-caption"><span><i /> SCREEN 01 / HOME</span><span>SCROLL TO EXPLORE</span></div>
-              </div>
-            </article>
-
-            <article className="ap-preview-card" id="ap-listing-preview">
-              <header className="ap-preview-card-heading">
-                <span>SCREEN 02 / LISTING</span>
-                <h2>Listing details</h2>
-                <p>See the offer, delivery, seller metrics and Zeno’s listing insight.</p>
-              </header>
-              <div className="ap-device-wrap">
-                <div className="ap-device-halo" />
-                <div id="ap-listing-device" className="ap-device ap-device-detail" role="application" aria-label="BROKA listing details app preview">
-                  <ListingDetailPreview onBack={() => scrollToPreview("ap-home-preview")} />
-                </div>
-                <div className="ap-device-caption"><span><i /> SCREEN 02 / LISTING DETAILS</span><span>SCROLL TO EXPLORE</span></div>
-              </div>
-            </article>
+      <section className="apx-stage" id="phone-preview" aria-label="BROKA app screens">
+        <div className="wrap">
+          <div className="apx-switch" id="ap-switcher" role="group" aria-label="Choose which screens to show">
+            {VIEWS.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                className={`apx-switch-btn apx-switch-${item.id}`}
+                aria-pressed={view === item.id}
+                onClick={() => setView(item.id)}
+              >
+                {item.id === "both" && <LayoutPanelLeft size={15} aria-hidden="true" />}
+                {item.label}
+              </button>
+            ))}
           </div>
-          <p className="ap-disclaimer"><span>ⓘ</span> Product and seller details are illustrative. Preview controls are simulated and won’t contact a real seller.</p>
-          <p className="ap-gallery-hint"><ChevronRight size={14} /> Swipe across to view both screens.</p>
+
+          <div className="apx-gallery" data-view={view}>
+            {SCREENS.map((screen) => (
+              <article className="apx-card" id={cardId(screen.id)} key={screen.id} hidden={view !== "both" && view !== screen.id}>
+                <header className="apx-card-head">
+                  <span className="apx-step" aria-hidden="true">{screen.step}</span>
+                  <div>
+                    <span className="apx-card-kicker">{screen.kicker}</span>
+                    <h2>{screen.title}</h2>
+                    <p>{screen.lead}</p>
+                  </div>
+                </header>
+
+                <div className="apx-device-wrap">
+                  <span className="apx-device-halo" aria-hidden="true" />
+                  {screen.id === "home" ? (
+                    <div id="ap-home-device" className="ap-device apx-device" role="group" aria-label="BROKA home screen preview">
+                      <HomeScreenPreview onOpenListing={() => openScreen("listing")} />
+                    </div>
+                  ) : (
+                    <div id="ap-listing-device" className="ap-device ap-device-detail apx-device" role="group" aria-label="BROKA listing details preview">
+                      <ListingDetailPreview onBack={() => openScreen("home")} />
+                    </div>
+                  )}
+                </div>
+
+                <ul className="apx-points">
+                  {screen.points.map(({ icon: Icon, text }) => (
+                    <li key={text}><Icon size={15} aria-hidden="true" /><span>{text}</span></li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+
+          <p className="apx-note"><Info size={14} aria-hidden="true" /> Products and sellers are illustrative. Nothing here contacts a real seller.</p>
+        </div>
+      </section>
+
+      <section className="apx-cta wrap" aria-labelledby="apx-cta-title">
+        <div className="apx-cta-panel">
+          <div>
+            <h2 id="apx-cta-title">Like what you see?</h2>
+            <p>Install BROKA on Android to talk to real sellers, or keep browsing on the web.</p>
+          </div>
+          <div className="apx-cta-actions">
+            <Link href="/download" className="btn btn-primary btn-lg hp-beam">
+              <Download size={18} aria-hidden="true" /> Download for Android
+            </Link>
+            <Link href="/browse" className="btn btn-ghost btn-lg">Browse on the web</Link>
+          </div>
         </div>
       </section>
     </div>

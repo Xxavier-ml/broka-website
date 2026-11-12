@@ -1,5 +1,6 @@
 "use client";
 
+import "@/app/app-preview/listing-detail/listing-detail.css";
 import { useState } from "react";
 import {
   Bookmark,
@@ -140,7 +141,7 @@ export function ListingDetailPreview({ onBack }: ListingDetailPreviewProps) {
 
       {message && <div className="apd-toast" role="status">{message}</div>}
       <footer className="apd-bottom-bar">
-        <div><b>KES 1,500</b><small>Negotiable · Pay with escrow</small></div>
+        <div><b>KES 1,500</b><small>Negotiable · Third-party escrow</small></div>
         <button onClick={() => setMessage("Preview only — this won’t contact the seller.")}><MessageCircle size={16} /> Start Negotiation</button>
       </footer>
       <div className="apd-gesture"><i /></div>

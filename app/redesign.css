@@ -104,8 +104,21 @@ body { background-color: #05060d; }
 
 /* Keep the same animated BROKA field; tune its contrast so it supports copy. */
 .netbg { background: #030518; }
-.netbg-video { opacity: .76; }
+.netbg-video { opacity: .64; }
 .netbg-particles { opacity: .64; }
+/* A dark veil over the whole field. The network video has pale violet mist in
+   its middle; this deepens everything a little (stars and nodes included) and
+   the area behind the headline most. */
+.netbg::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 85% 62% at 50% 34%, rgba(2, 3, 12, .34), transparent 78%),
+    rgba(2, 3, 12, .16);
+}
 
 :focus-visible { outline: 2px solid #a99cff; outline-offset: 3px; }
 
