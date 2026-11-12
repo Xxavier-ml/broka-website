@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, Check, Download, Heart, Home, Info, LayoutPanelLeft, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { HomeScreenPreview } from "./HomeScreenPreview";
 import { ListingDetailPreview } from "./ListingDetailPreview";
+import { PREVIEW_LISTINGS } from "./previewListings";
 
 type Screen = "home" | "listing";
 type View = "both" | Screen;
@@ -50,6 +51,8 @@ function smoothOrAuto(): ScrollBehavior {
 
 export function AppPreview() {
   const [view, setView] = useState<View>("both");
+  const [listingId, setListingId] = useState(PREVIEW_LISTINGS[0]!.id);
+  const listing = PREVIEW_LISTINGS.find((item) => item.id === listingId) ?? PREVIEW_LISTINGS[0]!;
 
   // One screen at a time on phones: two side by side don't fit, and a sideways
   // swipe strip hides the second screen. The server renders both; a phone
@@ -130,11 +133,11 @@ export function AppPreview() {
                   <span className="apx-device-halo" aria-hidden="true" />
                   {screen.id === "home" ? (
                     <div id="ap-home-device" className="ap-device apx-device" role="group" aria-label="BROKA home screen preview">
-                      <HomeScreenPreview onOpenListing={() => openScreen("listing")} />
+                      <HomeScreenPreview onOpenListing={(id) => { setListingId(id); openScreen("listing"); }} />
                     </div>
                   ) : (
                     <div id="ap-listing-device" className="ap-device ap-device-detail apx-device" role="group" aria-label="BROKA listing details preview">
-                      <ListingDetailPreview onBack={() => openScreen("home")} />
+                      <ListingDetailPreview key={listing.id} listing={listing} onBack={() => openScreen("home")} />
                     </div>
                   )}
                 </div>
