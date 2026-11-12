@@ -32,7 +32,7 @@
 - **Canvas:** Preserve `#05060d`; dark navy/near-black surfaces provide readable contrast over the network.
 - **Core accents:** BROKA violet `#8b75ff` and electric blue `#608cff`; cyan and warm amber remain secondary status accents.
 - **Text:** Near-white primary; high-contrast cool gray secondary; muted labels remain legible against dark surfaces.
-- **Typography:** Montserrat for display headings and price emphasis; Inter for navigation, controls, and dense UI; Noto Serif reserved for a small number of editorial storytelling moments.
+- **Typography:** Space Grotesk for display headings and price emphasis; DM Sans for reading text; Inter for navigation, controls, and dense UI; JetBrains Mono for small instrument labels. Montserrat draws only the BROKA wordmark. Set site-wide in `app/experience.css`.
 - **Spacing:** 8px base rhythm, with page gutters and section spacing fluidly clamped to viewport width.
 - **Shape:** 12px control radius, 18px card radius, 24px feature surfaces. Pill shape is reserved for compact category/status controls and the app CTA.
 - **Elevation:** Thin neutral borders and restrained shadow; one calm surface hierarchy rather than layered glow on every card.

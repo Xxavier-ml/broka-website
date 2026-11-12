@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Montserrat, Noto_Serif, Inter, Space_Grotesk, DM_Sans } from "next/font/google";
+import { Montserrat, Inter, Space_Grotesk, DM_Sans, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import "./marketplace.css";
 import "./site.css";
@@ -8,24 +8,27 @@ import "./redesign.css";
 import "./category-cards.css";
 import "./category-directory.css";
 import "./electronics-subcategories.css";
-import "./premium.css";
+import "./experience.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
 import { VideoBackground } from "@/components/background/VideoBackground";
 import { JsonLd } from "@/components/ui/JsonLd";
+import { Spotlight } from "@/components/ui/Spotlight";
 import { CONTACT, SITE_URL, SOCIAL } from "@/lib/site";
 
-// Type pairing from the BROKA mockup: a bold geometric sans for headlines,
-// prices and numbers; a readable serif for everything else. Inter stays for
-// dense UI (inputs, badges, tabs) where a serif gets fussy at small sizes.
-const display = Montserrat({ subsets: ["latin"], weight: ["600", "700", "800"], variable: "--font-montserrat", display: "swap" });
-const serif = Noto_Serif({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-noto-serif", display: "swap" });
+// One type system for the whole site (app/experience.css sets the tokens):
+// Space Grotesk for headlines, prices and numbers, DM Sans for reading text,
+// Inter for dense UI (inputs, badges, tabs). Montserrat is kept only for the
+// BROKA wordmark, which is drawn in it.
+const display = Montserrat({ subsets: ["latin"], weight: ["700", "800"], variable: "--font-montserrat", display: "swap" });
 const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-inter", display: "swap" });
-// The UI UX Pro Max "Tech Startup" pairing, applied by app/premium.css to the
-// homepage and marketing surfaces only: the marketplace keeps the brand faces.
 const futureDisplay = Space_Grotesk({ subsets: ["latin"], weight: ["500", "600", "700"], variable: "--font-space-grotesk", display: "swap" });
 const futureBody = DM_Sans({ subsets: ["latin"], weight: ["400", "500", "600"], variable: "--font-dm-sans", display: "swap" });
+// Instrument labels (indexes, coordinates, status tags) in app/experience.css
+// and app/home.css. Small and never the largest text on screen, so it is not
+// preloaded: it must not compete with the headline fonts for the first paint.
+const futureMono = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains-mono", display: "swap", preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -90,12 +93,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     // data-scroll-behavior: globals.css makes html scroll smoothly; this keeps Next.js jumping
     // (not gliding) to the top on navigation once it stops doing so by default (Next 16).
-    <html lang="en" data-scroll-behavior="smooth" className={`${display.variable} ${serif.variable} ${inter.variable} ${futureDisplay.variable} ${futureBody.variable}`}>
+    <html lang="en" data-scroll-behavior="smooth" className={`${display.variable} ${inter.variable} ${futureDisplay.variable} ${futureBody.variable} ${futureMono.variable}`}>
       <body>
         <a href="#main" className="skip-link">
           Skip to content
         </a>
         <SmoothScroll />
+        <Spotlight />
         <VideoBackground />
         <JsonLd data={organization} />
         <Header />

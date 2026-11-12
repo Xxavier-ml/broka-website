@@ -1,60 +1,84 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, BellRing, Download, MessageCircle, Search } from "lucide-react";
-import { Reveal } from "@/components/ui/Reveal";
+import { ArrowUpRight, Download, MessageCircle, Search, Store } from "lucide-react";
+import { QrCode } from "@/components/ui/QrCode";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * The handoff to the app, which is where the account, the conversations and
  * the notifications live. The website stays a browsing surface, so this panel
  * says plainly what the app adds rather than implying the site can do it too.
+ * Visitors on a computer get a code to scan, since the app installs on the
+ * phone in their pocket rather than the screen they are reading.
  */
 const APP_POINTS = [
-  { icon: Search, text: "Search and browse the full marketplace" },
-  { icon: MessageCircle, text: "Chat or call sellers about a listing" },
-  { icon: BellRing, text: "Manage your own store and listings" },
+  { icon: Search, title: "The whole marketplace", text: "Search and browse every category and store." },
+  { icon: MessageCircle, title: "Talk to sellers", text: "Chat or call inside BROKA, without sharing your number." },
+  { icon: Store, title: "Your own store", text: "Open a store with its own link and add products in minutes." },
 ];
 
 export function HomeApp() {
   return (
     <section className="sec hp-app" aria-labelledby="hp-app-title">
       <div className="wrap">
-        <Reveal className="hp-app-panel">
+        <div className="hp-app-panel hp-reveal">
           <div className="hp-app-visual">
+            <span className="hp-app-halo" aria-hidden="true" />
+            <span className="hp-app-rings" aria-hidden="true"><i /><i /><i /></span>
             <Image
               src="/assets/home/app-phone.webp"
               alt="The BROKA app on a phone, showing a marketplace search and product grid"
               width={900}
               height={1125}
-              sizes="(max-width: 900px) 60vw, 300px"
+              sizes="(max-width: 900px) 70vw, 420px"
               className="hp-app-image"
             />
           </div>
+
           <div className="hp-app-copy">
-            <span className="t-eyebrow">Get the app</span>
-            <h2 className="t-h2" id="hp-app-title">BROKA in your pocket.</h2>
-            <p className="t-body-lg">
-              The app is where a browse turns into a conversation. Download it for
-              Android, sign in, and keep the sellers you found here in one place.
+            <span className="hp-eyebrow"><b>05</b> Get the app</span>
+            <h2 className="hp-title" id="hp-app-title">
+              BROKA <em>in your pocket.</em>
+            </h2>
+            <p className="hp-lede">
+              The app is where a browse turns into a conversation. Download it for Android, sign in, and keep
+              the sellers you found here in one place.
             </p>
             <ul className="hp-app-points">
               {APP_POINTS.map((point) => (
-                <li key={point.text}><point.icon size={15} aria-hidden="true" /> {point.text}</li>
+                <li key={point.title}>
+                  <span className="hp-app-point-icon" aria-hidden="true"><point.icon size={16} /></span>
+                  <span><strong>{point.title}</strong> {point.text}</span>
+                </li>
               ))}
             </ul>
             <div className="hp-app-actions">
-              <Link href="/download" className="btn btn-primary">
-                <Download size={16} aria-hidden="true" /> Download for Android
+              <Link href="/download" className="btn btn-primary btn-lg hp-beam">
+                <Download size={18} aria-hidden="true" /> Download for Android
               </Link>
-              <Link href="/app-preview" className="btn btn-ghost">
-                Preview the app <ArrowUpRight size={15} aria-hidden="true" />
+              <Link href="/app-preview" className="btn btn-ghost btn-lg">
+                Preview the app <ArrowUpRight size={16} aria-hidden="true" className="btn-arrow" />
               </Link>
             </div>
+            <p className="hp-app-platforms">
+              <span><i aria-hidden="true" /> Android — available now</span>
+              <span>iPhone — coming later</span>
+            </p>
+
+            <div className="hp-qr-card">
+              <QrCode value={`${SITE_URL}/download`} title="QR code linking to the BROKA download page" className="hp-qr" />
+              <p>
+                <strong>Reading this on a computer?</strong>
+                Point your phone&apos;s camera at the code to open the download page there.
+              </p>
+            </div>
+
             <p className="hp-app-note">
-              The website stays a place to browse and compare — buying, selling and
-              paying are arranged between you and the seller.
+              The website stays a place to browse and compare — buying, selling and paying are arranged between
+              you and the seller.
             </p>
           </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );

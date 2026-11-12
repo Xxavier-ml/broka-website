@@ -1,15 +1,12 @@
-import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight, Check, Sparkles } from "lucide-react";
-import { Reveal } from "@/components/ui/Reveal";
+import { ArrowUpRight, Check } from "lucide-react";
+import { ZenoOrbit } from "./ZenoOrbit";
 
 /**
- * Zeno, shown rather than described.
- *
- * The right-hand panel is a labelled sample conversation: it shows the shape
- * of the exchange (a sentence in, structured context out) without pretending
- * to be live inventory — the card says SAMPLE PREVIEW in the same way the
- * other simulated moments on the site are labelled.
+ * Zeno, shown rather than described: the character in his orbit beside one
+ * worked example of what he does, a plain sentence read into the details a
+ * search needs. The example is labelled as a sample, like every simulated
+ * moment on the site.
  */
 const POINTS = [
   "Understands everyday language — size, budget, location — not just keywords.",
@@ -17,73 +14,60 @@ const POINTS = [
   "Suggests the next step; you decide what to do with it.",
 ];
 
+const READ = ["Laptop", "MacBook", "Used", "≤ KSh 80,000", "Nairobi"];
+
 export function HomeZeno() {
   return (
     <section className="sec hp-zeno" aria-labelledby="hp-zeno-title">
       <div className="wrap hp-zeno-grid">
-        <Reveal className="hp-zeno-copy">
-          <span className="t-eyebrow">Meet Zeno</span>
-          <h2 className="t-h2" id="hp-zeno-title">An assistant that reads the market with you.</h2>
-          <p className="t-body-lg">
-            Zeno turns a plain sentence into a search you can act on, then keeps the
-            details that matter in view. It is a context layer over real listings —
-            not a shop of its own, and not a replacement for the seller.
+        <div className="hp-zeno-visual hp-reveal">
+          <span className="hp-zeno-pad" aria-hidden="true"><i /><i /><i /></span>
+          <ZenoOrbit />
+        </div>
+
+        <div className="hp-zeno-copy hp-reveal">
+          <span className="hp-eyebrow"><b>03</b> Meet Zeno</span>
+          <h2 className="hp-title" id="hp-zeno-title">
+            An assistant that <em>reads the market</em> with you.
+          </h2>
+          <p className="hp-lede">
+            Zeno turns a plain sentence into a search you can act on, then keeps the details that matter in
+            view. It is a context layer over real listings — not a shop of its own, and not a replacement for
+            the seller.
           </p>
-          <ul className="hp-zeno-points">
+
+          <figure className="hp-parse" data-spotlight="">
+            <div className="hp-parse-row">
+              <span className="hp-parse-label">You say</span>
+              <p className="hp-parse-quote">“A used MacBook under 80K, preferably in Nairobi.”</p>
+            </div>
+            <span className="hp-parse-beam" aria-hidden="true"><i /></span>
+            <div className="hp-parse-row">
+              <span className="hp-parse-label">Zeno reads</span>
+              <ul className="hp-parse-tokens">
+                {READ.map((token, i) => (
+                  <li key={token} style={{ ["--i" as string]: i }}>{token}</li>
+                ))}
+              </ul>
+            </div>
+            <figcaption className="hp-parse-note">Sample — how a request is read, not a live search.</figcaption>
+          </figure>
+
+          <ul className="hp-points">
             {POINTS.map((point) => (
-              <li key={point}><Check size={14} aria-hidden="true" /> {point}</li>
+              <li key={point}><span className="hp-points-icon" aria-hidden="true"><Check size={13} /></span> {point}</li>
             ))}
           </ul>
-          <div className="hp-zeno-actions">
+
+          <div className="hp-actions">
             <Link href="/zeno" className="btn btn-primary btn-sm">
-              Explore Zeno <ArrowUpRight size={15} aria-hidden="true" />
+              Explore Zeno <ArrowUpRight size={15} aria-hidden="true" className="btn-arrow" />
             </Link>
-            <Link href="/app-preview" className="preview-link">
-              Preview the app <ArrowUpRight size={14} aria-hidden="true" />
+            <Link href="/app-preview" className="hp-textlink">
+              Preview the app <ArrowUpRight size={15} aria-hidden="true" />
             </Link>
           </div>
-        </Reveal>
-
-        <Reveal className="hp-zeno-demo" delay={0.1} aria-label="Sample Zeno conversation">
-          <div className="hp-chat">
-            <div className="hp-chat-head">
-              <span className="hp-chat-who">
-                <Image src="/assets/zeno-icon.png" alt="" width={28} height={28} className="hp-chat-avatar" />
-                <span><strong>Zeno</strong><small>BROKA assistant</small></span>
-              </span>
-              <span className="hp-chat-status"><i aria-hidden="true" /> SAMPLE PREVIEW</span>
-            </div>
-
-            <div className="hp-chat-thread">
-              <p className="hp-bubble hp-bubble-user">
-                I need a 55-inch TV under KSh 50,000, preferably in Nairobi.
-              </p>
-              <div className="hp-bubble hp-bubble-zeno">
-                <p>
-                  Here is the shape of what comes back — three sample matches with the
-                  details you would compare before contacting anyone.
-                </p>
-                <ul className="hp-chat-results">
-                  <li>
-                    <span className="hp-chat-thumb" aria-hidden="true">TV</span>
-                    <span className="hp-chat-result-copy"><strong>55-inch smart TV</strong><small>Nairobi · used, good condition</small></span>
-                    <span className="hp-chat-price">KSh 46,500</span>
-                  </li>
-                  <li>
-                    <span className="hp-chat-thumb hp-chat-thumb-b" aria-hidden="true">TV</span>
-                    <span className="hp-chat-result-copy"><strong>55-inch 4K TV + soundbar</strong><small>Mombasa · new, sealed</small></span>
-                    <span className="hp-chat-price">KSh 49,000</span>
-                  </li>
-                </ul>
-                <span className="hp-chat-foot"><Sparkles size={12} aria-hidden="true" /> Then you contact the seller directly.</span>
-              </div>
-            </div>
-
-            <p className="hp-chat-note">
-              Illustrative sample — not live listings. Prices shown are examples.
-            </p>
-          </div>
-        </Reveal>
+        </div>
       </div>
     </section>
   );
