@@ -5,11 +5,13 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const q = searchParams.get("q")?.trim().slice(0, 80) ?? "";
+  const q = searchParams.get("q")?.trim().slice(0, 100) ?? "";
   if (q.length < 2) return NextResponse.json({ items: [] });
 
   try {
-    const result = await listListings({ search: q, limit: 6, sort: "recent" });
+    // No sort: the API's own ranking puts the best matches first. "recent"
+    // returned the six newest matches, however loosely they matched.
+    const result = await listListings({ search: q, limit: 6 });
     return NextResponse.json(
       {
         items: result.items.map((listing) => ({

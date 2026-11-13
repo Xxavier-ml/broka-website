@@ -109,7 +109,8 @@ export function BrowseView({
               action="/browse"
               value={q}
               placeholder="Search products or places…"
-              hidden={{ category }}
+              // Searching keeps the filters that are set; it used to send only the category.
+              hidden={{ category, sort: query.sort, condition, min_price: query.min_price, max_price: query.max_price, location }}
               className="sform-lg browse-search browse-search-v0"
               label="Search marketplace"
               filters={{ action: "/browse", category, condition, minPrice, maxPrice, location, sort }}

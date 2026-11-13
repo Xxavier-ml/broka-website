@@ -91,7 +91,7 @@ export function HeroSearch() {
   return (
     <div className="hp-hero-search">
       <SearchForm
-        action="/search"
+        action="/browse"
         placeholder="Search phones, cars, land…"
         className="hp-search"
         iconSubmit
