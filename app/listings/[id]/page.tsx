@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Handshake, MapPin, Truck, Eye, Tag, ChevronLeft } from "lucide-react";
+import { Handshake, MapPin, Truck, Eye, Tag, ChevronLeft, Home } from "lucide-react";
 import { getListing } from "@/lib/api/listings";
 import { coverImage, galleryImages } from "@/lib/api/images";
 import { categoryVisual } from "@/lib/categories";
@@ -82,22 +82,28 @@ export default async function ListingPage({ params }: Props) {
           },
         }}
       />
-      <section className="detail-top detail-app-shell" aria-labelledby="listing-h">
+      <section className="detail-top detail-app-shell mk-detail" aria-labelledby="listing-h">
         <div className="wrap">
           <Breadcrumbs
             items={[
+              { label: "Home", href: "/" },
               { label: "Browse", href: "/browse" },
               ...(l.store_name && l.store_slug ? [{ label: l.store_name, href: storeWebsiteUrl(l.store_slug) }] : []),
               { label: l.name },
             ]}
           />
           <div className="detail-app-toolbar">
-            <Link href="/browse" className="detail-app-back"><ChevronLeft size={16} aria-hidden="true" /> Browse marketplace</Link>
-            <span className="detail-app-kicker">BROKA / LISTING DETAIL</span>
+            <nav className="mk-detail-nav" aria-label="Listing navigation">
+              <Link href="/" className="detail-app-back mk-home-link"><Home size={15} aria-hidden="true" /> <span>Home</span></Link>
+              <Link href="/browse" className="detail-app-back mk-back-link"><ChevronLeft size={16} aria-hidden="true" /> <span>Browse marketplace</span></Link>
+            </nav>
+            <span className="detail-app-kicker">BROKA <i>/</i> LISTING DETAIL</span>
             <span className="detail-app-sale-badge">MARKETPLACE LISTING</span>
           </div>
           <div className="detail-grid">
-            <Gallery images={images} alt={l.name} fallback={<Media image={null} category={l.category} alt={l.name} />} />
+            <div className="mk-gallery-frame">
+              <Gallery images={images} alt={l.name} fallback={<Media image={null} category={l.category} alt={l.name} />} />
+            </div>
 
             <div className="detail-side">
               <div className="detail-tags">
@@ -115,6 +121,11 @@ export default async function ListingPage({ params }: Props) {
                 </p>
               )}
 
+              <div className="mk-price-deck">
+                <span className="mk-price-label">Asking price</span>
+                <strong className="mk-price">{formatUnitPrice(l.price, l.price_unit)}</strong>
+              </div>
+
               <div className="detail-terms-block">
                 <p className="detail-section-label">DEAL TERMS</p>
                 <div className="detail-terms-grid">
@@ -122,7 +133,6 @@ export default async function ListingPage({ params }: Props) {
                     <span className="detail-term-label"><Handshake size={15} aria-hidden="true" /> PRICE</span>
                     <strong>{l.price_negotiable ? "Negotiable" : "Fixed price"}</strong>
                     <p>{l.price_negotiable ? "Contact the seller to discuss price" : "Seller's asking price"}</p>
-                    <b>{formatUnitPrice(l.price, l.price_unit)}</b>
                   </div>
                   <div className="detail-term detail-term-delivery">
                     <span className="detail-term-label"><Truck size={15} aria-hidden="true" /> DELIVERY</span>
@@ -148,7 +158,7 @@ export default async function ListingPage({ params }: Props) {
         </div>
       </section>
 
-      <section className="detail-more">
+      <section className="detail-more mk-detail-more">
         <div className="wrap detail-more-grid">
           <div className="detail-col">
             <Description text={l.description} />

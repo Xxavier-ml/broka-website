@@ -9,6 +9,7 @@ import "./category-cards.css";
 import "./category-directory.css";
 import "./electronics-subcategories.css";
 import "./experience.css";
+import "./marketplace-premium.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { SmoothScroll } from "@/components/layout/SmoothScroll";
