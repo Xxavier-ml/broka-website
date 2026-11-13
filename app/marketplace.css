@@ -152,6 +152,14 @@
 .sform-suggestion-copy small { display: inline-flex; align-items: center; gap: 3px; overflow: hidden; color: var(--c-text-3); font: 11px var(--f-ui); white-space: nowrap; text-overflow: ellipsis; }
 .sform-suggestion-price { flex-shrink: 0; color: var(--c-c-light); font: 600 12px var(--f-ui); }
 .sform-suggestions-hint { padding: 8px 10px 4px; color: var(--c-text-3); font: 10px var(--f-ui); }
+.sform-suggestion.stale { opacity: .55; }
+.sform-suggestion-go { flex-shrink: 0; color: var(--c-text-3); }
+.sform-suggestion-query.active .sform-suggestion-go, .sform-suggestion-query:hover .sform-suggestion-go { color: var(--c-v-light); }
+/* A search was taken and the results page is on its way. */
+.sform-shell.sform-pending { cursor: progress; }
+.sform-shell.sform-pending .sform::after { content: ""; position: absolute; left: 14px; right: 14px; bottom: 0; height: 2px; border-radius: 2px; background: linear-gradient(90deg, transparent, var(--c-v-light), transparent); background-size: 50% 100%; background-repeat: no-repeat; animation: sform-pending 1s linear infinite; pointer-events: none; }
+@keyframes sform-pending { from { background-position: -50% 0; } to { background-position: 150% 0; } }
+@media (prefers-reduced-motion: reduce) { .sform-shell.sform-pending .sform::after { animation: none; background-size: 100% 100%; opacity: .6; } }
 .sform-lg { max-width: 760px; padding: 8px 8px 8px 20px; border-radius: 18px; border-color: rgba(139, 107, 255, 0.35); }
 .sform-lg .sform-input { font-size: 16px; padding: 12px 8px; }
 .sform-lg .sform-btn { padding: 13px 26px; border-radius: 12px; font-size: 14px; }
