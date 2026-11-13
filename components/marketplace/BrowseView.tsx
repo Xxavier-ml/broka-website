@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { Home } from "lucide-react";
 import { CategoryChips } from "./CategoryChips";
 import { Pagination } from "./Pagination";
 import { ProductCard } from "./ProductCard";
 import { SearchForm } from "./SearchForm";
 import { ApiNotice, EmptyState } from "./StateMessage";
-import { canonicalCategory } from "@/lib/categories";
+import { CATEGORIES, canonicalCategory } from "@/lib/categories";
 import { withQuery } from "@/lib/params";
 import { LISTINGS_PAGE_SIZE, type ListingPage } from "@/lib/api/listings";
 import { CategoryLanding } from "./CategoryLanding";
@@ -58,15 +59,50 @@ export function BrowseView({
   const query = { q, category, sort: sortParam(sort), condition, min_price: minPrice?.toString(), max_price: maxPrice?.toString(), location };
   const pageCount = Math.max(1, Math.ceil(result.total / LISTINGS_PAGE_SIZE));
   const pageHref = (target: number) => withQuery("/browse", { ...query, page: target > 1 ? target : undefined });
+  const activeSortLabel = sortOptions.find((option) => option.key === sort)?.label ?? sortOptions[0].label;
 
   return (
     <>
-      <section className="browse-hero browse-hero-v0" aria-label="Browse marketplace">
+      <section className="browse-hero browse-hero-v0 mk-premium mk-hero" aria-label="Browse marketplace">
         <div className="wrap">
-          <div className="browse-v0-intro">
-            {/* The page's only h1: styled as the compact eyebrow, but the page
-                still needs a top-level heading for screen readers and search. */}
-            <h1 className="t-eyebrow" id="browse-page-title">Broka Marketplace</h1>
+          <div className="mk-deck">
+            <nav className="mk-deck-nav" aria-label="Marketplace navigation">
+              <Link href="/" className="mk-home-link">
+                <Home size={15} aria-hidden="true" />
+                <span>Home</span>
+              </Link>
+              <span className="mk-deck-path" aria-hidden="true">BROKA <i>/</i> MARKETPLACE</span>
+            </nav>
+            <div className="browse-route-signal" aria-label="Live marketplace status">
+              <span className="browse-route-signal-dot" aria-hidden="true" />
+              <span><b>LIVE CATALOGUE</b><small>Listings update as sellers post</small></span>
+            </div>
+          </div>
+          <div className="mk-hero-head">
+            <div className="browse-v0-intro mk-hero-intro">
+              <h1 className="mk-hero-title" id="browse-page-title">
+                <span className="mk-hero-title-lead">Broka</span> <span className="mk-hero-title-accent">Marketplace</span>
+              </h1>
+              <p className="mk-hero-sub">Real listings from Kenyan sellers, with price, place and seller context side by side.</p>
+            </div>
+            <dl className="mk-hud">
+              <div>
+                <dt>Listings</dt>
+                <dd>{failed ? "—" : result.total.toLocaleString("en-KE")}</dd>
+              </div>
+              <div>
+                <dt>Categories</dt>
+                <dd>{CATEGORIES.length}</dd>
+              </div>
+              <div>
+                <dt>Sorted by</dt>
+                <dd>{activeSortLabel}</dd>
+              </div>
+              <div>
+                <dt>Page</dt>
+                <dd>{failed ? "—" : `${page} / ${pageCount}`}</dd>
+              </div>
+            </dl>
           </div>
           <div className="browse-v0-search-slot">
             <SearchForm
@@ -79,10 +115,6 @@ export function BrowseView({
               filters={{ action: "/browse", category, condition, minPrice, maxPrice, location, sort }}
               filterRowClassName="browse-search-filter-row"
             />
-          </div>
-          <div className="browse-route-signal" aria-label="Live marketplace status">
-            <span className="browse-route-signal-dot" aria-hidden="true" />
-            <span><b>LIVE CATALOGUE</b><small>Listings update as sellers post</small></span>
           </div>
           <div className="browse-v0-controls">
             <div className="browse-category-discovery-head">
@@ -98,7 +130,7 @@ export function BrowseView({
           </div>
         </div>
       </section>
-      <section className="browse-section browse-v0-results" aria-label="Marketplace listings">
+      <section className="browse-section browse-v0-results mk-premium mk-results" aria-label="Marketplace listings">
         <div className="wrap">
           <div className="browse-toolbar browse-v0-toolbar listing-v0-toolbar">
             <div>
