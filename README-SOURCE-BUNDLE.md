@@ -22,7 +22,7 @@ npm run build
 npm run start
 ```
 
-The app uses the same public BROKA API server as the mobile frontend by default (`https://broka-a6vh.onrender.com`). Review `.env.example` and `README.md` for storefront URL, shared proxy-key and app-download configuration. Do not put real secrets in source control or `NEXT_PUBLIC_*` variables.
+The app uses the BROKA API server at `https://broka-api-development.up.railway.app` by default. Review `.env.example` and `README.md` for storefront URL, shared proxy-key and app-download configuration. Do not put real secrets in source control or `NEXT_PUBLIC_*` variables.
 
 ## Permanent publication
 
